@@ -361,6 +361,17 @@
             padding: 0;
         }
 
+        .without_nav .my-nav {
+            display: none
+        }
+        .base-content{
+            padding-top: 45px;
+        }
+
+        .without_nav .base-content{
+            padding-top: 0;
+        }
+
         .rtl-nav {
             direction: rtl
         }
@@ -454,7 +465,7 @@
     {% block styles %}{% endblock %}
 </head>
 
-<body>
+<body class="{%if without_nav %} without_nav {% endif %}">
     {% if messages %}
     <ul class="back_messages">
         {% for message in messages %}
@@ -465,8 +476,10 @@
 
     {% include 'base/nav.html' %}
 
-    {% block base_content %}
-    {% endblock %}
+    <div class="base-content">
+        {% block base_content %}{% endblock %}
+    </div>
+
 
 
     {% block modals %}{% endblock %}

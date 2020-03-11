@@ -20,5 +20,8 @@ from django.urls import path
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('test_base/', lambda r: render(r, 'base/base.html'))
+    path('test_landing/', lambda r: render(r, 'homepages/landing_page.html')),
+    path('test_auth_base/', lambda r: render(r, 'auth/base.html', {
+        "without_nav": True
+    })),
 ]
