@@ -12,25 +12,24 @@
 
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav ml-auto">
-                <li class="nav-item">
+                {% comment %} <li class="nav-item">
                     <a class="nav-link hover-shadow {% if request.path == '/' %} activate {% endif %}"
                         href="/">داشبورد</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link hover-shadow {% if request.path == '/profile/' %} activate {% endif %}"
                         href="/profile/">پروفایل</a>
-                </li>
+                </li> {% endcomment %}
             </ul>
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item">
                     <a class="nav-link hover-shadow {% if request.path == '/about/' %} activate {% endif %}"
                         href="/about/">درباره ما</a>
-
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link hover-shadow" href="/logout/" style="background: #d3c096;">
+                    {% comment %} <a class="nav-link hover-shadow" href="/logout/" style="background: #d3c096;">
                         <i class="fa fa-sign-out-alt"></i>
-                    </a>
+                    </a> {% endcomment %}
                 </li>
             </ul>
         </div>
