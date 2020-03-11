@@ -1,5 +1,21 @@
 {% extends 'base/base.html' %}
-
+{% load static %}
+{% block styles %}
+<link rel="stylesheet" href="{% static 'styles/countdown.css' %}" />
+{% endblock styles %}
 {% block base_content %}
-<div></div>
+
+<div style="height: calc(100vh - 45px); display: flex; align-items: center; justify-content: center;">
+    <div class="container">
+        <h1 class="text-center text-white mb-5" style="direction: rtl">منتظر ما باشید!!!</h1>
+        {% include 'homepages/countdown.html' %}
+    </div>
+</div>
+
+
 {% endblock base_content %}
+
+{% block scripts %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/latest/TweenMax.min.js"></script>
+<script src="{% static 'scripts/countdown.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,108 @@
+.my-nav {
+    background: #272A43;
+    padding: 10px 0;
+}
+
+.my-nav.active-nav {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    padding: 0;
+}
+
+.without_nav .my-nav {
+    display: none
+}
+
+.base-content {
+    padding-top: 45px;
+}
+
+.without_nav .base-content {
+    padding-top: 0;
+}
+
+.rtl-nav {
+    direction: rtl
+}
+
+.rtl-nav .nav-link {
+    text-align: right
+}
+
+.my-nav .nav-logo {
+    padding: 5px
+}
+
+.rasta-logo,
+.rasta-logo>img {
+    border-radius: 50%;
+}
+
+.my-nav .nav-logo>img {
+    height: 35px;
+    box-shadow: 0 0 0 rgba(204, 169, 44, 0.4);
+    animation: pulse 2s infinite;
+}
+
+ul.navbar-nav {
+    padding: 0
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        -webkit-box-shadow: 0 0 0 0 rgba(204, 169, 44, 0.4);
+    }
+
+    70% {
+        transform: scale(1.1);
+        -webkit-box-shadow: 0 0 0 10px rgba(204, 169, 44, 0);
+    }
+
+    100% {
+        transform: scale(1);
+        -webkit-box-shadow: 0 0 0 0 rgba(204, 169, 44, 0);
+    }
+}
+
+.my-nav .navbar-brand {
+    padding: 0;
+}
+
+.my-nav .nav-link {
+    color: black;
+    transition: 0.3s;
+    font-size: 20px;
+    background: #fafafa;
+    box-shadow: 0 1px 1px rgba(10, 60, 0, 0.5);
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+}
+
+.text-hover-shadow:hover,
+.text-hover-shadow:focus {
+    text-shadow: 3px 2px 2px #33333355;
+}
+
+.hover-shadow {
+    transition: 0.3s;
+}
+
+.hover-shadow:hover,
+.hover-shadow:focus,
+.my-nav .nav-link.activate {
+    box-shadow: 0 2px 1px rgba(0, 0, 0, 0.1), 0 3px 1px rgba(0, 0, 0, 0.2);
+    background: gray;
+    color: white;
+}
+
+.my-nav .navbar-toggler {
+    background: white;
+}
+
+.navbar-toggler-icon {
+    background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3e%3cpath stroke='rgba(0, 0, 0, 0.5)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+}
+
+.my-nav .dropdown:hover>.dropdown-menu {
+    display: block;
+}
