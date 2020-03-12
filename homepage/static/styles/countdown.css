@@ -167,12 +167,12 @@
 @media (max-width: 576px) {
     .countdown .figure {
         width: 37px;
-        height: 55px;
+        height: 54px;
         margin-right: 2px;
     }
 
     .countdown .figure>span {
-        font: 800 4em/63px 'Iranyekan';
+        font: 800 4em/60px 'Iranyekan';
         font-weight: 800;
     }
 
@@ -189,7 +189,7 @@
     }
 
     .countdown .figure>span {
-        font: 800 3.8em/53px 'Iranyekan';
+        font: 800 3.8em/48px 'Iranyekan';
         font-weight: 800;
     }
 
