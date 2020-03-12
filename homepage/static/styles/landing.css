@@ -1,0 +1,25 @@
+.transparent-text {
+    color: transparent;
+    caret-color: transparent;
+    -webkit-text-stroke-width: 1px;
+    text-stroke-width: 1px;
+    -webkit-text-stroke-color: #fff;
+    text-stroke-color: #fff;
+    font-weight: 900;
+    font-size: 80px;
+    letter-spacing: 10px;
+    animation: text-anim 4s infinite;
+}
+
+@keyframes text-anim {
+
+    10% {
+        letter-spacing: 9px;
+        color: white;
+    }
+
+    50% {
+        color: white;
+        letter-spacing: 0;
+    }
+}
