@@ -125,15 +125,21 @@
     margin: auto;
 }
 
+.countdown .counter-container {
+    display: flex
+}
+
 @media (max-width: 992px) {
     .countdown .figure {
         width: 60px;
+        height: 80px;
     }
 
     .countdown .figure>span {
-        font: 800 5.14em/107px 'Iranyekan';
+        font: 800 5.14em/87px 'Iranyekan';
         font-weight: 800;
     }
+
     .countdown .count-title {
         font-size: 28px
     }
@@ -142,11 +148,14 @@
 @media (max-width: 768px) {
     .countdown .figure {
         width: 50px;
+        height: 70px;
     }
+
     .countdown .figure>span {
-        font: 800 5em/107px 'Iranyekan';
+        font: 800 4.7em/77px 'Iranyekan';
         font-weight: 800;
     }
+
     .countdown .count-title {
         font-size: 26px
     }
@@ -155,11 +164,14 @@
 @media (max-width: 576px) {
     .countdown .figure {
         width: 40px;
+        height: 60px;
     }
+
     .countdown .figure>span {
-        font: 800 4.3em/107px 'Iranyekan';
+        font: 800 4.2em/67px 'Iranyekan';
         font-weight: 800;
     }
+
     .countdown .count-title {
         font-size: 24px
     }

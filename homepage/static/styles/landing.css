@@ -50,5 +50,22 @@
 @media (max-width: 576px) {
     .transparent-text {
         font-size: 30px;
+        letter-spacing: 5px;
+    }
+    @keyframes text-anim {
+
+        10% {
+            letter-spacing: 4px;
+            color: white;
+        }
+    
+        50% {
+            color: white;
+            letter-spacing: 0;
+        }
+    
+        55% {
+            color: white;
+        }
     }
 }
