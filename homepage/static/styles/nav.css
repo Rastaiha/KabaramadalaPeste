@@ -1,9 +1,10 @@
 .my-nav {
-    background: #272A43;
     padding: 10px 0;
+    transition: 0.5s;
 }
 
 .my-nav.active-nav {
+    background: #272A43;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     padding: 0;
 }
@@ -45,6 +46,7 @@ ul.navbar-nav {
     0% {
         transform: scale(1);
     }
+
     30% {
         transform: scale(1.01) rotate(8deg);
     }

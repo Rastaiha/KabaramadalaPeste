@@ -18,7 +18,8 @@
     display: block;
     color: white;
     text-transform: uppercase;
-    font-size: 30px
+    font-size: 30px;
+    font-weight: 800;
 }
 
 .countdown .figure {
@@ -42,7 +43,7 @@
     left: 0;
     right: 0;
     margin: auto;
-    font: 900 5.94em/107px 'Iranyekan';
+    font: 900 5.94em/113px 'Iranyekan';
     font-weight: 900;
     color: #de4848;
 }
@@ -165,13 +166,13 @@
 
 @media (max-width: 576px) {
     .countdown .figure {
-        width: 40px;
-        height: 60px;
+        width: 37px;
+        height: 50px;
         margin-right: 2px;
     }
 
     .countdown .figure>span {
-        font: 800 4.2em/67px 'Iranyekan';
+        font: 800 4em/63px 'Iranyekan';
         font-weight: 800;
     }
 
@@ -183,12 +184,12 @@
 @media (max-width: 300px) {
     .countdown .figure {
         width: 30px;
-        height: 50px;
+        height: 45px;
         margin-right: 0;
     }
 
     .countdown .figure>span {
-        font: 800 3.8em/57px 'Iranyekan';
+        font: 800 3.8em/53px 'Iranyekan';
         font-weight: 800;
     }
 
