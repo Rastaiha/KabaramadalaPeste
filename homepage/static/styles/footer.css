@@ -1,0 +1,36 @@
+.footer {
+    background: #2F2F31;
+    color: blanchedalmond;
+}
+
+.without_footer .footer {
+    display: none
+}
+
+.social-medias {
+    display: flex;
+    justify-content: center;
+}
+
+.social-medias>div {
+    width: 150px;
+    display: flex;
+}
+
+.social-link {
+    margin: auto;
+    transition: 0.5s;
+}
+
+.social-link:hover,
+.social-link:focus {
+    transform: scale(1.5) rotate(360deg);
+}
+
+.social-link img,
+.social-link i {
+    height: 20px;
+    font-size: 20px;
+    line-height: 20px;
+    color: #10a6ce
+}

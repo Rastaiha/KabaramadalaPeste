@@ -36,11 +36,12 @@
     <!-- Custom Theme Style -->
     <link rel="stylesheet" href="{% static 'styles/base.css' %}">
     <link rel="stylesheet" href="{% static 'styles/nav.css' %}">
+    <link rel="stylesheet" href="{% static 'styles/footer.css' %}">
 
     {% block styles %}{% endblock %}
 </head>
 
-<body class="{%if without_nav %} without_nav {% endif %}">
+<body class="{%if without_nav %} without_nav {% endif %} {%if without_footer %} without_footer {% endif %}">
     {% if messages %}
     <ul class="back_messages">
         {% for message in messages %}
@@ -55,6 +56,8 @@
         {% block base_content %}{% endblock %}
     </div>
 
+    {% include 'base/footer.html' %}
+
     {% block modals %}{% endblock %}
     {% csrf_token %}
 
@@ -64,6 +67,9 @@
 
     <!-- Bootstrap -->
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+    <!-- Custom Scripts -->
+    <script src="{% static 'scripts/nav.js' %}"></script>
 
     {% block scripts %}{% endblock %}
 </body>
