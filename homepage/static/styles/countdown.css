@@ -134,6 +134,9 @@
         font: 800 5.14em/107px 'Iranyekan';
         font-weight: 800;
     }
+    .countdown .count-title {
+        font-size: 28px
+    }
 }
 
 @media (max-width: 768px) {
@@ -144,14 +147,20 @@
         font: 800 5em/107px 'Iranyekan';
         font-weight: 800;
     }
+    .countdown .count-title {
+        font-size: 26px
+    }
 }
 
 @media (max-width: 576px) {
     .countdown .figure {
-        width: 45px;
+        width: 40px;
     }
     .countdown .figure>span {
-        font: 800 4.6em/107px 'Iranyekan';
+        font: 800 4.3em/107px 'Iranyekan';
         font-weight: 800;
+    }
+    .countdown .count-title {
+        font-size: 24px
     }
 }

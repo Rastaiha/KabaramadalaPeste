@@ -9,6 +9,7 @@
     font-size: 80px;
     letter-spacing: 10px;
     animation: text-anim 4s infinite;
+    white-space: nowrap;
 }
 
 @keyframes text-anim {
