@@ -1,3 +1,10 @@
+.first-page {
+    height: calc(100vh - 45px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 .transparent-text {
     color: transparent;
     caret-color: transparent;
@@ -52,18 +59,19 @@
         font-size: 30px;
         letter-spacing: 5px;
     }
+
     @keyframes text-anim {
 
         10% {
             letter-spacing: 4px;
             color: white;
         }
-    
+
         50% {
             color: white;
             letter-spacing: 0;
         }
-    
+
         55% {
             color: white;
         }
