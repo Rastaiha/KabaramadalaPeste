@@ -42,8 +42,8 @@
     left: 0;
     right: 0;
     margin: auto;
-    font: normal 5.94em/107px 'Iranyekan';
-    font-weight: 700;
+    font: 900 5.94em/107px 'Iranyekan';
+    font-weight: 900;
     color: #de4848;
 }
 
@@ -123,4 +123,35 @@
     left: 0;
     right: 0;
     margin: auto;
+}
+
+@media (max-width: 992px) {
+    .countdown .figure {
+        width: 60px;
+    }
+
+    .countdown .figure>span {
+        font: 800 5.14em/107px 'Iranyekan';
+        font-weight: 800;
+    }
+}
+
+@media (max-width: 768px) {
+    .countdown .figure {
+        width: 50px;
+    }
+    .countdown .figure>span {
+        font: 800 5em/107px 'Iranyekan';
+        font-weight: 800;
+    }
+}
+
+@media (max-width: 576px) {
+    .countdown .figure {
+        width: 45px;
+    }
+    .countdown .figure>span {
+        font: 800 4.6em/107px 'Iranyekan';
+        font-weight: 800;
+    }
 }
