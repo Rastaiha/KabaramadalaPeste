@@ -22,7 +22,32 @@
         color: white;
         letter-spacing: 0;
     }
+
     55% {
         color: white;
+    }
+}
+
+@media (max-width: 1200px) {
+    .transparent-text {
+        font-size: 60px;
+    }
+}
+
+@media (max-width: 992px) {
+    .transparent-text {
+        font-size: 50px;
+    }
+}
+
+@media (max-width: 768px) {
+    .transparent-text {
+        font-size: 40px;
+    }
+}
+
+@media (max-width: 576px) {
+    .transparent-text {
+        font-size: 30px;
     }
 }
