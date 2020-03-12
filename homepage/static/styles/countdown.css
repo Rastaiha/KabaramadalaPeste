@@ -133,6 +133,7 @@
     .countdown .figure {
         width: 60px;
         height: 80px;
+        margin-right: 6px;
     }
 
     .countdown .figure>span {
@@ -149,6 +150,7 @@
     .countdown .figure {
         width: 50px;
         height: 70px;
+        margin-right: 4px;
     }
 
     .countdown .figure>span {
@@ -165,6 +167,7 @@
     .countdown .figure {
         width: 40px;
         height: 60px;
+        margin-right: 2px;
     }
 
     .countdown .figure>span {
@@ -174,5 +177,22 @@
 
     .countdown .count-title {
         font-size: 24px
+    }
+}
+
+@media (max-width: 300px) {
+    .countdown .figure {
+        width: 30px;
+        height: 50px;
+        margin-right: 0;
+    }
+
+    .countdown .figure>span {
+        font: 800 3.8em/57px 'Iranyekan';
+        font-weight: 800;
+    }
+
+    .countdown .count-title {
+        font-size: 20px
     }
 }
