@@ -38,6 +38,9 @@
         <span class="bar"></span>
         <label class="fa-input">تکرار گذرواژه</label>
     </div>
+    <div class="col-md-12 my-3">
+        <div class="bibot-captcha" data-sitekey="only-demo" data-lang="fa"></div>
+    </div>
 
     <div class="col-md-12 my-3">
         <button class="my-btn w-100" style="font-size: 20px">
@@ -63,4 +66,5 @@
     password.onchange = validatePassword;
     confirm_password.onkeyup = validatePassword;
 </script>
+<script src="https://cdn.bibot.ir/bibot.min.js"></script>
 {% endblock auth_script %}
