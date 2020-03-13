@@ -1,0 +1,66 @@
+{% extends 'auth/base.html' %}
+{% block auth_form %}
+<div class="row">
+    <h2 class="text-center col-md-12 my-4">
+        ثبت‌نام در مسابقه
+    </h2>
+    <div class="col-md-6 my-3">
+        <input name="first_name" class="fa-input" type="text" required>
+        <span class="highlight"></span>
+        <span class="bar"></span>
+        <label class="fa-input">نام</label>
+    </div>
+
+    <div class="col-md-6 my-3">
+        <input name="last_name" class="fa-input" type="text" required>
+        <span class="highlight"></span>
+        <span class="bar"></span>
+        <label class="fa-input">نام‌خانوادگی</label>
+    </div>
+
+    <div class="col-md-12 my-3">
+        <input name="email" type="email" required>
+        <span class="highlight"></span>
+        <span class="bar"></span>
+        <label class="fa-input">ایمیل</label>
+    </div>
+
+    <div class="col-md-6 my-3">
+        <input id="password" name="password" type="password" required>
+        <span class="highlight"></span>
+        <span class="bar"></span>
+        <label class="fa-input">گذرواژه</label>
+    </div>
+
+    <div class="col-md-6 my-3">
+        <input id="confirm_password" type="password" required>
+        <span class="highlight"></span>
+        <span class="bar"></span>
+        <label class="fa-input">تکرار گذرواژه</label>
+    </div>
+
+    <div class="col-md-12 my-3">
+        <button class="my-btn w-100" style="font-size: 20px">
+            ثبت‌نام
+        </button>
+    </div>
+</div>
+{% endblock auth_form %}
+
+{% block auth_script %}
+<script>
+    var password = document.getElementById("password"),
+        confirm_password = document.getElementById("confirm_password");
+
+    function validatePassword() {
+        if (password.value != confirm_password.value) {
+            confirm_password.setCustomValidity("گذرواژه‌ها یکی نیستند");
+        } else {
+            confirm_password.setCustomValidity('');
+        }
+    }
+
+    password.onchange = validatePassword;
+    confirm_password.onkeyup = validatePassword;
+</script>
+{% endblock auth_script %}

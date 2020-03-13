@@ -28,6 +28,10 @@
                         href="/about/">درباره ما</a>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link hover-shadow {% if request.path == '/test_auth_base/' %} activate {% endif %}"
+                        href="/test_auth_base/">ثبت‌نام</a>
+                </li>
+                <li class="nav-item">
                     {% comment %} <a class="nav-link hover-shadow" href="/logout/" style="background: #d3c096;">
                         <i class="fa fa-sign-out-alt"></i>
                     </a> {% endcomment %}
