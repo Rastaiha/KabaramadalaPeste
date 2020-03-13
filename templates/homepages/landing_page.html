@@ -10,6 +10,46 @@
     <div class="container">
         <h1 class="text-center mb-5 transparent-text" style="direction: rtl">منتظر ما باشید!!!</h1>
         {% include 'homepages/countdown.html' %}
+        <div class="center-container">
+            <a href="#what-page" class="w-btn">قضیه
+                چیه؟</a>
+        </div>
+        <div class="center-container">
+            <img src="{% static 'images/scroll.gif' %}" style="width: 30px; display:block" />
+        </div>
+    </div>
+</div>
+
+<div id="what-page" class="py-5">
+    <div class="container" style="direction: rtl; text-align: right">
+        <h2>قضیه چیه؟</h2>
+        <p>
+            تا حالا شده داخل یه بازی سرمایه‌ات فقط هوش و توانایی حل مسئله‌ات باشه؟ تا حالا بازی و ریاضی رو کنار هم دیدی؟
+            تا حالا به این فکر کردی که چرا یه سری بازی‌ها خسته‌کننده‌ان؟ چیکار می‌شه کرد که یه بازی تموم‌شدنی و
+            حوصله‌سربر نباشه؟
+            <br />
+            رستا به این سوال‌ها فکر کرده و به جواب‌های هیجان‌انگیزی رسیده! قرنطینه مانع یادگیری‌ ما نمی‌شه!
+            بازی بدون تصمیم‌گیری‌ که جذاب نیست!
+            <br />
+            پس چند روزی از عید نوروز رو با بازی هیجان‌انگیز رستا بگذرون. شبانه‌روز مسئله‌های مختلف ریاضی حل کن و
+            استراتژی‌هات رو بسنج! با بقیه دوستات رقابت کن تا بتونی کابارامادالاپسته رو پیدا کنی. قراره با تصمیمات خودت و
+            بقیه داخل این بازی، غافل‌گیری‌‌‌‌‌های زیادی در انتظارت باشه!
+            <br />
+            ما قراره
+            <b>
+                «در جست‌وجوی کابارامادالاپسته»
+            </b>
+            دنبال پاسخ‌هامون بیفتیم و تصمیم‌هایی بگیریم که راهی که توی بازی از
+            قبل تعیین نشده رو بسازیم. پس منتظرتونیم تا به همه نشون بدید نقشه‌های خوبی در سرتون برای رسیدن به گنج‌هاتون
+            دارید :)
+            <br />
+            <br />
+
+            با ما باشید، دوستاتون رو خبر کنید و به کانالمون در تلگرام سر بزنید:
+            <a href="http://t.me/rastaiha" style="direction: ltr; display: inline-block">
+                @Rastaiha
+            </a>
+        </p>
     </div>
 </div>
 
@@ -19,4 +59,11 @@
 {% block scripts %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/latest/TweenMax.min.js"></script>
 <script src="{% static 'scripts/countdown.js' %}"></script>
+<script>
+    $('a[href^="#"]').click(function () {
+        $('html, body').animate({
+            scrollTop: $($(this).attr('href')).offset().top
+        }, 500);
+    });
+</script>
 {% endblock %}

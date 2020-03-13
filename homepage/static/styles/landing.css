@@ -70,3 +70,55 @@
         }
     }
 }
+
+
+
+.w-btn {
+    margin: 15px auto;
+    border: 1px solid white;
+    color: white;
+    padding: 4px 20px;
+    font-size: 30px;
+    border-radius: 10px;
+    transition: 0.5s;
+    font-weight: 800;
+}
+
+.w-btn:hover,
+.w-btn:focus {
+    cursor: pointer;
+    background: white;
+    color: #272A43;
+    text-decoration: none;
+}
+
+.center-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#what-page {
+    padding: 10px 0;
+    background: rgb(56, 59, 82);
+    color: white;
+}
+
+#what-page h2 {
+    font-size: 40px;
+    line-height: 80px;
+    font-weight: 800;
+}
+
+#what-page b {
+    font-weight: 900;
+}
+
+#what-page p {
+    font-size: 18px;
+    line-height: 32px;
+}
+
+#what-page a {
+    color: #4a84f0
+}
