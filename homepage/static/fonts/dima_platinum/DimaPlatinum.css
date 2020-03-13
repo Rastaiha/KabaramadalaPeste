@@ -1,0 +1,12 @@
+@font-face {
+    font-family: DimaPlatinum;
+    font-display: fallback;
+    font-style: normal;
+    font-weight: 700;
+    src: url(DimaPlatinum.woff) format('woff')
+}
+
+body.DimaPlatinum *,
+body.DimaPlatinum {
+    font-family: DimaPlatinum
+}

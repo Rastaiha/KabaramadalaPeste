@@ -26,12 +26,23 @@
     <!-- Bootstrap -->
     <link rel='stylesheet' href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
 
+    <!-- Iranyekan Font and Style -->
+    <link rel="stylesheet" href="{% static 'fonts/iranyekan/iranyekan.css' %}">
+
+    <!-- Dima Font and Style -->
+    <link rel="stylesheet" href="{% static 'fonts/dima_abdo/DimaAbdo.css' %}">
+    <link rel="stylesheet" href="{% static 'fonts/dima_barf/DimaBarf.css' %}">
+    <link rel="stylesheet" href="{% static 'fonts/dima_fantasy_2/DimaFantasy2.css' %}">
+    <link rel="stylesheet" href="{% static 'fonts/dima_platinum/DimaPlatinum.css' %}">
+    <link rel="stylesheet" href="{% static 'fonts/dima_sogand/DimaSogand.css' %}">
+
     <!-- FontAwesome -->
     <link rel='stylesheet' href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css">
-
-    <!-- Iranyekan Font and Style -->
-    <link rel="stylesheet" href="https://res.cloudinary.com/dclfeq8cv/raw/upload//bibot/font/css/fontiran.min.css">
-    <link rel="stylesheet" href="https://res.cloudinary.com/dclfeq8cv/raw/upload//bibot/font/css/style.min.css">
+    <style>
+        .fab {
+            font-family: "Font Awesome 5 Brands" !important;
+        }
+    </style>
 
     <!-- Custom Theme Style -->
     <link rel="stylesheet" href="{% static 'styles/base.css' %}">
@@ -52,6 +63,38 @@
 
     {% include 'base/nav.html' %}
 
+    <style>
+        .choose_font {
+            position: fixed;
+            top: 100px;
+            left: 100px;
+        }
+
+        .font-btn {
+            background: white;
+            border-radius: 5px;
+            color: black;
+            margin: 10px;
+            padding: 5px 10px;
+            transition: 0.3s
+        }
+
+        .font-btn:hover,
+        .font-btn:focus {
+            background: #333;
+            color: white;
+            cursor: pointer
+        }
+    </style>
+    <div class="choose_font row">
+        <div class="font-btn">DimaAbdo</div>
+        <div class="font-btn">DimaBarf</div>
+        <div class="font-btn">DimaFantasy2</div>
+        <div class="font-btn">DimaPlatinum</div>
+        <div class="font-btn">DimaSogand</div>
+        <div class="font-btn">iranyekan</div>
+    </div>
+
     <div class="base-content">
         {% block base_content %}{% endblock %}
     </div>
@@ -70,7 +113,12 @@
 
     <!-- Custom Scripts -->
     <script src="{% static 'scripts/nav.js' %}"></script>
-
+    <script>
+        $('.font-btn').click(function () {
+            $('body').removeClass();
+            $('body').addClass($(this).text());
+        })
+    </script>
     {% block scripts %}{% endblock %}
 </body>
 

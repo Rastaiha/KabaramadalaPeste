@@ -1,0 +1,12 @@
+@font-face {
+    font-family: DimaSogand;
+    font-display: fallback;
+    font-style: normal;
+    font-weight: 700;
+    src: url(DimaSogand.woff) format('woff')
+}
+
+body.DimaSogand *,
+body.DimaSogand {
+    font-family: DimaSogand
+}

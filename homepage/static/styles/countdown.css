@@ -43,7 +43,8 @@
     left: 0;
     right: 0;
     margin: auto;
-    font: 900 5.94em/113px 'Iranyekan';
+    font-size: 5.94em;
+    line-height: 113px;
     font-weight: 900;
     color: #de4848;
 }
@@ -138,7 +139,8 @@
     }
 
     .countdown .figure>span {
-        font: 800 5.14em/87px 'Iranyekan';
+        font-size: 5.14em;
+        line-height: 87px;
         font-weight: 800;
     }
 
@@ -155,7 +157,8 @@
     }
 
     .countdown .figure>span {
-        font: 800 4.7em/77px 'Iranyekan';
+        font-size: 4.7em;
+        line-height: 77px;
         font-weight: 800;
     }
 
@@ -172,7 +175,8 @@
     }
 
     .countdown .figure>span {
-        font: 800 4em/60px 'Iranyekan';
+        font-size: 4em;
+        line-height: 60px;
         font-weight: 800;
     }
 
@@ -189,7 +193,8 @@
     }
 
     .countdown .figure>span {
-        font: 800 3.8em/48px 'Iranyekan';
+        font-size: 3.8em;
+        line-height: 48px;
         font-weight: 800;
     }
 

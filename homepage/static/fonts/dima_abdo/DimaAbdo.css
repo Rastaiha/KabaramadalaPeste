@@ -1,0 +1,12 @@
+@font-face {
+    font-family: DimaAbdo;
+    font-display: fallback;
+    font-style: normal;
+    font-weight: 700;
+    src: url(DimaAbdo.woff) format('woff')
+}
+
+body.DimaAbdo *,
+body.DimaAbdo {
+    font-family: DimaAbdo
+}

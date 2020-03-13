@@ -1,0 +1,12 @@
+@font-face {
+    font-family: DimaBarf;
+    font-display: fallback;
+    font-style: normal;
+    font-weight: 700;
+    src: url(DimaBarf.woff) format('woff')
+}
+
+body.DimaBarf *,
+body.DimaBarf {
+    font-family: DimaBarf
+}
