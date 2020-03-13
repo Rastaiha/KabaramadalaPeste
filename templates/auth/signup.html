@@ -1,44 +1,67 @@
 {% extends 'auth/base.html' %}
 {% block auth_form %}
 <div class="row">
-    <h2 class="text-center col-md-12 my-4">
+    <h2 class="text-center col-md-12 my-4" style="font-weight: 800">
         ثبت‌نام در مسابقه
     </h2>
-    <div class="col-md-6 my-3">
-        <input name="first_name" class="fa-input" type="text" required>
+    <small class="col-md-12 text-right my-1" style="color: #555">اطلاعات فردی</small>
+    <div class="col-md-6 my-3 material-input">
+        <input name="name" class="fa-input" type="text" required>
         <span class="highlight"></span>
         <span class="bar"></span>
-        <label class="fa-input">نام</label>
+        <label class="fa-input">نام و نام‌خانوادگی</label>
     </div>
 
-    <div class="col-md-6 my-3">
-        <input name="last_name" class="fa-input" type="text" required>
+    <div class="col-md-6 my-3 material-input">
+        <input name="city" type="text" required>
         <span class="highlight"></span>
         <span class="bar"></span>
-        <label class="fa-input">نام‌خانوادگی</label>
+        <label class="fa-input">شهر</label>
     </div>
 
-    <div class="col-md-12 my-3">
+    <div class="col-md-6 my-3 material-input">
+        <input name="school" type="text" required>
+        <span class="highlight"></span>
+        <span class="bar"></span>
+        <label class="fa-input">مدرسه</label>
+    </div>
+
+    <div class="col-md-6 my-3 material-input">
+        <input name="school" type="file" required style="padding: 1px; font-size: 12px;">
+        <span class="highlight"></span>
+        <span class="bar"></span>
+        <label class="fa-input">تصویر شناسنامه</label>
+    </div>
+
+    <small class="col-md-12 text-right my-1" style="color: #555">راه ارتباطی</small>
+    <div class="col-md-6 my-3 material-input">
+        <input type="tel" name="phone" pattern="^(\+98|0)?9\d{9}$" type="text" required>
+        <span class="highlight"></span>
+        <span class="bar"></span>
+        <label class="fa-input">تلفن همراه</label>
+    </div>
+
+    <div class="col-md-6 my-3 material-input">
         <input name="email" type="email" required>
         <span class="highlight"></span>
         <span class="bar"></span>
         <label class="fa-input">ایمیل</label>
     </div>
 
-    <div class="col-md-6 my-3">
+    <div class="col-md-6 my-3 material-input">
         <input id="password" name="password" type="password" required>
         <span class="highlight"></span>
         <span class="bar"></span>
         <label class="fa-input">گذرواژه</label>
     </div>
 
-    <div class="col-md-6 my-3">
+    <div class="col-md-6 my-3 material-input">
         <input id="confirm_password" type="password" required>
         <span class="highlight"></span>
         <span class="bar"></span>
         <label class="fa-input">تکرار گذرواژه</label>
     </div>
-    <div class="col-md-12 my-3">
+    <div class="col-md-12 my-2">
         <div class="bibot-captcha" data-sitekey="only-demo" data-lang="fa"></div>
     </div>
 
