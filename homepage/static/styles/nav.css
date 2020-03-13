@@ -9,7 +9,7 @@
     padding: 0;
 }
 
-.without_nav .my-nav {
+.without-nav .my-nav {
     display: none
 }
 
@@ -17,7 +17,7 @@
     padding-top: 45px;
 }
 
-.without_nav .base-content {
+.without-nav .base-content {
     padding-top: 0;
 }
 
@@ -31,6 +31,19 @@
 
 .my-nav .nav-logo {
     padding: 5px
+}
+
+.nol .nav-link {
+    display: none
+}
+
+.nol .nav-logo {
+    display: block
+}
+
+.nol .my-nav.active-nav {
+    background: unset;
+    box-shadow: unset;
 }
 
 .my-nav .nav-logo>img {

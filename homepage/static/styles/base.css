@@ -65,7 +65,6 @@ select,
 .checkbox-input {
     border-radius: 5px;
     height: calc(2.25rem + 2px);
-    direction: ltr !important;
     border: none !important;
     transition: 0.1s;
     line-height: 2;
@@ -319,4 +318,27 @@ input[type="checkbox"].toggle:focus:checked+label:hover:before {
 
 a:hover {
     cursor: pointer;
+}
+
+.full-page-center-item {
+    height: calc(100vh - 45px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.without-nav .full-page-center-item {
+    height: 100vh;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.text-right {
+    text-align: right;
+}
+
+.text-left {
+    text-align: left;
 }

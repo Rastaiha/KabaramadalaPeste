@@ -1,10 +1,3 @@
-.first-page {
-    height: calc(100vh - 45px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
 .transparent-text {
     color: transparent;
     caret-color: transparent;
