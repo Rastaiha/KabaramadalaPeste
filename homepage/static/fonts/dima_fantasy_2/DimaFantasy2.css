@@ -1,0 +1,12 @@
+@font-face {
+    font-family: DimaFantasy2;
+    font-display: fallback;
+    font-style: normal;
+    font-weight: 700;
+    src: url(DimaFantasy2.woff) format('woff')
+}
+
+body.DimaFantasy2 *,
+body.DimaFantasy2 {
+    font-family: DimaFantasy2
+}
