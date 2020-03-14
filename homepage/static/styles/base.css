@@ -460,18 +460,14 @@ a:hover {
 }
 
 .full-page-center-item {
-    min-height: calc(100vh - 80px);
+    min-height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-.without-nav .base-content {
+.without-nav .nav-padding {
     padding: 0;
-}
-
-.without-nav .full-page-center-item {
-    min-height: 100vh;
 }
 
 .text-center {
