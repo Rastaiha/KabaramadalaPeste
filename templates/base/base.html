@@ -64,40 +64,6 @@
 
     {% include 'base/nav.html' %}
 
-    <style>
-        .choose_font {
-            position: fixed;
-            top: 100px;
-            left: 100px;
-            z-index: 10;
-        }
-
-        .font-btn {
-            background: white;
-            border-radius: 2px;
-            color: black;
-            margin: 3px;
-            padding: 2px 5px;
-            transition: 0.3s;
-            font-size: 8px
-        }
-
-        .font-btn:hover,
-        .font-btn:focus {
-            background: #333;
-            color: white;
-            cursor: pointer
-        }
-    </style>
-    <div class="choose_font row">
-        <div class="font-btn">DimaAbdo</div>
-        <div class="font-btn">DimaBarf</div>
-        <div class="font-btn">DimaFantasy2</div>
-        <div class="font-btn">DimaPlatinum</div>
-        <div class="font-btn">DimaSogand</div>
-        <div class="font-btn">iranyekan</div>
-    </div>
-
     <div class="base-content">
         {% block base_content %}{% endblock %}
     </div>
@@ -117,12 +83,6 @@
     <!-- Custom Scripts -->
     <script src="{% static 'scripts/nav.js' %}"></script>
     <script src="{% static 'scripts/base.js' %}"></script>
-    <script>
-        $('.font-btn').click(function () {
-            $('body').removeClass();
-            $('body').addClass($(this).text());
-        })
-    </script>
     {% block scripts %}{% endblock %}
 </body>
 
