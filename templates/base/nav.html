@@ -24,8 +24,8 @@
             </ul>
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item">
-                    <a class="nav-link hover-shadow {% if request.path == '/about/' %} activate {% endif %}"
-                        href="#about-page">درباره ما</a>
+                    <a class="nav-link hover-shadow"
+                        href="{% if request.path == '/' %}#about-page{% else %}/about_us{% endif %}">درباره ما</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link hover-shadow {% if request.path == '/test_auth_base/' %} activate {% endif %}"
