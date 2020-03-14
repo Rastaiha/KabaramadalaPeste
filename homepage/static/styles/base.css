@@ -16,7 +16,7 @@
     --color-3: #ec8f6a;
     --color-4: #f6416c;
     --color-5: #78d237;
-    --color-6: #66afda;
+    --color-6: #10a6ce;
 
     --cafe-green: #53ad6f;
     --cafe-green-border: #50aa6c;
@@ -135,15 +135,17 @@ select:focus,
 .material-input label.fa-input {
     left: unset;
     right: 25px;
+    text-align: right;
 }
 
 /* active state */
 .material-input input:focus~label,
 .material-input input:valid~label,
 .material-input input.not_empty~label,
-.material-input input[type="file"]~label {
+.material-input input[type="file"]~label,
+.material-input .active-input-label {
     top: -20px;
-    font-size: 14px;
+    font-size: 11px;
     color: #5264AE;
 }
 
@@ -458,20 +460,18 @@ a:hover {
 }
 
 .full-page-center-item {
-    min-height: calc(100vh - 45px);
+    min-height: calc(100vh - 80px);
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-.without-nav .base-content,
-.nol .base-content {
+.without-nav .base-content {
     padding: 0;
 }
 
-.without-nav .full-page-center-item,
-.nol .full-page-center-item {
-    height: 100vh;
+.without-nav .full-page-center-item {
+    min-height: 100vh;
 }
 
 .text-center {

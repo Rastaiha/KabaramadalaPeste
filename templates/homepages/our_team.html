@@ -1,0 +1,31 @@
+{% extends 'base/base.html' %}
+{% load static %}
+{% block styles %}
+<link rel="stylesheet" href="{% static 'styles/our_team.css' %}">
+{% endblock styles %}
+
+{% block base_content %}
+<div class="full-page-center-item our-team-page">
+    <div class="container" style="max-width: 800px">
+        <div class="tab-wrap">
+            <input type="radio" id="tab1" name="tabGroup1" class="tab" checked>
+            <label for="tab1">فنی</label>
+            <input type="radio" id="tab2" name="tabGroup1" class="tab">
+            <label for="tab2">محتوی</label>
+            <input type="radio" id="tab3" name="tabGroup1" class="tab">
+            <label for="tab3">مارکتینگ</label>
+            <div id="fani" class="tab__content row"></div>
+            <div id="mohtava" class="tab__content row"></div>
+            <div id="marketing" class="tab__content row"></div>
+        </div>
+    </div>
+</div>
+{% endblock base_content %}
+{% block scripts %}
+<script src="{% static 'scripts/our_team.js' %}"></script>
+<script>
+    filter_list('فنی', '#fani');
+    filter_list('محتوا', '#mohtava');
+    filter_list('مارکتینگ', '#marketing');
+</script>
+{% endblock scripts %}

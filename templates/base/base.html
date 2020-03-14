@@ -69,6 +69,7 @@
             position: fixed;
             top: 100px;
             left: 100px;
+            z-index: 10;
         }
 
         .font-btn {
@@ -115,6 +116,7 @@
 
     <!-- Custom Scripts -->
     <script src="{% static 'scripts/nav.js' %}"></script>
+    <script src="{% static 'scripts/base.js' %}"></script>
     <script>
         $('.font-btn').click(function () {
             $('body').removeClass();
