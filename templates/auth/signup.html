@@ -1,15 +1,25 @@
 {% extends 'auth/base.html' %}
+{% load static %}
 {% block auth_form %}
 <div class="row">
     <h2 class="text-center col-md-12 my-4" style="font-weight: 800">
         ثبت‌نام در مسابقه
     </h2>
-    <small class="col-md-12 text-right my-1" style="color: #555">اطلاعات فردی</small>
-    <div class="col-md-6 my-3 material-input">
+    <small class="col-md-12 text-right my-1" style="color: #555; font-size: 9px">اطلاعات فردی</small>
+    <div class="col-9 col-md-4 my-3 material-input">
         <input name="name" class="fa-input" type="text" required>
         <span class="highlight"></span>
         <span class="bar"></span>
         <label class="fa-input">نام و نام‌خانوادگی</label>
+    </div>
+    <div class="col-3 col-md-2 my-3 material-input">
+        <div class="gender-container" style="">
+            <input id="gender-input" name="gender" required
+                oninvalid="this.setCustomValidity('Please select one of these.')" />
+            <div class="gender-icon" data-val="b"><img src="{% static 'images/boy.png' %}" /></div>
+            <div class="gender-icon" data-val="g"><img src="{% static 'images/girl.png' %}" /></div>
+        </div>
+        <label class="fa-input active-input-label">جنسیت</label>
     </div>
 
     <div class="col-md-6 my-3 material-input">
@@ -30,10 +40,10 @@
         <input name="school" type="file" required style="padding: 1px; font-size: 12px;">
         <span class="highlight"></span>
         <span class="bar"></span>
-        <label class="fa-input">تصویر شناسنامه</label>
+        <label class="fa-input">تصویر شناسنامه/کارت‌ملی/کارنامه تحصیلی</label>
     </div>
 
-    <small class="col-md-12 text-right my-1" style="color: #555">راه ارتباطی</small>
+    <small class="col-md-12 text-right my-1" style="color: #555; font-size: 9px">راه ارتباطی</small>
     <div class="col-md-6 my-3 material-input">
         <input type="tel" name="phone" pattern="^(\+98|0)?9\d{9}$" type="text" required>
         <span class="highlight"></span>
@@ -75,7 +85,7 @@
 
 {% block auth_script %}
 <script>
-    var password = document.getElementById("password"),
+    let password = document.getElementById("password"),
         confirm_password = document.getElementById("confirm_password");
 
     function validatePassword() {
@@ -88,6 +98,12 @@
 
     password.onchange = validatePassword;
     confirm_password.onkeyup = validatePassword;
+
+    $('.gender-icon').click(function () {
+        $('.gender-icon').removeClass('selected');
+        $(this).addClass('selected');
+        $('#gender-input').val($(this).data('val'))
+    })
 </script>
 <script src="https://cdn.bibot.ir/bibot.min.js"></script>
 {% endblock auth_script %}

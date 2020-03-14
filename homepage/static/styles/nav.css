@@ -14,7 +14,7 @@
 }
 
 .base-content {
-    padding-top: 45px;
+    padding-top: 80px;
 }
 
 .without-nav .base-content {
@@ -33,17 +33,13 @@
     padding: 5px
 }
 
-.nol .nav-link {
+.nol .nav-link,
+.nol .navbar-toggler {
     display: none
 }
 
 .nol .nav-logo {
     display: block
-}
-
-.nol .my-nav.active-nav {
-    background: unset;
-    box-shadow: unset;
 }
 
 .my-nav .nav-logo>img {
