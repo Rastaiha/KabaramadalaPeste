@@ -13,11 +13,11 @@
     display: none
 }
 
-.base-content {
+.nav-padding {
     padding-top: 80px;
 }
 
-.without-nav .base-content {
+.without-nav .nav-padding {
     padding-top: 0;
 }
 
