@@ -7,7 +7,9 @@ import json
 
 
 def homepage(request):
-    return render(request, 'homepages/landing_page.html')
+    return render(request, 'homepages/landing_page.html', {
+        'not_nav_padding': True
+    })
 
 
 def our_team(request):

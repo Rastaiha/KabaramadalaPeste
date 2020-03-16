@@ -1,3 +1,12 @@
+.first-page {
+    padding-top: 50px;
+    background: url('../images/fback.jpg') no-repeat center center fixed;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+}
+
 .transparent-text {
     color: transparent;
     caret-color: transparent;
@@ -51,6 +60,14 @@
     .transparent-text {
         font-size: 30px;
         letter-spacing: 5px;
+    }
+
+    .first-page {
+        background: url('../images/fbackmob.jpg') no-repeat center center fixed;
+        -webkit-background-size: 100% 100%;
+        -moz-background-size: 100% 100%;
+        -o-background-size: 100% 100%;
+        background-size: 100% 100%;
     }
 
     @keyframes text-anim {

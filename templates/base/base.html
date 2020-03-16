@@ -64,7 +64,7 @@
 
     {% include 'base/nav.html' %}
 
-    <div class="base-content">
+    <div class="base-content {% if not not_nav_padding %} nav-padding {% endif %}">
         {% block base_content %}{% endblock %}
     </div>
 
