@@ -26,7 +26,7 @@ COPY ./entrypoint.prod.sh /usr/src/app/entrypoint.prod.sh
 # copy project
 COPY . /usr/src/app/
 
-RUN pip install -r /usr/src/app/requirements/production.txt
+RUN pip install -r /usr/src/app/requirements.txt
 
 # run entrypoint.prod.sh
 ENTRYPOINT ["/usr/src/app/entrypoint.prod.sh"]
