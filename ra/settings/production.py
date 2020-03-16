@@ -35,6 +35,8 @@ DATABASES = {
     }
 }
 
+LOG_LEVEL = get_environment_var('LOG_LEVEL', 'INFO')
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': True,
@@ -51,17 +53,17 @@ LOGGING = {
     'loggers': {
         '': {
             'handlers': ['file'],
-            'level': 'DEBUG',
+            'level': LOG_LEVEL,
             'propagate': True
         },
         'django': {
             'handlers': ['file'],
-            'level': 'DEBUG',
+            'level': LOG_LEVEL,
             'propagate': True,
         },
         'ra': {
             'handlers': ['file'],
-            'level': 'DEBUG',
+            'level': LOG_LEVEL,
             'propagate': True,
         },
     },
