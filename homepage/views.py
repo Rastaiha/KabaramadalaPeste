@@ -26,6 +26,7 @@ def get_all_members_api(request):
         data.append({
             "name": team_member.full_name,
             "title": team_member.team_type,
+            "description": team_member.description,
             'image': team_member.profile_picture.url
         })
     return JsonResponse({'data': data})

@@ -1,69 +1,18 @@
-let team = [
-    {
-        name: "مرتضی ابوالقاسمی",
-        title: "فنی",
-        image: "/static/images/john_doe.jpeg"
-    },
-    {
-        name: "2مرتضی ابوالقاسمی",
-        title: "فنی",
-        image: "/static/images/john_doe.jpeg"
-    },
-    {
-        name: "3مرتضی ابوالقاسمی",
-        title: "فنی",
-        image: "/static/images/john_doe.jpeg"
-    },
-    {
-        name: "4مرتضی ابوالقاسمی",
-        title: "فنی",
-        image: "/static/images/john_doe.jpeg"
-    },
-    {
-        name: "5مرتضی ابوالقاسمی",
-        title: "فنی",
-        image: "/static/images/john_doe.jpeg"
-    },
-    {
-        name: "6مرتضی ابوالقاسمی",
-        title: "فنی",
-        image: "/static/images/john_doe.jpeg"
-    },
-    {
-        name: "7مرتضی ابوالقاسمی",
-        title: "محتوا",
-        image: "/static/images/john_doe.jpeg"
-    },
-    {
-        name: "8مرتضی ابوالقاسمی",
-        title: "مارکتینگ",
-        image: "/static/images/john_doe.jpeg"
-    },
-    {
-        name: "9مرتضی ابوالقاسمی",
-        title: "مارکتینگ",
-        image: "/static/images/john_doe.jpeg"
-    },
-    {
-        name: "10مرتضی ابوالقاسمی",
-        title: "مارکتینگ",
-        image: "/static/images/john_doe.jpeg"
-    }
-];
+let team = [];
 var is_inited = false;
 
-function init(){
-    if (is_inited){
-        return
+function init() {
+    if (is_inited) {
+        return;
     }
     is_inited = true;
     $.ajax({
         url: "/get_all_members_api/",
         async: false,
-        success: function (data) {
+        success: function(data) {
             team = data.data;
         },
-        error: function (data) {
+        error: function(data) {
             console.log(data.responseText);
         }
     });
@@ -72,6 +21,11 @@ function init(){
 function show_list(team_members, container) {
     init();
     for (let i = 0; i < team_members.length; i++) {
+        let description = "";
+        if (team_members[i].description) {
+            description =
+                "<hr/>" + "<small>" + team_members[i].description + "</small>";
+        }
         $(container).append(
             '<div class="team-wrapper"><div class="team-member-card"><div><div><img src="' +
                 team_members[i].image +
@@ -79,6 +33,7 @@ function show_list(team_members, container) {
                 team_members[i].title +
                 '</div></div><div class="team-member-details"><div class="team-member-name">' +
                 team_members[i].name +
+                description +
                 "</div></div></div></div></div>"
         );
     }
@@ -97,7 +52,7 @@ function random_team_list() {
         }
         return result;
     }
-    show_list(getRandom(team, 4), ".random-team-list");
+    show_list(getRandom(team, Math.min(4, team.length)), ".random-team-list");
 }
 
 function filter_list(title, container) {
