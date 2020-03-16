@@ -25,6 +25,7 @@ class TeamMember(models.Model):
         max_length=10,
         default=TeamType.Technical,
         choices=[(tag.value, tag.name) for tag in TeamType])
+    description = models.CharField(max_length=200, blank=True)
     profile_picture = models.ImageField(upload_to='profiles/', default='profiles/john_doe.jpeg')
 
     def __str__(self):

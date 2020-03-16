@@ -115,6 +115,12 @@
     position: relative
 }
 
+@media (max-width: 576px) {
+    .team-member-card {
+        width: 130px;
+    }
+}
+
 .team-member-card img {
     border-radius: 5px 5px 0 0;
     height: 130px;
@@ -126,6 +132,15 @@
 
 .team-member-details {
     padding: 5px;
+}
+
+.team-member-details hr {
+    margin-bottom: 0;
+}
+
+.team-member-details small {
+    font-weight: 300;
+    font-size: 14px;
 }
 
 .team-member-name {
