@@ -9,6 +9,17 @@ var Countdown = {
             minutes: this.$el.find(".bloc-time.min .figure"),
             seconds: this.$el.find(".bloc-time.sec .figure")
         };
+        var so = this;
+        $.ajax({
+            url: "/get_countdown_api/",
+            async: false,
+            success: function (data) {
+                so.total_seconds = (new Date(data.year, data.month, data.day, data.hour) - Date.now()) / 1000;
+            },
+            error: function (data) {
+                console.log(data.responseText);
+            }
+        });
         this.values = {};
         let delta = this.total_seconds;
         this.values.days = Math.floor(delta / 86400);

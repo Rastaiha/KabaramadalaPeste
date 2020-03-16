@@ -11,9 +11,9 @@
             <input type="radio" id="tab1" name="tabGroup1" class="tab" checked>
             <label for="tab1">فنی</label>
             <input type="radio" id="tab2" name="tabGroup1" class="tab">
-            <label for="tab2">محتوی</label>
+            <label for="tab2">علمی</label>
             <input type="radio" id="tab3" name="tabGroup1" class="tab">
-            <label for="tab3">مارکتینگ</label>
+            <label for="tab3">رسانه</label>
             <div id="fani" class="tab__content row"></div>
             <div id="mohtava" class="tab__content row"></div>
             <div id="marketing" class="tab__content row"></div>
@@ -25,7 +25,7 @@
 <script src="{% static 'scripts/our_team.js' %}"></script>
 <script>
     filter_list('فنی', '#fani');
-    filter_list('محتوا', '#mohtava');
-    filter_list('مارکتینگ', '#marketing');
+    filter_list('علمی', '#mohtava');
+    filter_list('رسانه', '#marketing');
 </script>
 {% endblock scripts %}

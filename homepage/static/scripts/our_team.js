@@ -50,8 +50,27 @@ let team = [
         image: "/static/images/john_doe.jpeg"
     }
 ];
+var is_inited = false;
+
+function init(){
+    if (is_inited){
+        return
+    }
+    is_inited = true;
+    $.ajax({
+        url: "/get_all_members_api/",
+        async: false,
+        success: function (data) {
+            team = data.data;
+        },
+        error: function (data) {
+            console.log(data.responseText);
+        }
+    });
+}
 
 function show_list(team_members, container) {
+    init();
     for (let i = 0; i < team_members.length; i++) {
         $(container).append(
             '<div class="team-wrapper"><div class="team-member-card"><div><div><img src="' +
@@ -66,6 +85,7 @@ function show_list(team_members, container) {
 }
 
 function random_team_list() {
+    init();
     function getRandom(arr, n) {
         var result = new Array(n),
             len = arr.length,
@@ -81,6 +101,7 @@ function random_team_list() {
 }
 
 function filter_list(title, container) {
+    init();
     let selected_team = [];
     for (let i = 0; i < team.length; i++) {
         if (team[i].title === title) {
