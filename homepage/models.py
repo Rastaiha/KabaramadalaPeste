@@ -27,3 +27,6 @@ class TeamMember(models.Model):
         choices=[(tag.value, tag.name) for tag in TeamType])
     profile_picture = models.ImageField(upload_to='profiles/', default='profiles/john_doe.jpeg')
 
+    def __str__(self):
+        return self.full_name
+
