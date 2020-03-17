@@ -115,40 +115,53 @@
     justify-content: center;
 }
 
-#team-page,
-#what-page {
+#what-page,
+#faq-page,
+#about-page,
+#team-page {
     padding: 10px 0;
-    background: rgb(56, 59, 82);
     color: white;
 }
 
-#team-page h2,
-#about-page h2,
-#what-page h2 {
+#what-page,
+#faq-page {
+    background: rgb(56, 59, 82);
+}
+
+h2 {
     font-size: 40px;
     line-height: 80px;
     font-weight: 800;
 }
 
-#team-page b,
-#what-page b {
+b {
     font-weight: 900;
 }
 
-#team-page p,
-#about-page p,
-#what-page p {
+p {
     font-size: 18px;
     line-height: 32px;
 }
 
-#what-page a {
-    color: #10a6ce
+@media (max-width: 576px) {
+    h2 {
+        font-size: 35px;
+        line-height: 60px;
+        font-weight: 800;
+    }
+
+    b {
+        font-weight: 900;
+    }
+
+    p {
+        font-size: 15px;
+        line-height: 23px;
+    }
 }
 
-#about-page {
-    padding: 10px 0;
-    color: white;
+#what-page a {
+    color: #10a6ce
 }
 
 @keyframes logo_kabar {
@@ -192,7 +205,7 @@
     direction: rtl;
     animation: logo_kabar 2s;
     pointer-events: none;
-    z-index: 1000000
+    z-index: 1000
 }
 
 .kabar-logo img {

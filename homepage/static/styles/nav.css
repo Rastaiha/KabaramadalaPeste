@@ -3,6 +3,10 @@
     transition: 0.5s;
 }
 
+.my-nav.fixed-top {
+    z-index: 100000;
+}
+
 .my-nav.active-nav {
     background: #272A43;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);

@@ -4,6 +4,7 @@
 <link rel="stylesheet" href="{% static 'styles/countdown.css' %}" />
 <link rel="stylesheet" href="{% static 'styles/landing.css' %}" />
 <link rel="stylesheet" href="{% static 'styles/our_team.css' %}" />
+<link rel="stylesheet" href="{% static 'styles/faq.css' %}" />
 {% endblock styles %}
 {% block base_content %}
 
@@ -73,6 +74,12 @@
     </div>
 </div>
 
+<div id="faq-page" class="py-5">
+    <div class="container" style="direction: rtl; text-align: right">
+        <h2>سوالات متداول</h2>
+        {% include 'homepages/faq_page.html' %}
+    </div>
+</div>
 
 <div id="team-page" class="py-5">
     <div class="container" style="direction: rtl; text-align: right">
@@ -93,6 +100,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/latest/TweenMax.min.js"></script>
 <script src="{% static 'scripts/countdown.js' %}"></script>
 <script src="{% static 'scripts/our_team.js' %}"></script>
+<script src="{% static 'scripts/faq.js' %}"></script>
 <script>
     random_team_list();
 </script>
