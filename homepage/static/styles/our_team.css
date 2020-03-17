@@ -115,8 +115,14 @@
     position: relative
 }
 
+.team-member-card>div {
+    width: 150px;
+}
+
 @media (max-width: 576px) {
-    .team-member-card {
+
+    .team-member-card,
+    .team-member-card>div {
         width: 130px;
     }
 }
