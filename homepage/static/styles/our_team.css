@@ -115,14 +115,19 @@
     position: relative
 }
 
-.team-member-card>div {
+.team-member-details {
+    padding: 5px;
     width: 150px;
+    margin: auto;
 }
 
 @media (max-width: 576px) {
 
-    .team-member-card,
-    .team-member-card>div {
+    .team-member-card {
+        width: 130px;
+    }
+
+    .team-member-details {
         width: 130px;
     }
 }
@@ -136,9 +141,6 @@
     margin-right: auto;
 }
 
-.team-member-details {
-    padding: 5px;
-}
 
 .team-member-details hr {
     margin-bottom: 0;
