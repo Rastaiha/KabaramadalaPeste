@@ -140,7 +140,7 @@ b {
 
 p {
     font-size: 18px;
-    line-height: 32px;
+    line-height: 28px;
 }
 
 @media (max-width: 576px) {
@@ -235,4 +235,19 @@ p {
             transform: scale(1) translateY(-30vh)
         }
     }
+}
+
+.h_iframe-aparat_embed_frame {
+    position: relative;
+}
+
+.h_iframe-aparat_embed_frame iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15), 0 1px 3px rgba(0, 0, 0, 0.25);
+    border-radius: 5px;
 }
