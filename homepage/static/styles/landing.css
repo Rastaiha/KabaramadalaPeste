@@ -204,4 +204,22 @@
     .kabar-logo img {
         width: 210px;
     }
+
+    @keyframes logo_kabar_img {
+        0% {
+            transform: scale(1)
+        }
+
+        50% {
+            transform: scale(1.5)
+        }
+
+        60% {
+            transform: scale(1.5)
+        }
+
+        100% {
+            transform: scale(1) translateY(-30vh)
+        }
+    }
 }
