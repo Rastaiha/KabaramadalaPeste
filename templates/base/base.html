@@ -21,7 +21,9 @@
     <meta name="msapplication-TileColor" content="#da532c">
     <meta name="theme-color" content="#ffffff">
 
-    <title>رستایی‌ها</title>
+    <title>
+        {% block title %}رستایی‌ها{% endblock title %}
+    </title>
 
     <!-- Bootstrap -->
     <link rel='stylesheet' href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
@@ -75,13 +77,13 @@
     </ul>
     {% endif %}
 
-    {% include 'base/nav.html' %}
+    {%if not without_nav %} {% include 'base/nav.html' %} {% endif %}
 
     <div class="base-content {% if not not_nav_padding %} nav-padding {% endif %}">
         {% block base_content %}{% endblock %}
     </div>
 
-    {% include 'base/footer.html' %}
+    {%if not without_footer %} {% include 'base/footer.html' %} {% endif %}
 
     {% block modals %}{% endblock %}
     {% csrf_token %}
@@ -109,7 +111,7 @@
             d.getElementsByTagName("head")[0].appendChild(s);
         })();
     </script>
-    
+
 </body>
 
 </html>
