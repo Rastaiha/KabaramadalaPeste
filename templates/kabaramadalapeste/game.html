@@ -1,0 +1,10 @@
+{% extends 'kabaramadalapeste/base.html' %}
+{% load static %}
+{% block base_content %}
+<div id="game-container"></div>
+{% endblock base_content %}
+{% block scripts %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/konva/4.2.0/konva.min.js"></script>
+<script src="{% static 'scripts/kabaramadalapeste/data.js' %}"></script>
+<script src="{% static 'scripts/kabaramadalapeste/game.js' %}"></script>
+{% endblock scripts %}
