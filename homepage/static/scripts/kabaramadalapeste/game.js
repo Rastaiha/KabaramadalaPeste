@@ -45,11 +45,11 @@ function init_backgronud(layer) {
 function init_jazireha(layer) {
     data.jazireha.forEach(jazire => {
         jazire.elem = new Konva.Image({
-            x: jazire.x,
-            y: jazire.y,
+            x: jazire.x * data.back.width,
+            y: jazire.y * data.back.height,
             image: data.images[jazire.src],
-            width: jazire.width,
-            height: jazire.height
+            width: jazire.width * data.back.width,
+            height: jazire.height * data.back.height
         });
         jazire.elem.on(
             "dragstart dragmove mousedown mouseup mouseover",
