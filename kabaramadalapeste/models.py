@@ -1,4 +1,5 @@
 from django.db import models
+from kabaramadalapeste.conf import settings
 
 
 class Island(models.Model):
@@ -22,20 +23,10 @@ class Challenge(models.Model):
 
 
 class ChallengeRewardItem(models.Model):
-    SEKKE = 'SK'
-    KEY1 = 'K1'
-    KEY2 = 'K2'
-    KEY3 = 'K3'
-    REWARD_TYPE_CHOICES = [
-        (SEKKE, 'sekke'),
-        (KEY1, 'key 1'),
-        (KEY2, 'key 2'),
-        (KEY3, 'key 3'),
-    ]
     reward_type = models.CharField(
         max_length=2,
-        choices=REWARD_TYPE_CHOICES,
-        default=SEKKE,
+        choices=settings.GAME_CHALLENGE_REWARD_TYPE_CHOICES,
+        default=settings.GAME_SEKKE,
     )
     amount = models.IntegerField(default=0)
     challenge = models.ForeignKey('Challenge',
@@ -89,3 +80,32 @@ class ShortAnswerQuestion(BaseQuestion):
 
 class JudgeableQuestion(BaseQuestion):
     pass
+
+
+class Treasure(models.Model):
+    def __str__(self):
+        return 'Treasure %s' % self.id
+
+
+class TreasureKeyItem(models.Model):
+    key_type = models.CharField(
+        max_length=2,
+        choices=settings.GAME_TREASURE_KEY_TYPE_CHOICES,
+        default=settings.GAME_KEY1,
+    )
+    amount = models.IntegerField(default=0)
+    treasure = models.ForeignKey('Treasure',
+                                 related_name='keys',
+                                 on_delete=models.CASCADE)
+
+
+class TreasureRewardItem(models.Model):
+    reward_type = models.CharField(
+        max_length=3,
+        choices=settings.GAME_TREASURE_REWARD_TYPE_CHOICES,
+        default=settings.GAME_SEKKE,
+    )
+    amount = models.IntegerField(default=0)
+    treasure = models.ForeignKey('Treasure',
+                                 related_name='rewards',
+                                 on_delete=models.CASCADE)
