@@ -22,7 +22,7 @@ class ChallengeRewardInline(admin.TabularInline):
 
 
 @admin.register(Challenge)
-class AuthorAdmin(admin.ModelAdmin):
+class ChallengeAdmin(admin.ModelAdmin):
     inlines = [
         ChallengeRewardInline,
     ]
