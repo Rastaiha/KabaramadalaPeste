@@ -7,8 +7,8 @@ let data = {
         src: "BG.jpg"
     },
     ways: {
-        x: 80,
-        y: 50,
+        x: 0,
+        y: 0,
         src: "ways.png"
     },
     jazireha: [
@@ -298,6 +298,9 @@ let data = {
 data.back.width = data.width * 1.3;
 data.back.height = (data.back.width / 1500) * 900;
 if (data.width / 1500 < data.height / 900) {
-    data.back.height = data.height * 1.3;
+    data.back.heightf = data.height * 1.3;
     data.back.width = (data.back.height / 900) * 1500;
 }
+
+data.ways.width = data.back.width;
+data.ways.height = data.back.height;

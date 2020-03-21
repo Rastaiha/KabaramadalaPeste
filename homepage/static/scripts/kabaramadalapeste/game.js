@@ -113,8 +113,8 @@ function init_ways(layer) {
         x: data.ways.x,
         y: data.ways.y,
         image: data.images[data.ways.src],
-        width: data.back.width - 150,
-        height: data.back.height - 130,
+        width: data.ways.width,
+        height: data.ways.height,
         listening: false
     });
     layer.add(data.ways.elem);
