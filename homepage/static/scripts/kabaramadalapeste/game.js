@@ -63,7 +63,7 @@ function init_jazireha(layer) {
             shadowOffset: { x: 2, y: 2 },
             shadowEnabled: false
         });
-        jazire.elem.on("click", function(e) {
+        jazire.elem.on("click touchend", function(e) {
             document.body.style.cursor = "pointer";
             jazire_info.addClass("hide");
             jazire_info.removeClass("show");
