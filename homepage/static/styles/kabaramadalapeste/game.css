@@ -1,0 +1,50 @@
+.jazire-info {
+    position: absolute;
+    background: white;
+    max-width: 300px;
+    opacity: 0;
+    z-index: 100000000;
+    border-radius: 40px 15px 40px 15px;
+    border: 4px solid rgb(240, 88, 88);
+    box-shadow: inset 0 0 0 2px #333, 0 0 0 2px #33333399, 0 4px 8px rgba(0, 0, 0, 0.2), 0 2px 6px rgba(0, 0, 0, 0.5);
+    text-align: center;
+    direction: ltr;
+    padding: 10px;
+}
+
+.jazire-name {
+    font-weight: 900;
+    font-size: 28px;
+}
+
+.jazire-info.show {
+    animation: show_jazire-info 0.5s forwards;
+}
+
+.jazire-info.hide {
+    animation: hide_jazire-info 0.2s forwards;
+}
+
+@keyframes show_jazire-info {
+    from {
+        opacity: 0;
+        transform: scaleY(0)
+    }
+
+    to {
+        opacity: 1;
+        transform: scaleY(1)
+    }
+}
+
+@keyframes hide_jazire-info {
+    from {
+        opacity: 1;
+        transform: scaleY(1)
+    }
+
+    to {
+        opacity: 0;
+        transform: scaleY(0)
+    }
+}

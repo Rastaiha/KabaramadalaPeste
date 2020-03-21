@@ -1,10 +1,37 @@
 {% extends 'kabaramadalapeste/base.html' %}
 {% load static %}
+{% block styles %}
+<link rel="stylesheet" href="{% static 'styles/kabaramadalapeste/game.css' %}" />
+{% endblock styles %}
 {% block base_content %}
 <div id="game-container"></div>
+<div class="jazire-info">
+    <h3 class="jazire-name">جزیره <span>مخوف</span></h3>
+    <div class="my-row text-center" style="direction: rtl">
+        <div class="jazire_kind m-auto">
+            <div class="fas fa-question-circle"></div>
+            <div class="m-auto">معما</div>
+        </div>
+
+        <div class="jazire_persons m-auto">
+            <div class="fas fa-users m-auto"></div>
+            <div class="m-auto">
+                12
+                نفر
+            </div>
+        </div>
+    </div>
+    <div class="mt-2">
+        <a class="my-btn">لنگر انداختن</a>
+    </div>
+</div>
+
 {% endblock base_content %}
 {% block scripts %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/konva/4.2.0/konva.min.js"></script>
 <script src="{% static 'scripts/kabaramadalapeste/data.js' %}"></script>
 <script src="{% static 'scripts/kabaramadalapeste/game.js' %}"></script>
+<script>
+    let counter = 0;
+</script>
 {% endblock scripts %}

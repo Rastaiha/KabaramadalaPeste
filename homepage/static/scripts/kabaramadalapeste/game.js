@@ -26,21 +26,28 @@ function init_backgronud(layer) {
     });
     layer.on("dragstart dragmove mousedown", function() {
         document.body.style.cursor = "grabbing";
-        if (layer.x() > 0) {
-            layer.x(0);
+        if (layer.x() > 100) {
+            layer.x(100);
         }
-        if (layer.y() > 0) {
-            layer.y(0);
+        if (layer.y() > 100) {
+            layer.y(100);
         }
-        if (layer.x() < data.stage.width() - data.back.elem.width()) {
-            layer.x(data.stage.width() - data.back.elem.width());
+        if (layer.x() < data.stage.width() - data.back.elem.width() - 100) {
+            layer.x(data.stage.width() - data.back.elem.width() - 100);
         }
-        if (layer.y() < data.stage.height() - data.back.elem.height()) {
-            layer.y(data.stage.height() - data.back.elem.height());
+        if (layer.y() < data.stage.height() - data.back.elem.height() - 100) {
+            layer.y(data.stage.height() - data.back.elem.height() - 100);
         }
+    });
+
+    layer.on("dragstart click", function() {
+        jazire_info.addClass("hide");
+        jazire_info.removeClass("show");
     });
     layer.add(data.back.elem);
 }
+
+let jazire_info = $(".jazire-info");
 
 function init_jazireha(layer) {
     data.jazireha.forEach(jazire => {
@@ -49,22 +56,68 @@ function init_jazireha(layer) {
             y: jazire.y * data.back.height,
             image: data.images[jazire.src],
             width: jazire.width * data.back.width,
-            height: jazire.height * data.back.height
+            height: jazire.height * data.back.height,
+            shadowColor: "black",
+            shadowBlur: 2,
+            shadowOpacity: 2,
+            shadowOffset: { x: 2, y: 2 },
+            shadowEnabled: false
         });
-        jazire.elem.on(
-            "dragstart dragmove mousedown mouseup mouseover",
-            function(e) {
-                document.body.style.cursor = "pointer";
-                console.log(jazire.elem.x(), jazire.elem.y(), jazire.src);
-                e.evt.preventDefault();
-                e.cancelBubble = true;
-            }
-        );
+        jazire.elem.on("click", function(e) {
+            document.body.style.cursor = "pointer";
+            jazire_info.addClass("hide");
+            jazire_info.removeClass("show");
+            setTimeout(() => {
+                let x = jazire.elem.x() + layer.x() + jazire.elem.width() + 10,
+                    y = jazire.elem.y() + layer.y() + jazire.elem.height() / 2;
+                if (data.stage.width() / 2 < jazire.elem.x() + layer.x()) {
+                    x -= 150 + jazire.elem.width() / 2 + 10;
+                }
+                if (data.stage.height() / 2 < jazire.elem.y() + layer.y()) {
+                    y -= jazire_info.height() / 2 + jazire.elem.height() / 2;
+                }
+                x = Math.max(10, Math.min(x, data.stage.width() - 150 - 30));
+                y = Math.max(
+                    10,
+                    Math.min(y, data.stage.height() - jazire_info.height() - 30)
+                );
+                jazire_info.css("left", x + "px");
+                jazire_info.css("top", y + "px");
+
+                jazire_info.removeClass("hide");
+                jazire_info.addClass("show");
+            }, 100);
+
+            e.evt.preventDefault();
+            e.cancelBubble = true;
+        });
+        jazire.elem.on("dragstart dragmove mouseover", function(e) {
+            document.body.style.cursor = "pointer";
+            jazire.elem.scale({ x: 1.01, y: 1.01 });
+            jazire.elem.shadowEnabled(true);
+            layer.draw();
+            e.evt.preventDefault();
+            e.cancelBubble = true;
+        });
         jazire.elem.on("mouseout", function(e) {
+            jazire.elem.scale({ x: 1, y: 1 });
+            jazire.elem.shadowEnabled(false);
             document.body.style.cursor = "grab";
         });
         layer.add(jazire.elem);
     });
+}
+
+function init_ways(layer) {
+    data.ways.elem = new Konva.Image({
+        x: data.ways.x,
+        y: data.ways.y,
+        image: data.images[data.ways.src],
+        width: data.back.width - 150,
+        height: data.back.height - 130,
+        listening: false
+    });
+    layer.add(data.ways.elem);
 }
 
 function init_game() {
@@ -79,16 +132,22 @@ function init_game() {
 
     layer.on("dragend mouseup mouseover", function() {
         document.body.style.cursor = "grab";
+        data.jazireha.forEach(jazire => {
+            jazire.elem.scale({ x: 1, y: 1 });
+            jazire.elem.shadowEnabled(false);
+            layer.draw();
+        });
     });
 
     init_backgronud(layer);
     init_jazireha(layer);
+    init_ways(layer);
 
     data.stage.add(layer);
     layer.draw();
 }
 
-let sources = [data.back.src];
+let sources = [data.back.src, data.ways.src];
 data.jazireha.forEach(jazire => {
     sources.push(jazire.src);
 });
