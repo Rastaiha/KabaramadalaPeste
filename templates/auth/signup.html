@@ -102,7 +102,9 @@
     $('.gender-icon').click(function () {
         $('.gender-icon').removeClass('selected');
         $(this).addClass('selected');
-        $('#gender-input').val($(this).data('val'))
+        $('#gender-input').val($(this).data('val'));
+        {#alert($(this).data('val'));#}
+        {#alert($('#gender-input').val());#}
     })
 </script>
 <script src="https://cdn.bibot.ir/bibot.min.js"></script>
