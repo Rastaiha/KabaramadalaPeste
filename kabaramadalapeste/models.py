@@ -13,6 +13,33 @@ class Island(models.Model):
     def __str__(self):
         return self.name
 
+    @property
+    def neighbors(self):
+        first_ns = set([way.second_end for way in Way.objects.filter(first_end=self)])
+        second_ns = set([way.first_end for way in Way.objects.filter(second_end=self)])
+        return first_ns.union(second_ns)
+
+    def is_neighbor_with(self, other_island):
+        return (
+            Way.objects.filter(first_end=self, second_end=other_island).count() != 0 or
+            Way.objects.filter(first_end=other_island, second_end=self).count() != 0
+        )
+
+
+class Way(models.Model):
+    first_end = models.ForeignKey('Island',
+                                  related_name='first_ends',
+                                  on_delete=models.CASCADE)
+    second_end = models.ForeignKey('Island',
+                                   related_name='second_ends',
+                                   on_delete=models.CASCADE)
+
+    def __str__(self):
+        return 'Way between %s and %s' % (self.first_end, self.second_end)
+
+    class Meta:
+        unique_together = (("first_end", "second_end"),)
+
 
 class Challenge(models.Model):
     name = models.CharField(max_length=50)

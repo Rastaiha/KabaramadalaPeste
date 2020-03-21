@@ -3,7 +3,7 @@ from django.contrib import admin
 # Register your models here.
 from kabaramadalapeste.models import (
     Island, Challenge, ChallengeRewardItem, ShortAnswerQuestion, JudgeableQuestion,
-    TreasureRewardItem, TreasureKeyItem, Treasure
+    TreasureRewardItem, TreasureKeyItem, Treasure, Way
 )
 from kabaramadalapeste.conf import settings
 from django.forms.models import BaseInlineFormSet
@@ -81,3 +81,4 @@ class TreasureAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Island)
+admin.site.register(Way)
