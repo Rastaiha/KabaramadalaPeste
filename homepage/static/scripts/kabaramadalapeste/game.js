@@ -85,27 +85,6 @@ function init_jazireha(layer) {
                 shadowOffset: { x: 2, y: 2 },
                 shadowEnabled: false
             });
-            // if (jazire.ganj_closed) {
-            //     jazire.ganj = new Konva.Image({
-            //         x: (jazire.x + data.ganj_open.x) * data.back.width,
-            //         y:
-            //             (jazire.y + (jazire.height - data.ganj_open.y) / 2) *
-            //             data.back.height,
-            //         image: data.images[data.ganj.src],
-            //         width: data.ganj.width * data.back.width,
-            //         height: data.ganj.height * data.back.height
-            //     });
-            // } else {
-            //     jazire.ganj = new Konva.Image({
-            //         x: (jazire.x + data.ganj_open.x) * data.back.width,
-            //         y:
-            //             (jazire.y + (jazire.height) / 2 - data.ganj_open.y) *
-            //             data.back.height,
-            //         image: data.images[data.ganj_open.src],
-            //         width: data.ganj_open.width * data.back.width,
-            //         height: data.ganj_open.height * data.back.height
-            //     });
-            // }
 
             jazire.elem.on("click touchend", function(e) {
                 document.body.style.cursor = "pointer";
@@ -171,7 +150,6 @@ function init_jazireha(layer) {
                 document.body.style.cursor = "grab";
             });
             layer.add(jazire.elem);
-            // layer.add(jazire.ganj);
         });
 }
 
