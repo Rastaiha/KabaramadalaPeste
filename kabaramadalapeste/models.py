@@ -1,5 +1,14 @@
 from django.db import models
 from kabaramadalapeste.conf import settings
+from accounts.models import Participant
+
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
+
+import random
+import logging
+
+logger = logging.getLogger(__file__)
 
 
 class Island(models.Model):
@@ -47,6 +56,12 @@ class Challenge(models.Model):
 
     def __str__(self):
         return self.name
+
+    @property
+    def questions(self):
+        if self.is_judgeable:
+            return self.judgeablequestion
+        return self.shortanswerquestion
 
 
 class ChallengeRewardItem(models.Model):
@@ -136,3 +151,34 @@ class TreasureRewardItem(models.Model):
     treasure = models.ForeignKey('Treasure',
                                  related_name='rewards',
                                  on_delete=models.CASCADE)
+
+
+class ParticipantIslandStatus(models.Model):
+    participant = models.ForeignKey(Participant, on_delete=models.CASCADE)
+    island = models.ForeignKey(Island, on_delete=models.CASCADE)
+
+    treasure = models.ForeignKey(Treasure, on_delete=models.SET_NULL, null=True)
+
+    did_anchor = models.BooleanField(default=False)
+    challenge_accepted = models.BooleanField(default=False)
+
+    question_content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    question_object_id = models.PositiveIntegerField()
+    question = GenericForeignKey('question_content_type', 'question_object_id')
+
+    class Meta:
+        unique_together = (("participant", "island"),)
+
+    def assign_question(self, force=False):
+        if self.question and not force:
+            logger.info('This PIS already has question if you want to forcly change it use force=True')
+            return
+        all_island_questions = set(self.island.challenge.questions.values_list('id'))
+        got_this_challenge_questions = set(ParticipantIslandStatus.objects.filter(
+            participant=self.participant,
+            island__challenge=self.island.challenge
+        ).exclude(island=self.island).values_list('question_object_id'))
+        valid_question_ids = all_island_questions.difference(got_this_challenge_questions)
+        result_question_id = random.choice(list(valid_question_ids))
+        self.question = self.island.challenge.questions.get(id=result_question_id[0])
+        self.save()
