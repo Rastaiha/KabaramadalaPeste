@@ -18,6 +18,7 @@ class ChallengeFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Challenge
 
+    challenge_id = factory.Sequence(lambda n: n)
     name = factory.Faker('sentence', nb_words=3)
     is_judgeable = False
 

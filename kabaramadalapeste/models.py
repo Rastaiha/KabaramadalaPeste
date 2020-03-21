@@ -51,6 +51,7 @@ class Way(models.Model):
 
 
 class Challenge(models.Model):
+    challenge_id = models.PositiveIntegerField(unique=True)
     name = models.CharField(max_length=50)
     is_judgeable = models.BooleanField(default=False)
 
@@ -159,8 +160,17 @@ class ParticipantIslandStatus(models.Model):
 
     treasure = models.ForeignKey(Treasure, on_delete=models.SET_NULL, null=True)
 
+    did_open_treasure = models.BooleanField(default=False)
+    treasure_opened_at = models.DateTimeField(null=True)
+
+    did_reach = models.BooleanField(default=False)
+    reached_at = models.DateTimeField(null=True)
+
     did_anchor = models.BooleanField(default=False)
-    challenge_accepted = models.BooleanField(default=False)
+    anchored_at = models.DateTimeField(null=True)
+
+    did_accept_challenge = models.BooleanField(default=False)
+    challenge_accepted_at = models.DateTimeField(null=True)
 
     question_content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     question_object_id = models.PositiveIntegerField()
