@@ -9,11 +9,11 @@ class Member(AbstractUser):
 
 
 class Participant(models.Model):
-    member = models.ForeignKey(Member, related_name='participant', on_delete=models.CASCADE)
+    member = models.OneToOneField(Member, related_name='participant', on_delete=models.CASCADE)
     school = models.CharField(max_length=50)
     city = models.CharField(max_length=20)
     document = models.ImageField(upload_to='documents/')
 
 
 class Judge(models.Model):
-    member = models.ForeignKey(Member, related_name='judge', on_delete=models.CASCADE)
+    member = models.OneToOneField(Member, related_name='judge', on_delete=models.CASCADE)
