@@ -205,7 +205,7 @@ function init_game() {
         document.body.style.cursor = "grab";
     });
 
-    layer.on("dragstart click", function() {
+    layer.on("dragstart click touchend", function() {
         jazire_info.addClass("hide");
         jazire_info.removeClass("show");
         change_target(layer, null);
