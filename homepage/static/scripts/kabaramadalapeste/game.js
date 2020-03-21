@@ -110,11 +110,11 @@ function init_jazireha(layer) {
 
 function init_ways(layer) {
     data.ways.elem = new Konva.Image({
-        x: data.ways.x,
-        y: data.ways.y,
+        x: data.back.x,
+        y: data.back.y,
         image: data.images[data.ways.src],
-        width: data.ways.width,
-        height: data.ways.height,
+        width: data.back.width,
+        height: data.back.height,
         listening: false
     });
     layer.add(data.ways.elem);
