@@ -6,24 +6,42 @@
 {% block base_content %}
 <div id="game-container"></div>
 <div class="jazire-info">
-    <h3 class="jazire-name">جزیره <span>مخوف</span></h3>
-    <div class="my-row text-center" style="direction: rtl">
-        <div class="jazire_kind m-auto">
-            <div class="fas fa-question-circle"></div>
-            <div class="m-auto">معما</div>
-        </div>
-
-        <div class="jazire_persons m-auto">
-            <div class="fas fa-users m-auto"></div>
-            <div class="m-auto">
-                12
-                نفر
+    <div style="background: #333; padding: 10px 15px; border-radius: 40px 15px 0 0; color: white">
+        <h3 class="jazire-name">جزیره <span>مخوف</span></h3>
+        <div class="my-row text-center" style="direction: rtl; line-height: 14px;">
+            <div class="jazire_kind m-auto">
+                <div class="fas fa-question-circle"></div>
+                <div class="m-auto">معما</div>
+            </div>
+            <div class="jazire_persons m-auto">
+                <div class="fas fa-users m-auto"></div>
+                <div class="m-auto">
+                    12
+                    نفر
+                </div>
             </div>
         </div>
     </div>
-    <div class="mt-2">
-        <a class="my-btn">لنگر انداختن</a>
+    <div style="padding: 10px; border-radius:  0 0 40px 15px;">
+        <div class="my-row">
+            <div class="m-auto"><img src="{% static 'images/game/test.png' %}" style="height: 60px" />
+                <div>حل نشده</div>
+            </div>
+            <div class="m-auto"><img src="{% static 'images/game/ganj.png' %}" style="height: 60px" />
+                <div>باز نشده</div>
+            </div>
+        </div>
+        <div class="m-auto">
+            <div class="m-auto" style="font-weight: 200; font-size: 10px">
+                <small>تصحیح در</small>
+                <small>۱۵ دقیقه</small>
+            </div>
+        </div>
+        <div class="mt-1">
+            <a class="my-btn">لنگر انداختن</a>
+        </div>
     </div>
+
 </div>
 
 {% endblock base_content %}
@@ -32,6 +50,20 @@
 <script src="{% static 'scripts/kabaramadalapeste/data.js' %}"></script>
 <script src="{% static 'scripts/kabaramadalapeste/game.js' %}"></script>
 <script>
-    let counter = 0;
+    let resized = false;
+    $(window).on('resize', function () {
+        if (!resized) {
+            resized = true;
+            setTimeout(() => {
+                resized = false;
+            }, 2000)
+            res = window.confirm(
+                'بازی برای ابعاد صفحه ابتدایی بارگذاری شده بود.\nآیا مایل به بارگذاری مجدد صفحه هستید؟');
+            if (res) {
+                location.reload(false);
+            }
+        }
+
+    });
 </script>
 {% endblock scripts %}
