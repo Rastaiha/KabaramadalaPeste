@@ -1,0 +1,23 @@
+{% extends 'auth/base.html' %}
+{% load static %}
+{% block auth_form %}
+<div class="row">
+    <h2 class="text-center col-md-12 my-4" style="font-weight: 800">
+        فراموشی گذرواژه
+    </h2>
+
+    <div class="col-md-8 my-3 mx-auto material-input">
+        <input name="email" type="email" required>
+        <span class="highlight"></span>
+        <span class="bar"></span>
+        <label class="fa-input">ایمیل</label>
+    </div>
+
+    <div class="col-md-8 my-3 mx-auto">
+        {% csrf_token %}
+        <button class="my-btn w-100" style="display: block;font-size: 20px">
+            ارسال ایمیل فراموشی
+        </button>
+    </div>
+</div>
+{% endblock auth_form %}

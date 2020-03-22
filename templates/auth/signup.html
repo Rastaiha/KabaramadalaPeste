@@ -82,6 +82,27 @@
         </button>
     </div>
 </div>
+
+{% comment %} <div class="text-center pt-4 pb-3">
+    <span style="color:#777">
+        ورود به حساب کاربری -
+    </span>
+
+    <a href="/panel/user/signup/">
+        ورود
+    </a>
+    {% csrf_token %}
+</div>
+
+<div class="text-center pb-3">
+    <span style="color:#777">
+        فراموشی
+    </span>
+
+    <a href="/panel/user/forgot_password/">
+        رمز عبور
+    </a>
+</div> {% endcomment %}
 {% endblock auth_form %}
 
 {% block auth_script %}
