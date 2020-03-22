@@ -9,10 +9,29 @@ from accounts.models import *
 from accounts.forms import *
 
 import json
+import requests
+
+
+def check_bibot_response(request):
+    if request.POST.get('bibot-response') is not None:
+        if request.POST.get('bibot-response') != '':
+            r = requests.post('https://api.bibot.ir/api1/siteverify/', data={
+                'secretkey': '9270bf6cd4a087673ca9e86666977a30',
+                'response': request.POST['bibot-response']
+            })
+            if r.json()['success']:
+                return True
+            else:
+                messages.error(request, 'کپچا به درستی حل نشده است!')
+                return False
+        else:
+            messages.error(request, 'کپچا به درستی حل نشده است!')
+            return False
+    return False
 
 
 def signup(request):
-    if request.method == 'POST':
+    if request.method == 'POST' and check_bibot_response(request):
         form = SignUpForm(request.POST, request.FILES)
         if not form.is_valid():
             messages.add_message(request, messages.ERROR, 'ایمیل تکراری')
