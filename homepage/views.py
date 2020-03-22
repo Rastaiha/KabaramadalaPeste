@@ -12,6 +12,16 @@ def homepage(request):
         messages.error(request, 'پرداخت ناموفق بود')
     if payment_status == settings.OK_STATUS:
         messages.success(request, 'پرداخت با موفقیت انجام شد')
+
+    activate_status = request.GET.get('activate')
+    if activate_status == settings.ERROR_STATUS:
+        messages.error(request, 'لینک فعال‌سازی درست نیست')
+    if activate_status == settings.OK_STATUS:
+        messages.success(request, 'حساب با موفقیت فعال شد')
+
+    signup_status = request.GET.get('signup')
+    if signup_status == settings.OK_STATUS:
+        messages.success(request, 'ثبت نام با موفقیت انجام شد. برای فعال‌سازی حساب به ایمیلت مراجعه کن.')
     return render(request, 'homepages/landing_page.html', {
         'not_nav_padding': True
     })

@@ -9,7 +9,10 @@ from django.template.loader import render_to_string
 from django.utils.html import strip_tags, strip_spaces_between_tags
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes, force_text
 
+from accounts.tokens import account_activation_token
 from accounts.models import *
 from accounts.forms import *
 
@@ -44,6 +47,12 @@ def check_bibot_response(request):
     return False
 
 
+def _redirect_homepage_with_action_status(action='payment', status=settings.OK_STATUS):
+    response = redirect(reverse('homepage:homepage'))
+    response['Location'] += '?%s=%s' % (action, status)
+    return response
+
+
 def signup(request):
     if request.user.is_authenticated:
         raise Http404
@@ -70,6 +79,7 @@ def signup(request):
             email=request.POST['email']
         )
         member.set_password(request.POST['password'])
+        member.is_active = False
         participant = Participant.objects.create(
             member=member,
             gender=request.POST['gender'],
@@ -81,15 +91,36 @@ def signup(request):
         member.save()
         participant.save()
 
-        html_content = strip_spaces_between_tags(render_to_string('auth/signup_email.html', {'user': member}))
+        html_content = strip_spaces_between_tags(render_to_string('auth/signup_email.html', {
+            'user': member,
+            'base_url': request.build_absolute_uri(reverse('homepage:homepage'))[:-1],
+            'token': account_activation_token.make_token(member),
+            'uid': urlsafe_base64_encode(force_bytes(member.pk))
+        }))
         text_content = re.sub('<style[^<]+?</style>', '', html_content)
         text_content = strip_tags(text_content)
 
         msg = EmailMultiAlternatives('تایید ثبت‌نام اولیه', text_content, 'Rastaiha <info@rastaiha.ir>', [member.email])
         msg.attach_alternative(html_content, "text/html")
         msg.send()
-        return redirect(reverse('homepage:homepage'))
+        return _redirect_homepage_with_action_status('signup', settings.OK_STATUS)
     return render(request, 'auth/signup.html')
+
+
+def activate(request, uidb64, token):
+    try:
+        uid = force_text(urlsafe_base64_decode(uidb64))
+        member = Member.objects.get(pk=uid)
+    except(TypeError, ValueError, OverflowError, Member.DoesNotExist):
+        member = None
+    if member is not None and account_activation_token.check_token(member, token):
+        member.is_active = True
+        member.save()
+        auth_login(request, member)
+        # return redirect('home')
+        return _redirect_homepage_with_action_status('activate', settings.OK_STATUS)
+    else:
+        return _redirect_homepage_with_action_status('activate', settings.ERROR_STATUS)
 
 
 def login(request):
@@ -104,6 +135,9 @@ def login(request):
             messages.error(request, 'ایمیل یا رمز عبور غلط است.')
             return render(request, 'auth/login.html')
         member = members[0]
+        if not member.is_active:
+            messages.error(request, 'به ایمیلت سر بزن و اول حسابت رو فعال کن')
+            return render(request, 'auth/login.html')
         username = member.username
         password = request.POST.get('password')
         user = authenticate(request, username=username, password=password)
@@ -120,12 +154,6 @@ def login(request):
 def logout(request):
     auth_logout(request)
     return redirect('homepage:homepage')
-
-
-def _redirect_homepage_with_payment_status(status):
-    response = redirect(reverse('homepage:homepage'))
-    response['Location'] += '?payment=%s' % status
-    return response
 
 
 def verify(request):
@@ -149,7 +177,7 @@ def verify(request):
             payment_attempt.red_id = str(result.RefID)
             payment_attempt.desc = 'Transaction success.'
             payment_attempt.save()
-            return _redirect_homepage_with_payment_status(settings.OK_STATUS)
+            return _redirect_homepage_with_action_status("payment", settings.OK_STATUS)
             # return HttpResponse('Transaction success.\nRefID: ' + str(result.RefID))
         elif result.Status == 101:
             request.user.participant.is_activated = True
@@ -164,16 +192,16 @@ def verify(request):
             payment_attempt.status = str(result.Status)
             payment_attempt.desc = 'Transaction submitted.'
             payment_attempt.save()
-            return _redirect_homepage_with_payment_status(settings.OK_STATUS)
+            return _redirect_homepage_with_action_status("payment", settings.OK_STATUS)
             # return HttpResponse('Transaction submitted : ' + str(result.Status))
         else:
             payment_attempt.status = str(result.Status)
             payment_attempt.desc = 'Transaction failed.'
             payment_attempt.save()
-            return _redirect_homepage_with_payment_status(settings.ERROR_STATUS)
+            return _redirect_homepage_with_action_status("payment", settings.ERROR_STATUS)
             # return HttpResponse('Transaction failed.\nStatus: ' + str(result.Status))
     else:
-        return _redirect_homepage_with_payment_status(settings.ERROR_STATUS)
+        return _redirect_homepage_with_action_status("payment", settings.ERROR_STATUS)
         # return HttpResponse('Transaction failed or canceled by user')
 
 
