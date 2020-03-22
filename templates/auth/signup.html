@@ -76,7 +76,6 @@
     </div>
 
     <div class="col-md-12 my-3">
-        {% csrf_token %}
         <button class="my-btn w-100" style="font-size: 20px">
             ثبت‌نام
         </button>
@@ -91,18 +90,17 @@
     <a href="/panel/user/signup/">
         ورود
     </a>
-    {% csrf_token %}
 </div>
 
-<div class="text-center pb-1">
-    <span style="color:#777">
-        فراموشی
-    </span>
-
-    <a href="/panel/user/forgot_password/">
-        رمز عبور
-    </a>
-</div>
+{#<div class="text-center pb-1">#}
+{#    <span style="color:#777">#}
+{#        فراموشی#}
+{#    </span>#}
+{##}
+{#    <a href="/panel/user/forgot_password/">#}
+{#        رمز عبور#}
+{#    </a>#}
+{#</div>#}
 {% endblock auth_form %}
 
 {% block auth_script %}

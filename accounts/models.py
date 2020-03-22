@@ -16,7 +16,7 @@ class Member(AbstractUser):
     is_participant = models.BooleanField(default=True)
 
     def __str__(self):
-        return self.first_name
+        return self.username
 
 
 class Participant(models.Model):

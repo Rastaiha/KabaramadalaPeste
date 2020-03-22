@@ -15,6 +15,7 @@ from accounts.forms import *
 import json
 import requests
 import re
+import random
 
 
 def check_bibot_response(request):
@@ -36,16 +37,28 @@ def check_bibot_response(request):
 
 
 def signup(request):
-    if request.user.is_authenticated:
-        raise Http404
+    # if request.user.is_authenticated:
+    #     raise Http404
     if request.method == 'POST' and check_bibot_response(request):
         form = SignUpForm(request.POST, request.FILES)
         if not form.is_valid():
             messages.add_message(request, messages.ERROR, 'ایمیل تکراری')
             return render(request, 'auth/signup.html')
+
+        file = open('animals.txt', 'r', encoding='UTF-8')
+        animals = file.read().strip().split('\n')
+        file.close()
+        file = open('adjectives.txt', 'r', encoding='UTF-8')
+        adjectives = file.read().strip().split('\n')
+        file.close()
+
+        username = random.choice(animals) + ' ' + random.choice(adjectives)
+        while Member.objects.filter(username__exact=username).count() > 0:
+            username = random.choice(animals) + ' ' + random.choice(adjectives)
+
         member = Member.objects.create(
             first_name=request.POST['name'],
-            username=request.POST['email'],  # TODO is it ok?
+            username=username,
             email=request.POST['email']
         )
         member.set_password(request.POST['password'])
