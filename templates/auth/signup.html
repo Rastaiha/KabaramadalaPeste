@@ -16,8 +16,8 @@
         <div class="gender-container" style="">
             <input id="gender-input" name="gender" required
                 oninvalid="this.setCustomValidity('Please select one of these.')" />
-            <div class="gender-icon" data-val="b"><img src="{% static 'images/boy.png' %}" /></div>
-            <div class="gender-icon" data-val="g"><img src="{% static 'images/girl.png' %}" /></div>
+            <div class="gender-icon" data-val="Man"><img src="{% static 'images/boy.png' %}" /></div>
+            <div class="gender-icon" data-val="Woman"><img src="{% static 'images/girl.png' %}" /></div>
         </div>
         <label class="fa-input active-input-label">جنسیت</label>
     </div>
@@ -37,7 +37,7 @@
     </div>
 
     <div class="col-md-6 my-3 material-input">
-        <input name="school" type="file" required style="padding: 1px; font-size: 12px;">
+        <input name="document" type="file" required style="padding: 1px; font-size: 12px;">
         <span class="highlight"></span>
         <span class="bar"></span>
         <label class="fa-input">تصویر شناسنامه/کارت‌ملی/کارنامه تحصیلی</label>

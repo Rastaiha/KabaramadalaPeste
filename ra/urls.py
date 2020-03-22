@@ -22,5 +22,6 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('game/', include('kabaramadalapeste.urls')),
-    path('', include('homepage.urls'))
+    path('accounts/', include(('accounts.urls', 'accounts'), namespace='accounts')),
+    path('', include(('homepage.urls', 'homepage'), namespace='homepage'))
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
