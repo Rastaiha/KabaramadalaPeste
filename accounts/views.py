@@ -18,6 +18,7 @@ import json
 import requests
 import re
 import random
+import datetime
 
 
 MERCHANT = '8b469980-683d-11ea-806a-000c295eb8fc'
@@ -124,6 +125,11 @@ def logout(request):
 def verify(request):
     if request.GET.get('Status') == 'OK':
         result = client.service.PaymentVerification(MERCHANT, request.GET['Authority'], payment_amount)
+        payment_attempt = PaymentAttempt.objects.get(
+            participant__member__email__exact=request.user.email,
+            authority__exact=request.GET['Authority']
+        )
+        payment_attempt.verify_datetime = datetime.datetime.now()
         if result.Status == 100:
             request.user.participant.is_activated = True
             request.user.participant.save()
@@ -134,6 +140,9 @@ def verify(request):
                                          'Rastaiha <info@rastaiha.ir>', [request.user.email])
             msg.attach_alternative(html_content, "text/html")
             msg.send()
+            payment_attempt.red_id = str(result.RefID)
+            payment_attempt.desc = 'Transaction success.'
+            payment_attempt.save()
             return redirect(reverse('homepage:homepage'))
             # return HttpResponse('Transaction success.\nRefID: ' + str(result.RefID))
         elif result.Status == 101:
@@ -146,9 +155,15 @@ def verify(request):
                                          'Rastaiha <info@rastaiha.ir>', [request.user.email])
             msg.attach_alternative(html_content, "text/html")
             msg.send()
+            payment_attempt.status = str(result.Status)
+            payment_attempt.desc = 'Transaction submitted.'
+            payment_attempt.save()
             return redirect(reverse('homepage:homepage'))
             # return HttpResponse('Transaction submitted : ' + str(result.Status))
         else:
+            payment_attempt.status = str(result.Status)
+            payment_attempt.desc = 'Transaction failed.'
+            payment_attempt.save()
             return redirect(reverse('homepage:homepage'))
             # return HttpResponse('Transaction failed.\nStatus: ' + str(result.Status))
     else:
@@ -163,13 +178,19 @@ def send_request(request):
     if request.user.participant.is_activated:
         raise Http404
     callback_url = request.build_absolute_uri(reverse('accounts:verify'))
-    print(callback_url)
     result = client.service.PaymentRequest(
         MERCHANT,
         payment_amount,
         'ثبت‌نام در رویداد در «جست‌وجوی کابارآمادالاپسته»',
         CallbackURL=callback_url
     )
+    payment_attempt = PaymentAttempt.objects.create(
+        request_datetime=datetime.datetime.now(),
+        desc='Transaction failed or canceled by user.',
+        participant=request.user.participant,
+        authority=str(result.Authority)
+    )
+    payment_attempt.save()
     if result.Status == 100:
         return redirect('https://www.zarinpal.com/pg/StartPay/' + str(result.Authority))
     else:

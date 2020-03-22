@@ -37,3 +37,16 @@ class Judge(models.Model):
 
     def __str__(self):
         return str(self.member)
+
+
+class PaymentAttempt(models.Model):
+    participant = models.ForeignKey(Participant, related_name='payment_attempts', on_delete=models.CASCADE)
+    red_id = models.CharField(max_length=20, null=True, blank=True)
+    status = models.CharField(max_length=20, null=True, blank=True)
+    authority = models.CharField(max_length=50)
+    desc = models.CharField(max_length=50)
+    request_datetime = models.DateTimeField(auto_now_add=True)
+    verify_datetime = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return 'PaymentAttempt object (' + str(self.pk) + ') (' + str(self.participant) + ')'
