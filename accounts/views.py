@@ -7,6 +7,7 @@ from django.core.mail import send_mail, EmailMessage, EmailMultiAlternatives
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
+from django.contrib.auth.decorators import login_required
 
 from accounts.models import *
 from accounts.forms import *
@@ -34,6 +35,8 @@ def check_bibot_response(request):
 
 
 def signup(request):
+    if request.user.is_authenticated:
+        raise Http404
     if request.method == 'POST' and check_bibot_response(request):
         form = SignUpForm(request.POST, request.FILES)
         if not form.is_valid():
@@ -71,3 +74,33 @@ def signup(request):
         msg.send()
         return redirect(reverse('homepage:homepage'))
     return render(request, 'auth/signup.html')
+
+
+def login(request):
+    if request.user.is_authenticated:
+        raise Http404
+    if request.method == "POST":
+        print(request.POST)
+        if not check_bibot_response(request):
+            return render(request, 'auth/login.html')
+        members = Member.objects.filter(email__exact=request.POST.get('email'))
+        if members.count() == 0:
+            messages.error(request, 'ایمیل یا رمز عبور غلط است.')
+            return render(request, 'auth/login.html')
+        member = members[0]
+        username = member.username
+        password = request.POST.get('password')
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            auth_login(request, user)
+            return redirect('homepage:homepage')
+        else:
+            messages.error(request, 'ایمیل یا رمز عبور غلط است.')
+            return render(request, 'auth/login.html')
+    return render(request, 'auth/login.html')
+
+
+@login_required
+def logout(request):
+    auth_logout(request)
+    return redirect('homepage:homepage')

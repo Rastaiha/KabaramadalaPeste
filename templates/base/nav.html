@@ -34,8 +34,8 @@
                 </li>
                 {% if user.is_authenticated %}
                     <li class="nav-item">
-                        <a class="nav-link hover-shadow {% if request.path == '/accounts/signup/' %} activate {% endif %}"
-                            href="{% url 'accounts:signup' %}">خروج</a>
+                        <a class="nav-link hover-shadow {% if request.path == '/accounts/logout/' %} activate {% endif %}"
+                            href="{% url 'accounts:logout' %}">خروج</a>
                     </li>
                 {% else %}
                     <li class="nav-item">
@@ -43,8 +43,8 @@
                             href="{% url 'accounts:signup' %}">ثبت‌نام</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link hover-shadow {% if request.path == '/accounts/signup/' %} activate {% endif %}"
-                            href="{% url 'accounts:signup' %}">ورود</a>
+                        <a class="nav-link hover-shadow {% if request.path == '/accounts/login/' %} activate {% endif %}"
+                            href="{% url 'accounts:login' %}">ورود</a>
                     </li>
                 {% endif %}
                 {% comment %} <li class="nav-item">
