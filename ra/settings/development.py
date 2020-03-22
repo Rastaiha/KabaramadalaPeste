@@ -45,4 +45,4 @@ LOGGING = {
     },
 }
 
-REGISTRATION_FEE = get_environment_var('REGISTRATION_FEE', '1000')
+REGISTRATION_FEE = get_environment_var('REGISTRATION_FEE', '500')
