@@ -6,7 +6,7 @@ from django.urls import reverse
 from django.core.mail import send_mail, EmailMessage, EmailMultiAlternatives
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.template.loader import render_to_string
-from django.utils.html import strip_tags
+from django.utils.html import strip_tags, strip_spaces_between_tags
 from django.contrib.auth.decorators import login_required
 
 from accounts.models import *
@@ -14,6 +14,7 @@ from accounts.forms import *
 
 import json
 import requests
+import re
 
 
 def check_bibot_response(request):
@@ -67,8 +68,9 @@ def signup(request):
         #     headers={'Content-Type': 'text/plain'},
         # )
         # email.send()
-        html_content = render_to_string('auth/signup_confirm_mail.html', {'user': member})
-        text_content = strip_tags(html_content)
+        html_content = strip_spaces_between_tags(render_to_string('auth/signup_email.html', {'user': member}))
+        text_content = re.sub('<style[^<]+?</style>', '', html_content)
+        text_content = strip_tags(text_content)
         msg = EmailMultiAlternatives('تایید ثبت‌نام اولیه', text_content, 'Rastaiha <info@rastaiha.ir>', [member.email])
         msg.attach_alternative(html_content, "text/html")
         msg.send()
