@@ -26,6 +26,7 @@ class Participant(models.Model):
     document = models.ImageField(upload_to='documents/')
     gender = models.CharField(max_length=10, default=Gender.Man, choices=[(tag.value, tag.name) for tag in Gender])
     phone_number = models.CharField(max_length=12, blank=True, null=True)
+    is_activated = models.BooleanField(default=False)
 
     def __str__(self):
         return str(self.member)

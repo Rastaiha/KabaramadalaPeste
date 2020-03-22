@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.http import JsonResponse, Http404
+from django.http import JsonResponse, Http404, HttpResponse
 from django.contrib import messages
 from django.shortcuts import redirect
 from django.urls import reverse
@@ -12,9 +12,16 @@ from django.contrib.auth.decorators import login_required
 from accounts.models import *
 from accounts.forms import *
 
+from zeep import Client
+
 import json
 import requests
 import random
+
+
+MERCHANT = '8b469980-683d-11ea-806a-000c295eb8fc'
+payment_amount = 15000
+client = Client('https://www.zarinpal.com/pg/services/WebGate/wsdl')
 
 
 def check_bibot_response(request):
@@ -36,8 +43,8 @@ def check_bibot_response(request):
 
 
 def signup(request):
-    # if request.user.is_authenticated:
-    #     raise Http404
+    if request.user.is_authenticated:
+        raise Http404
     if request.method == 'POST' and check_bibot_response(request):
         form = SignUpForm(request.POST, request.FILES)
         if not form.is_valid():
@@ -71,15 +78,7 @@ def signup(request):
         )
         member.save()
         participant.save()
-        # send_mail('ثبت‌نام در کابارآمادالاپسته', 'ثبت‌نام شما با موفقیت انجام شد.', 'info@rastaiha.ir', [member.email])
-        # email = EmailMessage(
-        #     subject='ثبت‌نام در کابارآمادالاپسته',
-        #     body='ثبت‌نام شما با موفقیت انجام شد.',
-        #     from_email='Rastaiha <info@rastaiha.ir>',
-        #     to=[member.email],
-        #     headers={'Content-Type': 'text/plain'},
-        # )
-        # email.send()
+
         html_content = render_to_string('auth/signup_confirm_mail.html', {'user': member})
         text_content = strip_tags(html_content)
         msg = EmailMultiAlternatives('تایید ثبت‌نام اولیه', text_content, 'Rastaiha <info@rastaiha.ir>', [member.email])
@@ -117,3 +116,58 @@ def login(request):
 def logout(request):
     auth_logout(request)
     return redirect('homepage:homepage')
+
+
+def verify(request):
+    if request.GET.get('Status') == 'OK':
+        result = client.service.PaymentVerification(MERCHANT, request.GET['Authority'], payment_amount)
+        if result.Status == 100:
+            request.user.participant.is_activated = True
+            request.user.participant.save()
+            html_content = render_to_string('auth/payment_success.html',
+                                            {'user': request.user, 'refid': result.RefID})
+            text_content = strip_tags(html_content)
+            msg = EmailMultiAlternatives('تایید پرداخت', text_content,
+                                         'Rastaiha <info@rastaiha.ir>', [request.user.email])
+            msg.attach_alternative(html_content, "text/html")
+            msg.send()
+            return redirect(reverse('homepage:homepage'))
+            # return HttpResponse('Transaction success.\nRefID: ' + str(result.RefID))
+        elif result.Status == 101:
+            request.user.participant.is_activated = True
+            request.user.participant.save()
+            html_content = render_to_string('auth/payment_success.html',
+                                            {'user': request.user})
+            text_content = strip_tags(html_content)
+            msg = EmailMultiAlternatives('تایید پرداخت', text_content,
+                                         'Rastaiha <info@rastaiha.ir>', [request.user.email])
+            msg.attach_alternative(html_content, "text/html")
+            msg.send()
+            return redirect(reverse('homepage:homepage'))
+            # return HttpResponse('Transaction submitted : ' + str(result.Status))
+        else:
+            return redirect(reverse('homepage:homepage'))
+            # return HttpResponse('Transaction failed.\nStatus: ' + str(result.Status))
+    else:
+        return redirect(reverse('homepage:homepage'))
+        # return HttpResponse('Transaction failed or canceled by user')
+
+
+@login_required
+def send_request(request):
+    if not request.user.is_participant:
+        raise Http404
+    if request.user.participant.is_activated:
+        raise Http404
+    callback_url = request.build_absolute_uri(reverse('accounts:verify'))
+    print(callback_url)
+    result = client.service.PaymentRequest(
+        MERCHANT,
+        payment_amount,
+        'ثبت‌نام در رویداد در «جست‌وجوی کابارآمادالاپسته»',
+        CallbackURL=callback_url
+    )
+    if result.Status == 100:
+        return redirect('https://www.zarinpal.com/pg/StartPay/' + str(result.Authority))
+    else:
+        return HttpResponse('Error code: ' + str(result.Status))
