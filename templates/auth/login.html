@@ -1,0 +1,57 @@
+{% extends 'auth/base.html' %}
+{% load static %}
+{% block auth_form %}
+<div class="row">
+    <h2 class="text-center col-md-12 my-4" style="font-weight: 800">
+        ورود به مسابقه
+    </h2>
+
+    <div class="col-md-8 mx-auto my-3 material-input">
+        <input name="email" type="email" required>
+        <span class="highlight"></span>
+        <span class="bar"></span>
+        <label class="fa-input">ایمیل</label>
+    </div>
+
+    <div class="col-md-8 mx-auto my-3 material-input">
+        <input id="password" name="password" type="password" required>
+        <span class="highlight"></span>
+        <span class="bar"></span>
+        <label class="fa-input">گذرواژه</label>
+    </div>
+
+
+    <div class="col-md-8 mx-auto my-2">
+        <div class="bibot-captcha" data-sitekey="ebe309aeb255d8be20faac5aa35fb5a5" data-lang="fa"></div>
+    </div>
+
+    <div class="col-md-8 mx-auto my-3">
+        <button class="my-btn w-100" style="font-size: 20px">
+            ورود
+        </button>
+    </div>
+</div>
+{#<div class="text-center pt-3 pb-2">#}
+{#    <span style="color:#777">#}
+{#        فراموشی#}
+{#    </span>#}
+{##}
+{#    <a href="/panel/user/forgot_password/">#}
+{#        رمز عبور#}
+{#    </a>#}
+{#</div>#}
+
+<div class="text-center pb-1">
+    <span style="color:#777">
+        ساختن حساب کاربری -
+    </span>
+
+    <a href="{% url 'accounts:signup' %}">
+        ثبت‌نام
+    </a>
+</div>
+{% endblock auth_form %}
+
+{% block auth_script %}
+<script src="https://cdn.bibot.ir/bibot.min.js"></script>
+{% endblock auth_script %}
