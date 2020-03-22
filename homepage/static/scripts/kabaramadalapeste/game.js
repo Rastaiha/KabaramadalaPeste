@@ -1,3 +1,4 @@
+Konva.pixelRatio = 1;
 function loadImages(sources) {
     return new Promise(resolve => {
         data.images = {};
@@ -18,11 +19,12 @@ function loadImages(sources) {
 
 function init_backgronud(layer) {
     data.back.elem = new Konva.Image({
-        x: data.back.x,
-        y: data.back.y,
+        x: Math.floor(data.back.x),
+        y: Math.floor(data.back.y),
         image: data.images[data.back.src],
-        width: data.back.width,
-        height: data.back.height
+        width: Math.floor(data.back.width),
+        height: Math.floor(data.back.height),
+        perfectDrawEnabled: false
     });
     layer.on("dragstart dragmove mousedown", function() {
         document.body.style.cursor = "grabbing";
@@ -50,7 +52,6 @@ function change_target(layer, target = null) {
     }
 
     data.jazireha.forEach(jazire => {
-        console.log(data.target);
         if (data.target !== jazire) {
             jazire.elem.scale({ x: 1, y: 1 });
             jazire.elem.shadowEnabled(false);
@@ -59,7 +60,7 @@ function change_target(layer, target = null) {
             jazire.elem.shadowColor("#cccccc");
             jazire.elem.shadowEnabled(true);
         }
-        layer.draw();
+        layer.batchDraw();
     });
 }
 function hover_jazire(jazire) {
@@ -75,18 +76,19 @@ function init_jazireha(layer) {
         .sort((a, b) => (a.zIndex > b.zIndex ? 1 : -1))
         .forEach(jazire => {
             jazire.elem = new Konva.Image({
-                x: jazire.x * data.back.width,
-                y: jazire.y * data.back.height,
+                x: Math.floor(jazire.x * data.back.width),
+                y: Math.floor(jazire.y * data.back.height),
                 image: data.images[jazire.src],
-                width: jazire.width * data.back.width,
-                height: jazire.height * data.back.height,
+                width: Math.floor(jazire.width * data.back.width),
+                height: Math.floor(jazire.height * data.back.height),
                 shadowBlur: 2,
                 shadowOpacity: 2,
                 shadowOffset: { x: 2, y: 2 },
-                shadowEnabled: false
+                shadowEnabled: false,
+                perfectDrawEnabled: false
             });
 
-            jazire.elem.on("click touchend", function(e) {
+            jazire.elem.on("click tap", function(e) {
                 document.body.style.cursor = "pointer";
                 if (data.target !== jazire) {
                     change_target(layer, jazire);
@@ -141,7 +143,7 @@ function init_jazireha(layer) {
             jazire.elem.on("dragstart dragmove mouseover", function(e) {
                 document.body.style.cursor = "pointer";
                 hover_jazire(jazire);
-                layer.draw();
+                layer.batchDraw();
                 e.evt.preventDefault();
                 e.cancelBubble = true;
             });
@@ -155,28 +157,30 @@ function init_jazireha(layer) {
 
 function init_ways(layer) {
     data.ways.elem = new Konva.Image({
-        x: data.back.x,
-        y: data.back.y,
+        x: Math.floor(data.back.x),
+        y: Math.floor(data.back.y),
         image: data.images[data.ways.src],
-        width: data.back.width,
-        height: data.back.height,
-        listening: false
+        width: Math.floor(data.back.width),
+        height: Math.floor(data.back.height),
+        listening: false,
+        perfectDrawEnabled: false
     });
     layer.add(data.ways.elem);
 }
 
 function init_ship(layer) {
     data.ship.elem = new Konva.Image({
-        x: data.ship.x * data.back.width,
-        y: data.ship.y * data.back.height,
+        x: Math.floor(data.ship.x * data.back.width),
+        y: Math.floor(data.ship.y * data.back.height),
         image: data.images[data.ship.src],
-        width: data.ship.width * data.back.width,
-        height: data.ship.height * data.back.height,
+        width: Math.floor(data.ship.width * data.back.width),
+        height: Math.floor(data.ship.height * data.back.height),
         shadowColor: "#4a1311",
         shadowBlur: 4,
         shadowOpacity: 4,
         shadowOffset: { x: 2, y: 2 },
-        shadowEnabled: true
+        shadowEnabled: true,
+        perfectDrawEnabled: false
     });
     let ox = Math.random() * 200 + 500;
     let oy = Math.random() * 200 + 500;
@@ -217,7 +221,7 @@ function init_game() {
     init_ship(layer);
 
     data.stage.add(layer);
-    layer.draw();
+    layer.batchDraw();
 }
 
 let sources = [
