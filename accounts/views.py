@@ -8,6 +8,7 @@ from django.contrib.auth import authenticate, login as auth_login, logout as aut
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags, strip_spaces_between_tags
 from django.contrib.auth.decorators import login_required
+from django.conf import settings
 
 from accounts.models import *
 from accounts.forms import *
@@ -22,7 +23,7 @@ import datetime
 
 
 MERCHANT = '8b469980-683d-11ea-806a-000c295eb8fc'
-payment_amount = 15000
+payment_amount = int(settings.REGISTRATION_FEE)
 client = Client('https://www.zarinpal.com/pg/services/WebGate/wsdl')
 
 

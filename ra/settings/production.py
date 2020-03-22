@@ -1,12 +1,6 @@
 from ra.settings.base import *
 
 
-def get_environment_var(var_name, default, prefixed=True):
-    if prefixed:
-        var_name = 'RA_SERVER_%s' % var_name
-    return os.getenv(var_name, default)
-
-
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = get_environment_var('DEBUG', 'False') == 'True'
 
@@ -68,3 +62,5 @@ LOGGING = {
         },
     },
 }
+
+REGISTRATION_FEE = get_environment_var('REGISTRATION_FEE', '15000')
