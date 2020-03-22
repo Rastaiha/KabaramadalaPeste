@@ -37,6 +37,14 @@
                         <a class="nav-link hover-shadow {% if request.path == '/accounts/logout/' %} activate {% endif %}"
                             href="{% url 'accounts:logout' %}">خروج</a>
                     </li>
+                    {% if user.is_participant %}
+                        {% if not user.participant.is_activated %}
+                            <li class="nav-item">
+                                <a class="nav-link hover-shadow {% if request.path == '/accounts/request/' %} activate {% endif %}"
+                                    href="{% url 'accounts:request' %}">پرداخت</a>
+                            </li>
+                        {% endif %}
+                    {% endif %}
                 {% else %}
                     <li class="nav-item">
                         <a class="nav-link hover-shadow {% if request.path == '/accounts/signup/' %} activate {% endif %}"
