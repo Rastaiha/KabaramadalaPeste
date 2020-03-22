@@ -116,6 +116,7 @@ EMAIL_HOST_PASSWORD = 'ET6vmrh.$gHZFjL'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
+DEFAULT_FROM_EMAIL = "Rastaiha <" + EMAIL_HOST_USER + ">"
 
 # Activate Django-Heroku.
 django_heroku.settings(locals())
