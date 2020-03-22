@@ -182,7 +182,7 @@ def send_request(request):
     result = client.service.PaymentRequest(
         MERCHANT,
         payment_amount,
-        'ثبت‌نام در رویداد در «جست‌وجوی کابارآمادالاپسته»',
+        'ثبت‌نام در رویداد «در جست‌وجوی کابارآمادالاپسته»',
         CallbackURL=callback_url
     )
     payment_attempt = PaymentAttempt.objects.create(
