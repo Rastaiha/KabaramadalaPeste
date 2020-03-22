@@ -1,9 +1,12 @@
 from django.shortcuts import render
-from django.http import JsonResponse
+from django.http import JsonResponse, Http404
 from django.contrib import messages
 from django.shortcuts import redirect
 from django.urls import reverse
-from django.core.mail import send_mail, EmailMessage
+from django.core.mail import send_mail, EmailMessage, EmailMultiAlternatives
+from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
 
 from accounts.models import *
 from accounts.forms import *
@@ -53,13 +56,18 @@ def signup(request):
         member.save()
         participant.save()
         # send_mail('ثبت‌نام در کابارآمادالاپسته', 'ثبت‌نام شما با موفقیت انجام شد.', 'info@rastaiha.ir', [member.email])
-        email = EmailMessage(
-            subject='ثبت‌نام در کابارآمادالاپسته',
-            body='ثبت‌نام شما با موفقیت انجام شد.',
-            from_email='Rastaiha <info@rastaiha.ir>',
-            to=[member.email],
-            headers={'Content-Type': 'text/plain'},
-        )
-        email.send()
+        # email = EmailMessage(
+        #     subject='ثبت‌نام در کابارآمادالاپسته',
+        #     body='ثبت‌نام شما با موفقیت انجام شد.',
+        #     from_email='Rastaiha <info@rastaiha.ir>',
+        #     to=[member.email],
+        #     headers={'Content-Type': 'text/plain'},
+        # )
+        # email.send()
+        html_content = render_to_string('auth/signup_confirm_mail.html', {'user': member})
+        text_content = strip_tags(html_content)
+        msg = EmailMultiAlternatives('تایید ثبت‌نام اولیه', text_content, 'Rastaiha <info@rastaiha.ir>', [member.email])
+        msg.attach_alternative(html_content, "text/html")
+        msg.send()
         return redirect(reverse('homepage:homepage'))
     return render(request, 'auth/signup.html')
