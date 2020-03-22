@@ -37,7 +37,7 @@ def signup(request):
         email = EmailMessage(
             subject='ثبت‌نام در کابارآمادالاپسته',
             body='ثبت‌نام شما با موفقیت انجام شد.',
-            from_email='info@rastaiha.ir',
+            from_email='Rastaiha <info@rastaiha.ir>',
             to=[member.email],
             headers={'Content-Type': 'text/plain'},
         )
