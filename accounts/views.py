@@ -15,7 +15,6 @@ from accounts.forms import *
 
 from zeep import Client
 
-import json
 import requests
 import re
 import random
@@ -123,6 +122,12 @@ def logout(request):
     return redirect('homepage:homepage')
 
 
+def _redirect_homepage_with_payment_status(status):
+    response = redirect(reverse('homepage:homepage'))
+    response['Location'] += '?payment=%s' % status
+    return response
+
+
 def verify(request):
     if request.GET.get('Status') == 'OK':
         result = client.service.PaymentVerification(MERCHANT, request.GET['Authority'], payment_amount)
@@ -144,7 +149,7 @@ def verify(request):
             payment_attempt.red_id = str(result.RefID)
             payment_attempt.desc = 'Transaction success.'
             payment_attempt.save()
-            return redirect(reverse('homepage:homepage'))
+            return _redirect_homepage_with_payment_status(settings.OK_STATUS)
             # return HttpResponse('Transaction success.\nRefID: ' + str(result.RefID))
         elif result.Status == 101:
             request.user.participant.is_activated = True
@@ -159,16 +164,16 @@ def verify(request):
             payment_attempt.status = str(result.Status)
             payment_attempt.desc = 'Transaction submitted.'
             payment_attempt.save()
-            return redirect(reverse('homepage:homepage'))
+            return _redirect_homepage_with_payment_status(settings.OK_STATUS)
             # return HttpResponse('Transaction submitted : ' + str(result.Status))
         else:
             payment_attempt.status = str(result.Status)
             payment_attempt.desc = 'Transaction failed.'
             payment_attempt.save()
-            return redirect(reverse('homepage:homepage'))
+            return _redirect_homepage_with_payment_status(settings.ERROR_STATUS)
             # return HttpResponse('Transaction failed.\nStatus: ' + str(result.Status))
     else:
-        return redirect(reverse('homepage:homepage'))
+        return _redirect_homepage_with_payment_status(settings.ERROR_STATUS)
         # return HttpResponse('Transaction failed or canceled by user')
 
 
