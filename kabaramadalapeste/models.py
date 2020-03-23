@@ -154,6 +154,26 @@ class TreasureRewardItem(models.Model):
                                  on_delete=models.CASCADE)
 
 
+class ParticipantPropertyItem(models.Model):
+    property_type = models.CharField(
+        max_length=3,
+        choices=settings.GAME_PARTICIPANT_PROPERTY_TYPE_CHOICES,
+        default=settings.GAME_SEKKE,
+    )
+    amount = models.IntegerField(default=0)
+    participant = models.ForeignKey(Participant,
+                                    related_name='properties',
+                                    on_delete=models.CASCADE)
+
+    def __str__(self):
+        return '%s of %s for user %s' % (
+            self.amount, self.property_type, self.participant.member.email,
+        )
+
+    class Meta:
+        unique_together = (("participant", "property_type"),)
+
+
 class ParticipantIslandStatus(models.Model):
     participant = models.ForeignKey(Participant, on_delete=models.CASCADE)
     island = models.ForeignKey(Island, on_delete=models.CASCADE)

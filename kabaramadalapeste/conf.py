@@ -36,5 +36,7 @@ class GameConf(AppConf):
         (SEKKE, 'sekke'),
     ] + TREASURE_KEY_TYPE_CHOICES + ABILITY_TYPY_CHOICES
 
+    PARTICIPANT_PROPERTY_TYPE_CHOICES = TREASURE_REWARD_TYPE_CHOICES
+
     class Meta:
         prefix = 'game'
