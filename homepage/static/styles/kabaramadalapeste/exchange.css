@@ -1,0 +1,14 @@
+.exchange-wrapper {
+    width: 100%;
+    background: #ddd;
+    border-radius: 20px;
+    padding: 10px;
+}
+
+.exchange-card {
+    background: #131113;
+    padding: 10px;
+    border-radius: 10px;
+    color: white;
+    text-align: center;
+}

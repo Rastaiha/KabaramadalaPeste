@@ -1,0 +1,31 @@
+{% extends 'kabaramadalapeste/base.html' %}
+{% load static %}
+{% block styles %}
+<link rel="stylesheet" href="{% static 'styles/kabaramadalapeste/exchange.css' %}" />
+{% endblock styles %}
+{% block game_base_content %}
+<div class="full-page-center-item">
+    <div class="container">
+        <div class="exchange-wrapper">
+            <div class="row">
+                <div class="col-md-4 col-sm-6">
+                    <div class="exchange-card">
+                        <div>
+                            
+                        </div>
+                        <div>
+                            تقاضا
+                        </div>
+                        <div>
+                            تقاضا
+                        </div>
+                        <div>
+                            <a class="my-btn w-100">مبادله</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock game_base_content %}

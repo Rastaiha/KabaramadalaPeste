@@ -1,6 +1,6 @@
 let data = {
-    width: window.innerWidth,
-    height: window.innerHeight,
+    width: $(window).width(),
+    height: $(window).height(),
     back: {
         x: 0,
         y: 0,
@@ -35,6 +35,29 @@ let data = {
         width: 0.05,
         height: 0.055
     },
+    players: [
+        {
+            x: 0.2,
+            y: 0.2,
+            src: "ship.png",
+            width: 0.025,
+            height: 0.026
+        },
+        {
+            x: 0.25,
+            y: 0.2,
+            src: "ship.png",
+            width: 0.025,
+            height: 0.026
+        },
+        {
+            x: 0.23,
+            y: 0.25,
+            src: "ship.png",
+            width: 0.025,
+            height: 0.026
+        }
+    ],
     jazireha: [
         {
             id: 1,

@@ -3,7 +3,7 @@
 {% block styles %}
 <link rel="stylesheet" href="{% static 'styles/kabaramadalapeste/game.css' %}" />
 {% endblock styles %}
-{% block base_content %}
+{% block game_base_content %}
 <div id="game-container"></div>
 <div class="jazire-info">
     <div style="background: #333; padding: 10px 15px; border-radius: 40px 15px 0 0; color: white">
@@ -41,10 +41,33 @@
             <a class="my-btn">لنگر انداختن</a>
         </div>
     </div>
-
 </div>
 
-{% endblock base_content %}
+
+<div class="right-info player-info my-row">
+    <div class="right-info-details"></div>
+    <div class="right-info-btn">
+        <img src="{% static 'images/game/bagpack.png' %}" />
+    </div>
+</div>
+
+
+<div class="right-info exchange-info my-row">
+    <div class="right-info-details">
+        <div>
+            <p>
+                در این بخش می‌توانید دارایی خود را با سایر بازیکنان مبادله کنید.
+            </p>
+            <a class="my-btn w-100 mt-1">مبادله</a>
+        </div>
+
+    </div>
+    <div class="right-info-btn">
+        <img src="{% static 'images/game/exchange.png' %}" />
+    </div>
+</div>
+
+{% endblock game_base_content %}
 {% block scripts %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/konva/4.2.0/konva.min.js"></script>
 <script src="{% static 'scripts/kabaramadalapeste/data.js' %}"></script>
@@ -63,7 +86,10 @@
                 location.reload(false);
             }
         }
-
     });
+
+    $(".right-info-btn").click(function () {
+        $(this).parent().toggleClass("show-details")
+    })
 </script>
 {% endblock scripts %}

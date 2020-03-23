@@ -184,15 +184,49 @@ function init_ship(layer) {
     });
     let ox = Math.random() * 200 + 500;
     let oy = Math.random() * 200 + 500;
-    let or = Math.random() * 200 + 500;
+    let or = Math.random() * 200 + 100;
     var anim = new Konva.Animation(function(frame) {
         data.ship.elem.offsetX(Math.sin(frame.time / ox));
         data.ship.elem.offsetY(Math.sin(frame.time / oy));
         data.ship.elem.rotate(Math.sin(frame.time / or) / 10);
     }, layer);
-
+    data.ship.elem.on("mouseover", function() {
+        document.body.style.cursor = "pointer";
+        e.evt.preventDefault();
+        e.cancelBubble = true;
+    });
+    data.ship.elem.on("click tap", function() {
+        document.body.style.cursor = "pointer";
+        $(".player-info").toggleClass("show-details");
+        e.evt.preventDefault();
+        e.cancelBubble = true;
+    });
     layer.add(data.ship.elem);
     anim.start();
+}
+
+function init_players(layer) {
+    data.players.forEach(player => {
+        player.elem = new Konva.Image({
+            x: Math.floor(player.x * data.back.width),
+            y: Math.floor(player.y * data.back.height),
+            image: data.images[player.src],
+            width: Math.floor(player.width * data.back.width),
+            height: Math.floor(player.height * data.back.height),
+            listening: false
+        });
+        let ox = Math.random() * 200 + 500;
+        let oy = Math.random() * 200 + 500;
+        let or = Math.random() * 200 + 100;
+        var anim = new Konva.Animation(function(frame) {
+            player.elem.offsetX(Math.sin(frame.time / ox));
+            player.elem.offsetY(Math.sin(frame.time / oy));
+            player.elem.rotate(Math.sin(frame.time / or) / 10);
+        }, layer);
+
+        layer.add(player.elem);
+        anim.start();
+    });
 }
 
 function init_game() {
@@ -218,7 +252,9 @@ function init_game() {
     init_backgronud(layer);
     init_jazireha(layer);
     init_ways(layer);
+
     init_ship(layer);
+    init_players(layer);
 
     data.stage.add(layer);
     layer.batchDraw();
