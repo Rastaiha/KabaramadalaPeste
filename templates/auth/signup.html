@@ -130,7 +130,7 @@
     var uploadField = document.getElementById("file-input");
 
     uploadField.onchange = function () {
-        if (this.files[0].size > 4000000) {
+        if (this.files[0].size > 5000000) {
             this.setCustomValidity('Maximum limit is 4 MB.')
             this.reportValidity();
             this.value = "";
