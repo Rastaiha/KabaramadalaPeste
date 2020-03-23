@@ -31,6 +31,11 @@ class Participant(models.Model):
     phone_number = models.CharField(max_length=12, blank=True, null=True)
     is_activated = models.BooleanField(default=False)
 
+    currently_at_island = models.ForeignKey('kabaramadalapeste.Island',
+                                            on_delete=models.SET_NULL,
+                                            related_name="current_participants",
+                                            null=True)
+
     def __str__(self):
         return str(self.member)
 

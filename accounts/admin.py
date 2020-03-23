@@ -7,7 +7,7 @@ from accounts.models import *
 
 
 class ParticipantInline(admin.StackedInline):
-    readonly_fields = ['document', 'gender']
+    readonly_fields = ['document', 'gender', 'currently_at_island']
     model = Participant
 
 
