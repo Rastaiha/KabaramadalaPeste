@@ -158,6 +158,9 @@ class TreasureRewardItem(models.Model):
 
 
 class ParticipantPropertyItem(models.Model):
+    class PropertyCouldNotBeNegative(Exception):
+        pass
+
     property_type = models.CharField(
         max_length=3,
         choices=settings.GAME_PARTICIPANT_PROPERTY_TYPE_CHOICES,

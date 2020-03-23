@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.utils import timezone
 from kabaramadalapeste import models as game_models
-
+from kabaramadalapeste.conf import settings as game_settings
 
 from enum import Enum
 import logging
@@ -54,6 +54,20 @@ class Participant(models.Model):
                 participant=self,
                 island=island,
             )
+
+    def init_properties(self):
+        if self.properties.count():
+            logger.info('Participant currently has some properties. We cant init again.')
+            return
+        for property_type, amount in game_settings.GAME_PARTICIPANT_INITIAL_PROPERTIES.items():
+            if amount > 0:
+                self.properties.create(
+                    participant=self,
+                    property_type=property_type,
+                    amount=amount
+                )
+            else:
+                logger.warning('Property could not be negative but we continue')
 
     def move(self, dest_island):
         if self.currently_at_island and not self.currently_at_island.is_neighbor_with(dest_island):

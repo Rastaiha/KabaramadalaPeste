@@ -5,8 +5,10 @@ from kabaramadalapeste.factory import (
     IslandFactory, ChallengeFactory
 )
 from kabaramadalapeste.models import (
-    Way, ParticipantIslandStatus, Island
+    Way, ParticipantIslandStatus, Island,
+    ParticipantPropertyItem
 )
+from kabaramadalapeste.conf import settings
 
 
 # Create your tests here.
@@ -56,3 +58,21 @@ class ParticipantTest(TestCase):
         self.assertTrue(pis_dest.did_reach)
         self.assertIsNotNone(pis_dest.reached_at)
         self.assertEqual(self.participant.currently_at_island, self.island)
+
+    def test_init_properties(self):
+        PARTICIPANT_INITIAL_PROPERTIES = {
+            settings.GAME_SEKKE: 100,
+            settings.GAME_KEY1: 2
+        }
+        with self.settings(GAME_PARTICIPANT_INITIAL_PROPERTIES=PARTICIPANT_INITIAL_PROPERTIES):
+            self.participant.init_properties()
+            self.assertEqual(ParticipantPropertyItem.objects.count(), 2)
+
+    def test_init_properties_negative(self):
+        PARTICIPANT_INITIAL_PROPERTIES = {
+            settings.GAME_SEKKE: -100,
+            settings.GAME_KEY1: 2
+        }
+        with self.settings(GAME_PARTICIPANT_INITIAL_PROPERTIES=PARTICIPANT_INITIAL_PROPERTIES):
+            self.participant.init_properties()
+            self.assertEqual(ParticipantPropertyItem.objects.count(), 1)
