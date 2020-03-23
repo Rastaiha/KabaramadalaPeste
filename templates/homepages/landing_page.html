@@ -16,16 +16,16 @@
         <h1 class="text-center mb-5 transparent-text" style="direction: rtl">منتظر ما باشید!!!</h1>
         {% include 'homepages/countdown.html' %}
         <div class="center-container my-4">
-            <a href="#what-page" class="w-btn mr-1 ml-auto">قضیه
+            <a href="#what-page" class="w-btn mr-1">قضیه
                 چیه؟</a>
             {% if not user.is_authenticated %}
-                <a href="{% url 'accounts:signup' %}" class="signup-btn ml-1 mr-auto">ثبت‌نام</a>
+            <a href="{% url 'accounts:signup' %}" class="signup-btn ml-1">ثبت‌نام</a>
             {% else %}
-                {% if user.is_participant %}
-                    {% if not user.participant.is_activated %}
-                        <a href="{% url 'accounts:request' %}" class="signup-btn ml-1 mr-auto">پرداخت</a>
-                    {% endif %}
-                {% endif %}
+            {% if user.is_participant %}
+            {% if not user.participant.is_activated %}
+            <a href="{% url 'accounts:request' %}" class="signup-btn ml-1">پرداخت</a>
+            {% endif %}
+            {% endif %}
             {% endif %}
         </div>
         <div class="center-container">
@@ -69,7 +69,7 @@
                     </a>
                 </p>
                 {% if not user.is_authenticated %}
-                    <a href="{% url 'accounts:signup' %}" class="signup-btn my-2 mx-auto">همین حالا شروع کن</a>
+                <a href="{% url 'accounts:signup' %}" class="signup-btn my-2 mx-auto">همین حالا شروع کن</a>
                 {% endif %}
             </div>
         </div>
