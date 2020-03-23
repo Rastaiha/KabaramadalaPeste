@@ -7,7 +7,7 @@ from accounts.models import *
 
 
 class MemberAdmin(admin.ModelAdmin):
-    list_display = ('username', 'real_name', 'get_city', 'get_school')
+    list_display = ('username', 'real_name', 'get_city', 'get_school', 'get_is_paid')
     readonly_fields = ['username', 'email']
     fields = ['first_name', 'username', 'email', 'is_active', 'is_participant']
 
@@ -26,8 +26,16 @@ class MemberAdmin(admin.ModelAdmin):
     def real_name(self, obj):
         return obj.first_name
 
+    def get_is_paid(self, obj):
+        try:
+            return obj.participant.is_activated
+        except:
+            return False
+
     get_school.short_description = 'SCHOOL'
     get_city.short_description = 'CITY'
+    get_is_paid.boolean = True
+    get_is_paid.short_description = 'IS PAID'
 
 
 class PaymentAttemptAdmin(admin.ModelAdmin):
