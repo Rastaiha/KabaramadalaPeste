@@ -15,6 +15,9 @@ class Gender(Enum):
 class Member(AbstractUser):
     is_participant = models.BooleanField(default=True)
 
+    class Meta:
+        db_table = "auth_user"
+
     def __str__(self):
         return self.username
 
