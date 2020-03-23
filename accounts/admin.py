@@ -11,8 +11,28 @@ class ParticipantInline(admin.StackedInline):
     model = Participant
 
 
+class IsPaidFilter(admin.SimpleListFilter):
+    title = 'is_paid'
+    parameter_name = 'is_paid'
+
+    def lookups(self, request, model_admin):
+        return (
+            ('Yes', 'Yes'),
+            ('No', 'No'),
+        )
+
+    def queryset(self, request, queryset):
+        value = self.value()
+        if value == 'Yes':
+            return queryset.filter(participant__is_activated=True)
+        elif value == 'No':
+            return queryset.exclude(participant__is_activated=True)
+        return queryset
+
+
 class MemberAdmin(admin.ModelAdmin):
-    list_display = ('username', 'real_name', 'get_city', 'get_school', 'get_is_paid')
+    list_display = ('username', 'real_name', 'get_city', 'get_school', 'is_active', 'get_is_paid')
+    list_filter = ('is_active', IsPaidFilter)
     readonly_fields = ['username', 'email']
     fields = ['first_name', 'username', 'email', 'is_active', 'is_participant']
     inlines = [ParticipantInline]
