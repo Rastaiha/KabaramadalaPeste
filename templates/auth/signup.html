@@ -37,7 +37,8 @@
     </div>
 
     <div class="col-md-6 my-3 material-input">
-        <input name="document" type="file" required style="padding: 1px; font-size: 12px;">
+        <input id="file-input" name="document" type="file" accept="image/*" required
+            style="padding: 1px; font-size: 12px;">
         <span class="highlight"></span>
         <span class="bar"></span>
         <label class="fa-input">تصویر شناسنامه/کارت‌ملی/کارنامه تحصیلی</label>
@@ -123,7 +124,21 @@
         $('.gender-icon').removeClass('selected');
         $(this).addClass('selected');
         $('#gender-input').val($(this).data('val'));
+        $('#gender-input')[0].setCustomValidity('')
     })
+
+    var uploadField = document.getElementById("file-input");
+
+    uploadField.onchange = function () {
+        if (this.files[0].size > 4000000) {
+            this.setCustomValidity('حداکثر حجم فایل قابل قبول، ۴ مگابایت است.')
+            this.reportValidity();
+            this.value = "";
+            setTimeout(function () {
+                this.setCustomValidity('');
+            }, 1000)
+        };
+    };
 </script>
 <script src="https://cdn.bibot.ir/bibot.min.js"></script>
 {% endblock auth_script %}
