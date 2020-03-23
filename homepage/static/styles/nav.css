@@ -96,6 +96,14 @@ ul.navbar-nav {
     transition: 0.3s;
 }
 
+.my-nav .nav-link.signup-link {
+    background: #34aa05;
+    color: white;
+    transition: 0.3s;
+}
+
+.my-nav .nav-link.signup-link.hover-shadow:hover,
+.my-nav .nav-link.signup-link.hover-shadow:focus,
 .hover-shadow:hover,
 .hover-shadow:focus,
 .my-nav .nav-link.activate {
