@@ -6,10 +6,16 @@ from django.contrib import admin
 from accounts.models import *
 
 
+class ParticipantInline(admin.StackedInline):
+    readonly_fields = ['document', 'gender']
+    model = Participant
+
+
 class MemberAdmin(admin.ModelAdmin):
     list_display = ('username', 'real_name', 'get_city', 'get_school', 'get_is_paid')
     readonly_fields = ['username', 'email']
     fields = ['first_name', 'username', 'email', 'is_active', 'is_participant']
+    inlines = [ParticipantInline]
 
     def get_city(self, obj):
         try:
@@ -52,6 +58,6 @@ class PaymentAttemptAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Member, MemberAdmin)
-admin.site.register(Participant)
+# admin.site.register(Participant)
 admin.site.register(Judge)
 admin.site.register(PaymentAttempt, PaymentAttemptAdmin)
