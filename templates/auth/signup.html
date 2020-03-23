@@ -16,28 +16,29 @@
         <div class="gender-container" style="">
             <input id="gender-input" name="gender" required
                 oninvalid="this.setCustomValidity('Please select one of these.')" />
-            <div class="gender-icon" data-val="b"><img src="{% static 'images/boy.png' %}" /></div>
-            <div class="gender-icon" data-val="g"><img src="{% static 'images/girl.png' %}" /></div>
+            <div class="gender-icon" data-val="Man"><img src="{% static 'images/boy.png' %}" /></div>
+            <div class="gender-icon" data-val="Woman"><img src="{% static 'images/girl.png' %}" /></div>
         </div>
         <label class="fa-input active-input-label">جنسیت</label>
     </div>
 
     <div class="col-md-6 my-3 material-input">
-        <input name="city" type="text" required>
+        <input name="city" class="fa-input" type="text" required>
         <span class="highlight"></span>
         <span class="bar"></span>
         <label class="fa-input">شهر</label>
     </div>
 
     <div class="col-md-6 my-3 material-input">
-        <input name="school" type="text" required>
+        <input name="school" class="fa-input" type="text" required>
         <span class="highlight"></span>
         <span class="bar"></span>
         <label class="fa-input">مدرسه</label>
     </div>
 
     <div class="col-md-6 my-3 material-input">
-        <input name="school" type="file" required style="padding: 1px; font-size: 12px;">
+        <input id="file-input" name="document" type="file" accept="image/*" required
+            style="padding: 1px; font-size: 12px;">
         <span class="highlight"></span>
         <span class="bar"></span>
         <label class="fa-input">تصویر شناسنامه/کارت‌ملی/کارنامه تحصیلی</label>
@@ -72,7 +73,7 @@
         <label class="fa-input">تکرار گذرواژه</label>
     </div>
     <div class="col-md-12 my-2">
-        <div class="bibot-captcha" data-sitekey="only-demo" data-lang="fa"></div>
+        <div class="bibot-captcha" data-sitekey="ebe309aeb255d8be20faac5aa35fb5a5" data-lang="fa"></div>
     </div>
 
     <div class="col-md-12 my-3">
@@ -81,6 +82,26 @@
         </button>
     </div>
 </div>
+
+<div class="text-center pt-3 pb-2">
+    <span style="color:#777">
+        ورود به حساب کاربری -
+    </span>
+
+    <a href="/panel/user/signup/">
+        ورود
+    </a>
+</div>
+
+{#<div class="text-center pb-1">#}
+{#    <span style="color:#777">#}
+{#        فراموشی#}
+{#    </span>#}
+{##}
+{#    <a href="/panel/user/forgot_password/">#}
+{#        رمز عبور#}
+{#    </a>#}
+{#</div>#}
 {% endblock auth_form %}
 
 {% block auth_script %}
@@ -103,9 +124,21 @@
         $('.gender-icon').removeClass('selected');
         $(this).addClass('selected');
         $('#gender-input').val($(this).data('val'));
-        {#alert($(this).data('val'));#}
-        {#alert($('#gender-input').val());#}
+        $('#gender-input')[0].setCustomValidity('')
     })
+
+    var uploadField = document.getElementById("file-input");
+
+    uploadField.onchange = function () {
+        if (this.files[0].size > 5000000) {
+            this.setCustomValidity('Maximum limit is 4 MB.')
+            this.reportValidity();
+            this.value = "";
+            setTimeout(function () {
+                this.setCustomValidity('');
+            }, 1000)
+        };
+    };
 </script>
 <script src="https://cdn.bibot.ir/bibot.min.js"></script>
 {% endblock auth_script %}

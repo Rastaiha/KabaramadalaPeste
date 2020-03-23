@@ -32,10 +32,29 @@
                     <a class="nav-link hover-shadow"
                         href="{% if request.path == '/' %}#about-page{% else %}/about_us{% endif %}">درباره ما</a>
                 </li>
-                {% comment %} <li class="nav-item">
-                    <a class="nav-link hover-shadow {% if request.path == '/test_auth_base/' %} activate {% endif %}"
-                        href="/test_auth_base/">ثبت‌نام</a>
-                </li> {% endcomment %}
+                {% if user.is_authenticated %}
+                <li class="nav-item">
+                    <a class="nav-link hover-shadow {% if request.path == '/accounts/logout/' %} activate {% endif %}"
+                        href="{% url 'accounts:logout' %}">خروج</a>
+                </li>
+                {% if user.is_participant %}
+                {% if not user.participant.is_activated %}
+                <li class="nav-item">
+                    <a class="nav-link hover-shadow {% if request.path == '/accounts/request/' %} activate {% endif %}"
+                        href="{% url 'accounts:request' %}">پرداخت</a>
+                </li>
+                {% endif %}
+                {% endif %}
+                {% else %}
+                <li class="nav-item">
+                    <a class="nav-link hover-shadow signup-link {% if request.path == '/accounts/signup/' %} activate {% endif %}"
+                        href="{% url 'accounts:signup' %}">ثبت‌نام</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link hover-shadow {% if request.path == '/accounts/login/' %} activate {% endif %}"
+                        href="{% url 'accounts:login' %}">ورود</a>
+                </li>
+                {% endif %}
                 {% comment %} <li class="nav-item">
                     <a class="nav-link hover-shadow" href="/logout/" style="background: #d3c096;">
                         <i class="fa fa-sign-out-alt"></i>

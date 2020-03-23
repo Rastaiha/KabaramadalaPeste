@@ -1,0 +1,48 @@
+{% extends 'auth/base.html' %}
+{% load static %}
+{% block auth_form %}
+<div class="row">
+    <h2 class="text-center col-md-12 my-4" style="font-weight: 800">
+        تغییر گذرواژه
+    </h2>
+
+    <div class="col-md-6 my-3 material-input">
+        <input id="password" name="password" type="password" required>
+        <span class="highlight"></span>
+        <span class="bar"></span>
+        <label class="fa-input">گذرواژه</label>
+    </div>
+
+    <div class="col-md-6 my-3 material-input">
+        <input id="confirm_password" type="password" required>
+        <span class="highlight"></span>
+        <span class="bar"></span>
+        <label class="fa-input">تکرار گذرواژه</label>
+    </div>
+
+    <div class="col-md-12 my-3">
+        {% csrf_token %}
+        <button class="my-btn w-100" style="font-size: 20px">
+            تایید
+        </button>
+    </div>
+</div>
+{% endblock auth_form %}
+
+{% block auth_script %}
+<script>
+    let password = document.getElementById("password"),
+        confirm_password = document.getElementById("confirm_password");
+
+    function validatePassword() {
+        if (password.value != confirm_password.value) {
+            confirm_password.setCustomValidity("گذرواژه‌ها یکی نیستند");
+        } else {
+            confirm_password.setCustomValidity('');
+        }
+    }
+
+    password.onchange = validatePassword;
+    confirm_password.onkeyup = validatePassword;
+</script>
+{% endblock auth_script %}
