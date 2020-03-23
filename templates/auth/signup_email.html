@@ -28,7 +28,7 @@
 </strong>
 می‌شناسیم!
 <br><br>
-می‌تونی از {اینجا} وارد حسابت بشی و با پرداخت هزینه‌ی بازی به مبلغ ۱۵ هزار تومان ثبت‌نام خودت رو کامل کنی.
+با <a href="{{ base_url }}{% url "accounts:activate" uidb64=uid token=token %}">این لینک</a> می‌تونی حسابت رو فعال کنی. بعدش با ورود و پرداخت هزینه‌ی بازی به مبلغ ۱۵ هزار تومان ثبت‌نام خودت رو کامل کن.
 <br>
 برای خبر گرفتن از جزئیات و اطلاعات لحظه‌به‌لحظه‌ی بازی در
 <a href="http://www.t.me/RastaihaOnline">
@@ -45,8 +45,8 @@
 							<!--[if mso]></td></tr></table><![endif]-->
 							<div align="center" class="button-container" style="padding-top:0px;padding-right:0px;padding-bottom:0px;padding-left:0px;">
 								<!--[if mso]><table width="100%" cellpadding="0" cellspacing="0" border="0" style="border-spacing: 0; border-collapse: collapse; mso-table-lspace:0pt; mso-table-rspace:0pt;"><tr><td style="padding-top: 0px; padding-right: 0px; padding-bottom: 0px; padding-left: 0px" align="center"><v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="" style="height:45pt; width:200.25pt; v-text-anchor:middle;" arcsize="100%" stroke="false" fillcolor="#004afd"><w:anchorlock/><v:textbox inset="0,0,0,0"><center style="color:#ffffff; font-family:Arial, sans-serif; font-size:16px"><![endif]-->
-								<a href="https://rastaiha.ir{% url "accounts:login" %}">
-									<div style="text-decoration:none;display:inline-block;color:#ffffff;background-color:#004afd;border-radius:60px;-webkit-border-radius:60px;-moz-border-radius:60px;width:auto; width:auto;;border-top:1px solid #004afd;border-right:1px solid #004afd;border-bottom:1px solid #004afd;border-left:1px solid #004afd;padding-top:12px;padding-bottom:16px;text-align:center;mso-border-alt:none;word-break:keep-all;"><span style="padding-left:32px;padding-right:32px;font-size:16px;display:inline-block;"><span style="font-size: 16px; margin: 0; line-height: 2; word-break: break-word; mso-line-height-alt: 32px;"><strong>ورود</strong></span></span></div>
+								<a href="{{ base_url }}{% url "accounts:activate" uidb64=uid token=token %}">
+									<div style="text-decoration:none;display:inline-block;color:#ffffff;background-color:#004afd;border-radius:60px;-webkit-border-radius:60px;-moz-border-radius:60px;width:auto; width:auto;;border-top:1px solid #004afd;border-right:1px solid #004afd;border-bottom:1px solid #004afd;border-left:1px solid #004afd;padding-top:12px;padding-bottom:16px;text-align:center;mso-border-alt:none;word-break:keep-all;"><span style="padding-left:32px;padding-right:32px;font-size:16px;display:inline-block;"><span style="font-size: 16px; margin: 0; line-height: 2; word-break: break-word; mso-line-height-alt: 32px;"><strong>فعال سازی حساب</strong></span></span></div>
 								</a>
 								<!--[if mso]></center></v:textbox></v:roundrect></td></tr></table><![endif]-->
 							</div>

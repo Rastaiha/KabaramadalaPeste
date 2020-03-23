@@ -127,3 +127,6 @@ DEFAULT_FROM_EMAIL = "Rastaiha <" + EMAIL_HOST_USER + ">"
 
 # Activate Django-Heroku.
 django_heroku.settings(locals())
+
+OK_STATUS = 'ok'
+ERROR_STATUS = 'err'
