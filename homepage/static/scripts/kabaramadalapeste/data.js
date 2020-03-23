@@ -6,286 +6,385 @@ let data = {
         y: 0,
         src: "BG.jpg"
     },
+    ways: {
+        src: "ways.png"
+    },
+    ganj: {
+        x: 0.012,
+        y: 0.04,
+        src: "ganj.png",
+        width: 0.03,
+        height: 0.04
+    },
+    ganj_open: {
+        x: 0.012,
+        y: 0.03,
+        src: "ganj_open.png",
+        width: 0.03,
+        height: 0.04
+    },
+    seagull: {
+        src: "seagull.png",
+        width: 0.05,
+        height: 0.05
+    },
+    ship: {
+        x: 0.1,
+        y: 0.1,
+        src: "ship.png",
+        width: 0.05,
+        height: 0.055
+    },
     jazireha: [
         {
             id: 1,
-            x: 0.8425480769230769,
-            y: 0.03605769230769231,
-            width: 0.11177884615384616,
-            height: 0.0921474358974359,
-            src: "1.png"
+            x: 0.842,
+            y: 0.036,
+            width: 0.111,
+            height: 0.092,
+            src: "1.png",
+            ganj_closed: true,
+            zIndex: 10
         },
         {
             id: 2,
-            x: 0.9230769230769231,
-            y: 0.13020833333333334,
-            width: 0.036057692307692304,
-            height: 0.11518429487179488,
-            src: "2.png"
+            x: 0.93,
+            y: 0.13,
+            width: 0.036,
+            height: 0.115,
+            src: "2.png",
+            ganj_closed: false,
+            zIndex: 10
         },
         {
             id: 3,
-            x: 0.6460336538461539,
-            y: 0.03705929487179487,
-            width: 0.09314903846153846,
-            height: 0.11518429487179488,
-            src: "3.png"
+            x: 0.646,
+            y: 0.037,
+            width: 0.093,
+            height: 0.115,
+            src: "3.png",
+            ganj_closed: true,
+            zIndex: 10
         },
         {
             id: 4,
-            x: 0.7554086538461539,
-            y: 0.10216346153846154,
-            width: 0.10997596153846154,
-            height: 0.1812900641025641,
-            src: "4.png"
+            x: 0.755,
+            y: 0.102,
+            width: 0.109,
+            height: 0.181,
+            src: "4.png",
+            ganj_closed: true,
+            zIndex: 10
         },
         {
             id: 5,
-            x: 0.4879807692307692,
-            y: 0.030048076923076924,
-            width: 0.13521634615384615,
-            height: 0.20833333333333334,
-            src: "5.png"
+            x: 0.487,
+            y: 0.03,
+            width: 0.135,
+            height: 0.208,
+            src: "5.png",
+            ganj_closed: true,
+            zIndex: 10
         },
         {
             id: 6,
-            x: 0.5769230769230769,
-            y: 0.1983173076923077,
-            width: 0.12319711538461539,
-            height: 0.1903044871794872,
-            src: "6.png"
+            x: 0.576,
+            y: 0.198,
+            width: 0.123,
+            height: 0.19,
+            src: "6.png",
+            ganj_closed: true,
+            zIndex: 10
         },
         {
             id: 7,
-            x: 0.7878605769230769,
-            y: 0.3155048076923077,
-            width: 0.08413461538461539,
-            height: 0.21033653846153846,
-            src: "7.png"
+            x: 0.787,
+            y: 0.315,
+            width: 0.084,
+            height: 0.21,
+            src: "7.png",
+            ganj_closed: false,
+            zIndex: 10
         },
         {
             id: 8,
-            x: 0.8713942307692307,
-            y: 0.23938301282051283,
-            width: 0.07211538461538461,
-            height: 0.1702724358974359,
-            src: "8.png"
+            x: 0.871,
+            y: 0.239,
+            width: 0.072,
+            height: 0.17,
+            src: "8.png",
+            ganj_closed: true,
+            zIndex: 10
         },
         {
             id: 9,
-            x: 0.8834134615384616,
-            y: 0.40064102564102566,
-            width: 0.09915865384615384,
-            height: 0.3255208333333333,
-            src: "9.png"
+            x: 0.883,
+            y: 0.41,
+            width: 0.099,
+            height: 0.325,
+            src: "9.png",
+            ganj_closed: true,
+            zIndex: 10
         },
         {
             id: 10,
-            x: 0.9242788461538461,
-            y: 0.7542067307692308,
-            width: 0.04807692307692308,
-            height: 0.08513621794871795,
-            src: "10.png"
+            x: 0.93,
+            y: 0.77,
+            width: 0.048,
+            height: 0.085,
+            src: "10.png",
+            ganj_closed: true,
+            zIndex: 10
         },
         {
             id: 11,
-            x: 0.8070913461538461,
-            y: 0.5518830128205129,
-            width: 0.1201923076923077,
-            height: 0.1762820512820513,
-            src: "11.png"
+            x: 0.807,
+            y: 0.551,
+            width: 0.12,
+            height: 0.176,
+            src: "11.png",
+            ganj_closed: false,
+            zIndex: 11
         },
         {
             id: 12,
-            x: 0.7794471153846154,
-            y: 0.8012820512820513,
-            width: 0.08413461538461539,
-            height: 0.1502403846153846,
-            src: "12.png"
+            x: 0.785,
+            y: 0.801,
+            width: 0.084,
+            height: 0.15,
+            src: "12.png",
+            ganj_closed: true,
+            zIndex: 10
         },
         {
             id: 13,
-            x: 0.7241586538461539,
-            y: 0.7271634615384616,
-            width: 0.0859375,
-            height: 0.13822115384615385,
-            src: "13.png"
+            x: 0.72,
+            y: 0.72,
+            width: 0.085,
+            height: 0.138,
+            src: "13.png",
+            ganj_closed: true,
+            zIndex: 11
         },
         {
             id: 14,
-            x: 0.4957932692307692,
-            y: 0.7371794871794872,
-            width: 0.17127403846153846,
-            height: 0.1502403846153846,
-            src: "14.png"
+            x: 0.495,
+            y: 0.737,
+            width: 0.171,
+            height: 0.15,
+            src: "14.png",
+            ganj_closed: true,
+            zIndex: 10
         },
         {
             id: 15,
-            x: 0.6165865384615384,
-            y: 0.5839342948717949,
-            width: 0.078125,
-            height: 0.14022435897435898,
-            src: "15.png"
+            x: 0.616,
+            y: 0.583,
+            width: 0.078,
+            height: 0.14,
+            src: "15.png",
+            ganj_closed: false,
+            zIndex: 10
         },
         {
             id: 16,
-            x: 0.6586538461538461,
-            y: 0.4186698717948718,
-            width: 0.09615384615384616,
-            height: 0.14623397435897437,
-            src: "16.png"
+            x: 0.658,
+            y: 0.418,
+            width: 0.096,
+            height: 0.146,
+            src: "16.png",
+            ganj_closed: true,
+            zIndex: 10
         },
         {
             id: 17,
-            x: 0.29627403846153844,
-            y: 0.015024038461538462,
-            width: 0.18028846153846154,
-            height: 0.11518429487179488,
-            src: "17.png"
+            x: 0.296,
+            y: 0.015,
+            width: 0.18,
+            height: 0.115,
+            src: "17.png",
+            ganj_closed: true,
+            zIndex: 10
         },
         {
             id: 18,
-            x: 0.4104567307692308,
-            y: 0.17928685897435898,
-            width: 0.10817307692307693,
-            height: 0.078125,
-            src: "18.png"
+            x: 0.41,
+            y: 0.179,
+            width: 0.108,
+            height: 0.078,
+            src: "18.png",
+            ganj_closed: true,
+            zIndex: 11
         },
         {
             id: 19,
-            x: 0.4296875,
-            y: 0.2744391025641026,
-            width: 0.08052884615384616,
-            height: 0.1201923076923077,
-            src: "19.png"
+            x: 0.429,
+            y: 0.274,
+            width: 0.08,
+            height: 0.12,
+            src: "19.png",
+            ganj_closed: false,
+            zIndex: 10
         },
         {
             id: 20,
-            x: 0.3798076923076923,
-            y: 0.4266826923076923,
-            width: 0.13221153846153846,
-            height: 0.234375,
-            src: "20.png"
+            x: 0.379,
+            y: 0.426,
+            width: 0.132,
+            height: 0.234,
+            src: "20.png",
+            ganj_closed: true,
+            zIndex: 10
         },
         {
             id: 21,
-            x: 0.4543269230769231,
-            y: 0.6620592948717949,
-            width: 0.08413461538461539,
-            height: 0.10016025641025642,
-            src: "21.png"
+            x: 0.465,
+            y: 0.66,
+            width: 0.084,
+            height: 0.1,
+            src: "21.png",
+            ganj_closed: true,
+            zIndex: 11
         },
         {
             id: 22,
-            x: 0.38461538461538464,
-            y: 0.6790865384615384,
-            width: 0.06911057692307693,
-            height: 0.1452323717948718,
-            src: "22.png"
+            x: 0.385,
+            y: 0.69,
+            width: 0.069,
+            height: 0.145,
+            src: "22.png",
+            ganj_closed: true,
+            zIndex: 10
         },
         {
             id: 23,
-            x: 0.33653846153846156,
-            y: 0.8313301282051282,
-            width: 0.2283653846153846,
-            height: 0.15524839743589744,
-            src: "23.png"
+            x: 0.336,
+            y: 0.831,
+            width: 0.228,
+            height: 0.155,
+            src: "23.png",
+            ganj_closed: false,
+            zIndex: 10
         },
         {
             id: 24,
-            x: 0.19591346153846154,
-            y: 0.852363782051282,
-            width: 0.13221153846153846,
-            height: 0.1252003205128205,
-            src: "24.png"
+            x: 0.195,
+            y: 0.845,
+            width: 0.132,
+            height: 0.125,
+            src: "24.png",
+            ganj_closed: true,
+            zIndex: 10
         },
         {
             id: 25,
-            x: 0.034254807692307696,
-            y: 0.7361778846153846,
-            width: 0.1502403846153846,
-            height: 0.1452323717948718,
-            src: "25.png"
+            x: 0.034,
+            y: 0.736,
+            width: 0.15,
+            height: 0.145,
+            src: "25.png",
+            ganj_closed: true,
+            zIndex: 10
         },
         {
             id: 26,
-            x: 0.18329326923076922,
-            y: 0.6790865384615384,
-            width: 0.06310096153846154,
-            height: 0.11017628205128205,
-            src: "26.png"
+            x: 0.183,
+            y: 0.679,
+            width: 0.063,
+            height: 0.11,
+            src: "26.png",
+            ganj_closed: true,
+            zIndex: 11
         },
         {
             id: 27,
-            x: 0.10096153846153846,
-            y: 0.5598958333333334,
-            width: 0.11117788461538461,
-            height: 0.18028846153846154,
-            src: "27.png"
+            x: 0.1,
+            y: 0.559,
+            width: 0.111,
+            height: 0.18,
+            src: "27.png",
+            ganj_closed: true,
+            zIndex: 10
         },
         {
             id: 28,
-            x: 0.02283653846153846,
-            y: 0.40965544871794873,
-            width: 0.078125,
-            height: 0.1903044871794872,
-            src: "28.png"
+            x: 0.03,
+            y: 0.41,
+            width: 0.078,
+            height: 0.19,
+            src: "28.png",
+            ganj_closed: true,
+            zIndex: 10
         },
         {
             id: 29,
-            x: 0.33653846153846156,
-            y: 0.5669070512820513,
-            width: 0.04807692307692308,
-            height: 0.09415064102564102,
-            src: "29.png"
+            x: 0.333,
+            y: 0.575,
+            width: 0.048,
+            height: 0.094,
+            src: "29.png",
+            ganj_closed: true,
+            zIndex: 10
         },
         {
             id: 30,
-            x: 0.28665865384615385,
-            y: 0.39863782051282054,
-            width: 0.08413461538461539,
-            height: 0.1953125,
-            src: "30.png"
+            x: 0.286,
+            y: 0.395,
+            width: 0.084,
+            height: 0.195,
+            src: "30.png",
+            ganj_closed: true,
+            zIndex: 10
         },
         {
             id: 31,
-            x: 0.2578125,
-            y: 0.10116185897435898,
-            width: 0.10216346153846154,
-            height: 0.15524839743589744,
-            src: "31.png"
+            x: 0.257,
+            y: 0.101,
+            width: 0.102,
+            height: 0.155,
+            src: "31.png",
+            ganj_closed: false,
+            zIndex: 10
         },
         {
             id: 32,
-            x: 0.018629807692307692,
-            y: 0.027043269230769232,
-            width: 0.078125,
-            height: 0.16526442307692307,
-            src: "32.png"
+            x: 0.018,
+            y: 0.027,
+            width: 0.078,
+            height: 0.165,
+            src: "32.png",
+            ganj_closed: true,
+            zIndex: 10
         },
         {
             id: 33,
-            x: 0.0859375,
-            y: 0.19230769230769232,
-            width: 0.04807692307692308,
-            height: 0.20032051282051283,
-            src: "33.png"
+            x: 0.085,
+            y: 0.192,
+            width: 0.048,
+            height: 0.2,
+            src: "33.png",
+            ganj_closed: false,
+            zIndex: 10
         },
         {
             id: 34,
-            x: 0.12860576923076922,
-            y: 0.062099358974358976,
-            width: 0.08713942307692307,
-            height: 0.18028846153846154,
-            src: "34.png"
+            x: 0.128,
+            y: 0.055,
+            width: 0.087,
+            height: 0.18,
+            src: "34.png",
+            ganj_closed: true,
+            zIndex: 10
         },
         {
             id: 35,
-            x: 0.14362980769230768,
-            y: 0.23537660256410256,
-            width: 0.10096153846153846,
-            height: 0.13521634615384615,
-            src: "35.png"
+            x: 0.143,
+            y: 0.235,
+            width: 0.1,
+            height: 0.135,
+            src: "35.png",
+            ganj_closed: true,
+            zIndex: 10
         }
     ]
 };
