@@ -68,7 +68,9 @@
                         @Rastaiha
                     </a>
                 </p>
-                <a href="{% url 'accounts:signup' %}" class="signup-btn my-2 mx-auto">همین حالا شروع کن</a>
+                {% if not user.is_authenticated %}
+                    <a href="{% url 'accounts:signup' %}" class="signup-btn my-2 mx-auto">همین حالا شروع کن</a>
+                {% endif %}
             </div>
         </div>
     </div>
