@@ -127,9 +127,6 @@ def login(request):
     if request.user.is_authenticated:
         raise Http404
     if request.method == "POST":
-        print(request.POST)
-        if not check_bibot_response(request):
-            return render(request, 'auth/login.html')
         members = Member.objects.filter(email__exact=request.POST.get('email'))
         if members.count() == 0:
             messages.error(request, 'ایمیل یا رمز عبور غلط است.')
