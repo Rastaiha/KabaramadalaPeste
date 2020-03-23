@@ -19,6 +19,9 @@ class Island(models.Model):
                                   blank=True,
                                   null=True)
 
+    class IslandsNotConnected(Exception):
+        pass
+
     def __str__(self):
         return self.name
 
@@ -192,8 +195,8 @@ class ParticipantIslandStatus(models.Model):
     did_accept_challenge = models.BooleanField(default=False)
     challenge_accepted_at = models.DateTimeField(null=True)
 
-    question_content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
-    question_object_id = models.PositiveIntegerField()
+    question_content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, null=True)
+    question_object_id = models.PositiveIntegerField(null=True)
     question = GenericForeignKey('question_content_type', 'question_object_id')
 
     class Meta:

@@ -1,8 +1,12 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.utils import timezone
+from kabaramadalapeste import models as game_models
 
 
 from enum import Enum
+import logging
+logger = logging.getLogger(__file__)
 
 # Create your models here.
 
@@ -38,6 +42,31 @@ class Participant(models.Model):
 
     def __str__(self):
         return str(self.member)
+
+    def init_pis(self):
+        if game_models.ParticipantIslandStatus.objects.filter(participant=self).count():
+            logger.info('Participant currently has some PIS. We cant init again.')
+            return
+        # TODO: handle random Treasure assignment
+        # TODO: handle random question assignment
+        for island in game_models.Island.objects.all():
+            game_models.ParticipantIslandStatus.objects.create(
+                participant=self,
+                island=island,
+            )
+
+    def move(self, dest_island):
+        if self.currently_at_island and not self.currently_at_island.is_neighbor_with(dest_island):
+            raise game_models.Island.IslandsNotConnected
+        dest_pis = game_models.ParticipantIslandStatus.objects.get(
+            participant=self,
+            island=dest_island
+        )
+        dest_pis.did_reach = True
+        dest_pis.reached_at = timezone.now()
+        self.currently_at_island = dest_island
+        dest_pis.save()
+        self.save()
 
 
 class Judge(models.Model):
