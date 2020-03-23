@@ -28,8 +28,8 @@ class Member(AbstractUser):
 
 class Participant(models.Model):
     member = models.OneToOneField(Member, related_name='participant', on_delete=models.CASCADE)
-    school = models.CharField(max_length=50)
-    city = models.CharField(max_length=20)
+    school = models.CharField(max_length=200)
+    city = models.CharField(max_length=40)
     document = models.ImageField(upload_to='documents/')
     gender = models.CharField(max_length=10, default=Gender.Man, choices=[(tag.value, tag.name) for tag in Gender])
     phone_number = models.CharField(max_length=12, blank=True, null=True)
