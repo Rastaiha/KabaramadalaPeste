@@ -131,7 +131,7 @@
 
     uploadField.onchange = function () {
         if (this.files[0].size > 4000000) {
-            this.setCustomValidity('حداکثر حجم فایل قابل قبول، ۴ مگابایت است.')
+            this.setCustomValidity('Maximum limit is 4 MB.')
             this.reportValidity();
             this.value = "";
             setTimeout(function () {
