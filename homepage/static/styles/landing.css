@@ -91,7 +91,6 @@
 
 
 .w-btn {
-    margin: 15px auto;
     border: 1px solid white;
     color: white;
     padding: 4px 20px;
@@ -99,14 +98,47 @@
     border-radius: 10px;
     transition: 0.5s;
     font-weight: 800;
+    text-align: center;
+    white-space: nowrap;
 }
 
 .w-btn:hover,
 .w-btn:focus {
     cursor: pointer;
     background: white;
-    color: #272A43;
+    color: #10a6ce;
     text-decoration: none;
+}
+
+.signup-btn {
+    display: block;
+    background: #34aa05;
+    border: 1px solid #34aa05;
+    color: white;
+    padding: 4px 50px;
+    font-size: 30px;
+    border-radius: 10px;
+    transition: 0.5s;
+    font-weight: 800;
+    text-align: center;
+}
+
+.signup-btn:hover,
+.signup-btn:focus {
+    cursor: pointer;
+    background: white;
+    color: #10a6ce;
+    text-decoration: none;
+}
+
+@media (max-width: 576px) {
+    .w-btn {
+        font-size: 24px;
+    }
+
+    .signup-btn {
+        font-size: 24px;
+    }
 }
 
 .center-container {
@@ -160,7 +192,7 @@ p {
     }
 }
 
-#what-page a {
+#what-page p a {
     color: #10a6ce
 }
 
