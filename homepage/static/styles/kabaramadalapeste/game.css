@@ -98,7 +98,6 @@
 
 .right-info-details {
     width: 200px;
-    height: 200px;
     background: #444;
     border-radius: 0 20px 20px 20px;
     border: 3px solid #ccc;
@@ -114,4 +113,27 @@
 .exchange-info .right-info-details p {
     font-size: 18px;
     font-weight: 600;
+}
+
+.player-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    direction: ltr;
+}
+
+
+.player-item span {
+    color: white;
+    font-size: 30px;
+    font-weight: 400;
+}
+
+.player-item b {
+    font-weight: 900;
+}
+
+.player-item img {
+    height: 20px;
+    margin-left: 10px;
 }

@@ -1,4 +1,4 @@
-Konva.pixelRatio = 1;
+// Konva.pixelRatio = 1;
 function loadImages(sources) {
     return new Promise(resolve => {
         data.images = {};
