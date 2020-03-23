@@ -8,7 +8,8 @@ from accounts.models import *
 
 class MemberAdmin(admin.ModelAdmin):
     list_display = ('username', 'real_name', 'get_city', 'get_school')
-    fields = ('password', 'username', 'first_name', 'email', 'is_active', 'is_participant')
+    readonly_fields = ['username', 'email']
+    fields = ['first_name', 'username', 'email', 'is_active', 'is_participant']
 
     def get_city(self, obj):
         try:
