@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import JsonResponse, Http404, HttpResponse
 from django.contrib import messages
-from django.shortcuts import redirect
+from django.shortcuts import redirect, get_object_or_404
 from django.urls import reverse
 from django.core.mail import send_mail, EmailMessage, EmailMultiAlternatives
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
@@ -15,6 +15,8 @@ from django.utils.encoding import force_bytes, force_text
 from accounts.tokens import account_activation_token
 from accounts.models import *
 from accounts.forms import *
+
+from homepage.models import *
 
 from zeep import Client
 
@@ -56,6 +58,8 @@ def _redirect_homepage_with_action_status(action='payment', status=settings.OK_S
 def signup(request):
     if request.user.is_authenticated:
         raise Http404
+    if not SiteConfiguration.get_solo().is_signup_enabled:
+        return redirect('homepage:homepage')
     if request.method == 'POST' and check_bibot_response(request):
         form = SignUpForm(request.POST, request.FILES)
         if not form.is_valid():
@@ -210,6 +214,8 @@ def send_request(request):
         raise Http404
     if request.user.participant.is_activated:
         raise Http404
+    if not SiteConfiguration.get_solo().is_signup_enabled:
+        return redirect('homepage:homepage')
     callback_url = request.build_absolute_uri(reverse('accounts:verify'))
     result = client.service.PaymentRequest(
         MERCHANT,

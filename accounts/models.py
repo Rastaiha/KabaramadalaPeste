@@ -12,6 +12,12 @@ class Gender(Enum):
     Woman = 'Woman'
 
 
+class ParticipantStatus(Enum):
+    Pending = 'Pending'
+    Verified = 'Verified'
+    Rejected = 'Rejected'
+
+
 class Member(AbstractUser):
     is_participant = models.BooleanField(default=True)
 
@@ -30,6 +36,9 @@ class Participant(models.Model):
     gender = models.CharField(max_length=10, default=Gender.Man, choices=[(tag.value, tag.name) for tag in Gender])
     phone_number = models.CharField(max_length=12, blank=True, null=True)
     is_activated = models.BooleanField(default=False)
+    document_status = models.CharField(max_length=30,
+                                       default='Pending',
+                                       choices=[(tag.value, tag.name) for tag in ParticipantStatus])
 
     def __str__(self):
         return str(self.member)
