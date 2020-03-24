@@ -3,6 +3,6 @@ from .views import game, exchange
 
 
 urlpatterns = [
-    path('', game),
-    path('exchange/', exchange),
+    path('test_1234/', game, name="game"),
+    path('exchange/', exchange, name="exchange"),
 ]

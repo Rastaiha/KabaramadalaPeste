@@ -13,6 +13,18 @@
     z-index: 10;
 }
 
+.jazire-info-header {
+    background: #333;
+    padding: 10px 15px;
+    border-radius: 40px 15px 0 0;
+    color: white
+}
+
+.jazire-info-body {
+    padding: 10px;
+    border-radius: 0 0 40px 15px;
+}
+
 .jazire-name {
     font-weight: 900;
     font-size: 28px;

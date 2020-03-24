@@ -112,13 +112,33 @@ function change_target(target = null) {
     }
 
     data.jazireha.forEach(jazire => {
-        if (data.target !== jazire) {
-            jazire.elem.scale({ x: 1, y: 1 });
-            jazire.elem.shadowEnabled(false);
+        if (data.target === jazire) {
+            jazire.elem.setAttrs({
+                scale: { x: 1.02, y: 1.02 },
+                shadowColor: "yellow",
+                shadowEnabled: true,
+                shadowBlur: 2,
+                shadowOpacity: 2,
+                shadowOffset: { x: 2, y: 2 }
+            });
+        } else if (
+            data.target &&
+            typeof data.target.neighborhoods !== "undefined" &&
+            data.target.neighborhoods.includes(jazire.id)
+        ) {
+            jazire.elem.setAttrs({
+                scale: { x: 1, y: 1 },
+                shadowColor: "#cccccc",
+                shadowEnabled: true,
+                shadowBlur: 1,
+                shadowOpacity: 1,
+                shadowOffset: { x: 1, y: 1 }
+            });
         } else {
-            jazire.elem.scale({ x: 1.01, y: 1.01 });
-            jazire.elem.shadowColor("#cccccc");
-            jazire.elem.shadowEnabled(true);
+            jazire.elem.setAttrs({
+                scale: { x: 1, y: 1 },
+                shadowEnabled: false
+            });
         }
         data.layer.batchDraw();
     });
@@ -126,9 +146,14 @@ function change_target(target = null) {
 
 function hover_jazire(jazire) {
     if (data.target !== jazire) {
-        jazire.elem.scale({ x: 1.01, y: 1.01 });
-        jazire.elem.shadowColor("#333333");
-        jazire.elem.shadowEnabled(true);
+        jazire.elem.setAttrs({
+            scale: { x: 1.01, y: 1.01 },
+            shadowColor: "yellow",
+            shadowEnabled: true,
+            shadowBlur: 1,
+            shadowOpacity: 1,
+            shadowOffset: { x: 1, y: 1 }
+        });
     }
 }
 
@@ -142,9 +167,6 @@ function init_jazireha() {
                 image: data.images[jazire.src],
                 width: Math.floor(jazire.width * data.back.width),
                 height: Math.floor(jazire.height * data.back.height),
-                shadowBlur: 2,
-                shadowOpacity: 2,
-                shadowOffset: { x: 2, y: 2 },
                 shadowEnabled: false,
                 perfectDrawEnabled: false
             });
