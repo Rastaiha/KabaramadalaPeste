@@ -18,6 +18,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='participant',
             name='document_status',
-            field=models.CharField(choices=[('Pending', 'Pending'), ('Verified', 'Verified'), ('Rejected', 'Rejected')], default=accounts.models.ParticipantStatus['Pending'], max_length=10),
+            field=models.CharField(choices=[('Pending', 'Pending'), ('Verified', 'Verified'), ('Rejected', 'Rejected')], default=accounts.models.ParticipantStatus['Pending'], max_length=30),
         ),
     ]
