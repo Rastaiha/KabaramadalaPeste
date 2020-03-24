@@ -3,11 +3,12 @@ from django.test import TestCase
 from accounts.factory import ParticipantFactory
 from accounts.models import Participant
 from kabaramadalapeste.factory import (
-    IslandFactory, ChallengeFactory
+    IslandFactory, ChallengeFactory, TreasureFactory,
+    ShortAnswerQuestionFactory
 )
 from kabaramadalapeste.models import (
     Way, ParticipantIslandStatus, Island,
-    ParticipantPropertyItem
+    ParticipantPropertyItem, ShortAnswerQuestion, Treasure
 )
 from kabaramadalapeste.conf import settings
 
@@ -16,9 +17,11 @@ from kabaramadalapeste.conf import settings
 class ParticipantTest(TestCase):
 
     def setUp(self):
-        [ChallengeFactory() for i in range(4)]
+        [ChallengeFactory() for i in range(10)]
+        [ShortAnswerQuestionFactory() for i in range(60)]
         self.participant = ParticipantFactory()
-        self.all_islands = [IslandFactory() for i in range(10)]
+        self.all_islands = [IslandFactory(__sequence=i) for i in range(settings.GAME_DEFAULT_ISLAND_COUNT)]
+        [TreasureFactory(keys=2, rewards=4) for i in range(settings.GAME_DEFAULT_ISLAND_COUNT - 1)]
         self.island = self.all_islands[0]
         for i in range(3, 7):
             Way.objects.create(
@@ -29,6 +32,29 @@ class ParticipantTest(TestCase):
     def test_init_pis(self):
         self.participant.init_pis()
         self.assertEqual(ParticipantIslandStatus.objects.count(), Island.objects.count())
+        treasure_ids = set()
+        question_ids = set()
+        for i in range(1, settings.GAME_DEFAULT_ISLAND_COUNT + 1):
+            pis = ParticipantIslandStatus.objects.get(
+                participant=self.participant,
+                island_id=i
+            )
+            if i != settings.GAME_BANDARGAH_ISLAND_ID:
+                self.assertIsNotNone(pis.treasure)
+                treasure_ids.add(pis.treasure.id)
+                question_ids.add(pis.question.id)
+            else:
+                self.assertIsNone(pis.treasure)
+        self.assertEqual(len(treasure_ids), settings.GAME_DEFAULT_ISLAND_COUNT - 1)
+        self.assertEqual(len(question_ids), settings.GAME_DEFAULT_ISLAND_COUNT - 1)
+
+    def test_init_pis_atomic(self):
+        for i, question in enumerate(ShortAnswerQuestion.objects.all()):
+            if i > 30:
+                question.delete()
+        with self.assertRaises(ParticipantIslandStatus.CantAssignNewQuestion):
+            self.participant.init_pis()
+            self.assertEqual(ParticipantIslandStatus.objects.count(), 0)
 
     def test_set_start_island(self):
         self.participant.init_pis()

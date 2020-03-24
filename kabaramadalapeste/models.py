@@ -181,6 +181,9 @@ class ParticipantPropertyItem(models.Model):
 
 
 class ParticipantIslandStatus(models.Model):
+    class CantAssignNewQuestion(Exception):
+        pass
+
     participant = models.ForeignKey(Participant, on_delete=models.CASCADE)
     island = models.ForeignKey(Island, on_delete=models.CASCADE)
 
@@ -217,6 +220,8 @@ class ParticipantIslandStatus(models.Model):
             island__challenge=self.island.challenge
         ).exclude(island=self.island).values_list('question_object_id'))
         valid_question_ids = all_island_questions.difference(got_this_challenge_questions)
+        if not valid_question_ids:
+            raise ParticipantIslandStatus.CantAssignNewQuestion
         result_question_id = random.choice(list(valid_question_ids))
         self.question = self.island.challenge.questions.get(id=result_question_id[0])
         self.save()

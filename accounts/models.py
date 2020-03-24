@@ -6,6 +6,7 @@ from kabaramadalapeste.conf import settings as game_settings
 
 from enum import Enum
 import logging
+import random
 logger = logging.getLogger(__file__)
 
 # Create your models here.
@@ -66,13 +67,18 @@ class Participant(models.Model):
         if game_models.ParticipantIslandStatus.objects.filter(participant=self).count():
             logger.info('Participant currently has some PIS. We cant init again.')
             return
-        # TODO: handle random Treasure assignment
-        # TODO: handle random question assignment
-        for island in game_models.Island.objects.all():
-            game_models.ParticipantIslandStatus.objects.create(
-                participant=self,
-                island=island,
-            )
+        treasures_shuffled = list(game_models.Treasure.objects.all())
+        random.shuffle(treasures_shuffled)
+        with transaction.atomic():
+            for island in game_models.Island.objects.all():
+                pis = game_models.ParticipantIslandStatus.objects.create(
+                    participant=self,
+                    island=island,
+                )
+                if island.island_id != game_settings.GAME_BANDARGAH_ISLAND_ID:
+                    pis.treasure = treasures_shuffled.pop()
+                    pis.save()
+                    pis.assign_question()
 
     def init_properties(self):
         if self.properties.count():

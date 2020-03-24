@@ -4,7 +4,7 @@ from django.urls import reverse
 # Create your tests here.
 from kabaramadalapeste.models import ParticipantIslandStatus, Island, Way
 from kabaramadalapeste.factory import (
-    ChallengeFactory, IslandFactory, ShortAnswerQuestionFactory
+    ChallengeFactory, IslandFactory, ShortAnswerQuestionFactory, TreasureFactory
 )
 from kabaramadalapeste.conf import settings
 from accounts.factory import ParticipantFactory
@@ -13,9 +13,10 @@ from accounts.factory import ParticipantFactory
 class AssignQuestionTest(TestCase):
 
     def setUp(self):
-        [ChallengeFactory() for i in range(4)]
-        [IslandFactory() for i in range(8)]
-        [ShortAnswerQuestionFactory() for i in range(30)]
+        [ChallengeFactory() for i in range(10)]
+        [IslandFactory(__sequence=i) for i in range(settings.GAME_DEFAULT_ISLAND_COUNT)]
+        [TreasureFactory(keys=2, rewards=3) for i in range(settings.GAME_DEFAULT_ISLAND_COUNT - 1)]
+        [ShortAnswerQuestionFactory() for i in range(60)]
         self.participant = ParticipantFactory()
         self.island = Island.objects.first()
 
@@ -51,15 +52,16 @@ class AssignQuestionTest(TestCase):
 
 class ViewsTest(TestCase):
     def setUp(self):
-        [ChallengeFactory() for i in range(4)]
-        self.all_islands = [IslandFactory() for i in range(10)]
+        [ChallengeFactory() for i in range(10)]
+        self.all_islands = [IslandFactory(__sequence=i) for i in range(settings.GAME_DEFAULT_ISLAND_COUNT)]
+        [TreasureFactory(keys=2, rewards=3) for i in range(settings.GAME_DEFAULT_ISLAND_COUNT - 1)]
         self.island = self.all_islands[0]
         for i in range(3, 7):
             Way.objects.create(
                 first_end=self.island,
                 second_end=self.all_islands[i]
             )
-        [ShortAnswerQuestionFactory() for i in range(30)]
+        [ShortAnswerQuestionFactory() for i in range(60)]
         self.all_participants = [ParticipantFactory() for i in range(10)]
         for participant in self.all_participants:
             participant.init_pis()
