@@ -32,8 +32,8 @@ let data = {
         x: 0.5,
         y: 0.5,
         src: "ship.png",
-        width: 0.05,
-        height: 0.055,
+        width: 0.06,
+        height: 0.065,
         jazire_id: 20
     },
     players: [

@@ -99,6 +99,9 @@
 <script src="{% static 'scripts/kabaramadalapeste/init.js' %}"></script>
 <script src="{% static 'scripts/kabaramadalapeste/pure.js' %}"></script>
 <script>
+    {% if low_q %}
+        Konva.pixelRatio = 1;
+    {% endif %}
     $(window).on('resize', function () {
         $("#resize_modal").modal()
     });
