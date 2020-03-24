@@ -42,5 +42,10 @@ class GameConf(AppConf):
         SEKKE: 100
     }
 
+    MOVE_PRICE = 20
+    PUT_ANCHOR_PRICE = 30
+
+    BANDARGAH_ISLAND_ID = 20
+
     class Meta:
         prefix = 'game'
