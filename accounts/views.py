@@ -28,7 +28,16 @@ import datetime
 
 MERCHANT = '8b469980-683d-11ea-806a-000c295eb8fc'
 payment_amount = int(settings.REGISTRATION_FEE)
-client = Client('https://www.zarinpal.com/pg/services/WebGate/wsdl')
+
+
+class ZarinpalClient:
+    instance = None
+
+    @classmethod
+    def get_instance(cls):
+        if cls.instance is None:
+            cls.instance = Client('https://www.zarinpal.com/pg/services/WebGate/wsdl')
+        return cls.instance
 
 
 def check_bibot_response(request):
@@ -161,7 +170,9 @@ def logout(request):
 
 def verify(request):
     if request.GET.get('Status') == 'OK':
-        result = client.service.PaymentVerification(MERCHANT, request.GET['Authority'], payment_amount)
+        result = ZarinpalClient.get_instance().service.PaymentVerification(
+            MERCHANT, request.GET['Authority'], payment_amount
+        )
         payment_attempt = PaymentAttempt.objects.get(
             participant__member__email__exact=request.user.email,
             authority__exact=request.GET['Authority']
@@ -217,7 +228,7 @@ def send_request(request):
     if not SiteConfiguration.get_solo().is_signup_enabled:
         return redirect('homepage:homepage')
     callback_url = request.build_absolute_uri(reverse('accounts:verify'))
-    result = client.service.PaymentRequest(
+    result = ZarinpalClient.get_instance().service.PaymentRequest(
         MERCHANT,
         payment_amount,
         'ثبت‌نام در رویداد «در جست‌وجوی کابارآمادالاپسته»',
