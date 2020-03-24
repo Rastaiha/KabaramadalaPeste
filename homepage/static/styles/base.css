@@ -102,7 +102,9 @@ select:focus,
 .material-input input {
     direction: ltr;
     font-size: 18px;
-    padding: 10px 10px 10px 5px;
+    line-height: 26px;
+    height: 33px;
+    padding: 3px 10px;
     display: block;
     width: 100%;
     border: none;
