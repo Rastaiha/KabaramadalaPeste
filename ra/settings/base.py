@@ -128,7 +128,7 @@ EMAIL_USE_SSL = False
 DEFAULT_FROM_EMAIL = "Rastaiha <" + EMAIL_HOST_USER + ">"
 
 # Activate Django-Heroku.
-django_heroku.settings(locals())
+django_heroku.settings(locals(), test_runner=False)
 
 OK_STATUS = 'ok'
 ERROR_STATUS = 'err'

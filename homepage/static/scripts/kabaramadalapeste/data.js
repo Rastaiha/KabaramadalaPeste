@@ -1,6 +1,6 @@
 let data = {
-    width: window.innerWidth,
-    height: window.innerHeight,
+    width: $(window).width(),
+    height: $(window).height(),
     back: {
         x: 0,
         y: 0,
@@ -29,12 +29,36 @@ let data = {
         height: 0.05
     },
     ship: {
-        x: 0.1,
-        y: 0.1,
+        x: 0.5,
+        y: 0.5,
         src: "ship.png",
         width: 0.05,
-        height: 0.055
+        height: 0.055,
+        jazire_id: 20
     },
+    players: [
+        {
+            x: 0.2,
+            y: 0.2,
+            src: "ship.png",
+            width: 0.025,
+            height: 0.026
+        },
+        {
+            x: 0.25,
+            y: 0.2,
+            src: "ship.png",
+            width: 0.025,
+            height: 0.026
+        },
+        {
+            x: 0.23,
+            y: 0.25,
+            src: "ship.png",
+            width: 0.025,
+            height: 0.026
+        }
+    ],
     jazireha: [
         {
             id: 1,
@@ -43,8 +67,9 @@ let data = {
             width: 0.111,
             height: 0.092,
             src: "1.png",
-            ganj_closed: true,
-            zIndex: 10
+            zIndex: 10,
+            neighborhoods: [3, 4],
+            name: "مخوف"
         },
         {
             id: 2,
@@ -53,8 +78,9 @@ let data = {
             width: 0.036,
             height: 0.115,
             src: "2.png",
-            ganj_closed: false,
-            zIndex: 10
+            zIndex: 10,
+            neighborhoods: [4, 8],
+            name: "باحال"
         },
         {
             id: 3,
@@ -63,8 +89,9 @@ let data = {
             width: 0.093,
             height: 0.115,
             src: "3.png",
-            ganj_closed: true,
-            zIndex: 10
+            zIndex: 10,
+            neighborhoods: [1, 4, 16],
+            name: "سخت"
         },
         {
             id: 4,
@@ -73,8 +100,9 @@ let data = {
             width: 0.109,
             height: 0.181,
             src: "4.png",
-            ganj_closed: true,
-            zIndex: 10
+            zIndex: 10,
+            neighborhoods: [1, 2, 3, 7],
+            name: "سخت"
         },
         {
             id: 5,
@@ -83,8 +111,9 @@ let data = {
             width: 0.135,
             height: 0.208,
             src: "5.png",
-            ganj_closed: true,
-            zIndex: 10
+            zIndex: 10,
+            neighborhoods: [6, 18, 19],
+            name: "سخت"
         },
         {
             id: 6,
@@ -93,8 +122,9 @@ let data = {
             width: 0.123,
             height: 0.19,
             src: "6.png",
-            ganj_closed: true,
-            zIndex: 10
+            zIndex: 10,
+            neighborhoods: [5, 16, 19],
+            name: "سخت"
         },
         {
             id: 7,
@@ -103,8 +133,9 @@ let data = {
             width: 0.084,
             height: 0.21,
             src: "7.png",
-            ganj_closed: false,
-            zIndex: 10
+            zIndex: 10,
+            neighborhoods: [4, 8, 9],
+            name: "باحال"
         },
         {
             id: 8,
@@ -113,8 +144,9 @@ let data = {
             width: 0.072,
             height: 0.17,
             src: "8.png",
-            ganj_closed: true,
-            zIndex: 10
+            zIndex: 10,
+            neighborhoods: [2, 7, 9],
+            name: "سخت"
         },
         {
             id: 9,
@@ -123,8 +155,9 @@ let data = {
             width: 0.099,
             height: 0.325,
             src: "9.png",
-            ganj_closed: true,
-            zIndex: 10
+            zIndex: 10,
+            neighborhoods: [7, 8, 10, 11, 12],
+            name: "عجیب"
         },
         {
             id: 10,
@@ -133,8 +166,9 @@ let data = {
             width: 0.048,
             height: 0.085,
             src: "10.png",
-            ganj_closed: true,
-            zIndex: 10
+            zIndex: 10,
+            neighborhoods: [9, 11, 12],
+            name: "سخت"
         },
         {
             id: 11,
@@ -143,8 +177,9 @@ let data = {
             width: 0.12,
             height: 0.176,
             src: "11.png",
-            ganj_closed: false,
-            zIndex: 11
+            zIndex: 11,
+            neighborhoods: [9, 10, 12, 13],
+            name: "سخت"
         },
         {
             id: 12,
@@ -153,8 +188,9 @@ let data = {
             width: 0.084,
             height: 0.15,
             src: "12.png",
-            ganj_closed: true,
-            zIndex: 10
+            zIndex: 10,
+            neighborhoods: [9, 10, 11, 13],
+            name: "مخوف"
         },
         {
             id: 13,
@@ -163,8 +199,9 @@ let data = {
             width: 0.085,
             height: 0.138,
             src: "13.png",
-            ganj_closed: true,
-            zIndex: 11
+            zIndex: 11,
+            neighborhoods: [11, 12, 15, 16],
+            name: "سخت"
         },
         {
             id: 14,
@@ -173,8 +210,9 @@ let data = {
             width: 0.171,
             height: 0.15,
             src: "14.png",
-            ganj_closed: true,
-            zIndex: 10
+            zIndex: 10,
+            neighborhoods: [15, 21, 22, 23],
+            name: "مخوف"
         },
         {
             id: 15,
@@ -183,8 +221,9 @@ let data = {
             width: 0.078,
             height: 0.14,
             src: "15.png",
-            ganj_closed: false,
-            zIndex: 10
+            zIndex: 10,
+            neighborhoods: [13, 14, 16],
+            name: "باحال"
         },
         {
             id: 16,
@@ -193,8 +232,9 @@ let data = {
             width: 0.096,
             height: 0.146,
             src: "16.png",
-            ganj_closed: true,
-            zIndex: 10
+            zIndex: 10,
+            neighborhoods: [3, 6, 13, 15, 19],
+            name: "عجیب"
         },
         {
             id: 17,
@@ -203,8 +243,9 @@ let data = {
             width: 0.18,
             height: 0.115,
             src: "17.png",
-            ganj_closed: true,
-            zIndex: 10
+            zIndex: 10,
+            neighborhoods: [18, 31],
+            name: "مخوف"
         },
         {
             id: 18,
@@ -213,8 +254,9 @@ let data = {
             width: 0.108,
             height: 0.078,
             src: "18.png",
-            ganj_closed: true,
-            zIndex: 11
+            zIndex: 11,
+            neighborhoods: [5, 17, 20, 30, 31],
+            name: "سخت"
         },
         {
             id: 19,
@@ -223,8 +265,9 @@ let data = {
             width: 0.08,
             height: 0.12,
             src: "19.png",
-            ganj_closed: false,
-            zIndex: 10
+            zIndex: 10,
+            neighborhoods: [5, 6, 16],
+            name: "مخوف"
         },
         {
             id: 20,
@@ -233,8 +276,9 @@ let data = {
             width: 0.132,
             height: 0.234,
             src: "20.png",
-            ganj_closed: true,
-            zIndex: 10
+            zIndex: 10,
+            neighborhoods: [18, 21, 29, 30, 31],
+            name: "سخت"
         },
         {
             id: 21,
@@ -243,8 +287,9 @@ let data = {
             width: 0.084,
             height: 0.1,
             src: "21.png",
-            ganj_closed: true,
-            zIndex: 11
+            zIndex: 11,
+            neighborhoods: [14, 20, 22, 23],
+            name: "سخت"
         },
         {
             id: 22,
@@ -253,8 +298,9 @@ let data = {
             width: 0.069,
             height: 0.145,
             src: "22.png",
-            ganj_closed: true,
-            zIndex: 10
+            zIndex: 10,
+            neighborhoods: [14, 21, 23, 29],
+            name: "مخوف"
         },
         {
             id: 23,
@@ -263,8 +309,9 @@ let data = {
             width: 0.228,
             height: 0.155,
             src: "23.png",
-            ganj_closed: false,
-            zIndex: 10
+            zIndex: 10,
+            neighborhoods: [14, 21, 22, 24],
+            name: "باحال"
         },
         {
             id: 24,
@@ -273,8 +320,9 @@ let data = {
             width: 0.132,
             height: 0.125,
             src: "24.png",
-            ganj_closed: true,
-            zIndex: 10
+            zIndex: 10,
+            neighborhoods: [23, 25, 26],
+            name: "سخت"
         },
         {
             id: 25,
@@ -283,8 +331,9 @@ let data = {
             width: 0.15,
             height: 0.145,
             src: "25.png",
-            ganj_closed: true,
-            zIndex: 10
+            zIndex: 10,
+            neighborhoods: [24, 26],
+            name: "سخت"
         },
         {
             id: 26,
@@ -293,8 +342,9 @@ let data = {
             width: 0.063,
             height: 0.11,
             src: "26.png",
-            ganj_closed: true,
-            zIndex: 11
+            zIndex: 11,
+            neighborhoods: [24, 25, 27, 30],
+            name: "عجیب"
         },
         {
             id: 27,
@@ -303,8 +353,9 @@ let data = {
             width: 0.111,
             height: 0.18,
             src: "27.png",
-            ganj_closed: true,
-            zIndex: 10
+            zIndex: 10,
+            neighborhoods: [26, 28, 30],
+            name: "مخوف"
         },
         {
             id: 28,
@@ -313,8 +364,9 @@ let data = {
             width: 0.078,
             height: 0.19,
             src: "28.png",
-            ganj_closed: true,
-            zIndex: 10
+            zIndex: 10,
+            neighborhoods: [27, 35],
+            name: "باحال"
         },
         {
             id: 29,
@@ -323,8 +375,9 @@ let data = {
             width: 0.048,
             height: 0.094,
             src: "29.png",
-            ganj_closed: true,
-            zIndex: 10
+            zIndex: 10,
+            neighborhoods: [20, 22, 30],
+            name: "باحال"
         },
         {
             id: 30,
@@ -333,8 +386,9 @@ let data = {
             width: 0.084,
             height: 0.195,
             src: "30.png",
-            ganj_closed: true,
-            zIndex: 10
+            zIndex: 10,
+            neighborhoods: [18, 20, 26, 27, 29, 31],
+            name: "سخت"
         },
         {
             id: 31,
@@ -343,8 +397,9 @@ let data = {
             width: 0.102,
             height: 0.155,
             src: "31.png",
-            ganj_closed: false,
-            zIndex: 10
+            zIndex: 10,
+            neighborhoods: [17, 18, 30, 34],
+            name: "عجیب"
         },
         {
             id: 32,
@@ -353,8 +408,9 @@ let data = {
             width: 0.078,
             height: 0.165,
             src: "32.png",
-            ganj_closed: true,
-            zIndex: 10
+            zIndex: 10,
+            neighborhoods: [33, 34, 35],
+            name: "سخت"
         },
         {
             id: 33,
@@ -363,8 +419,9 @@ let data = {
             width: 0.048,
             height: 0.2,
             src: "33.png",
-            ganj_closed: false,
-            zIndex: 10
+            zIndex: 10,
+            neighborhoods: [32, 35],
+            name: "عجیب"
         },
         {
             id: 34,
@@ -373,8 +430,9 @@ let data = {
             width: 0.087,
             height: 0.18,
             src: "34.png",
-            ganj_closed: true,
-            zIndex: 10
+            zIndex: 10,
+            neighborhoods: [31, 32, 35],
+            name: "مخوف"
         },
         {
             id: 35,
@@ -383,8 +441,9 @@ let data = {
             width: 0.1,
             height: 0.135,
             src: "35.png",
-            ganj_closed: true,
-            zIndex: 10
+            zIndex: 10,
+            neighborhoods: [28, 32, 33, 34],
+            name: "عجیب"
         }
     ]
 };

@@ -3,67 +3,154 @@
 {% block styles %}
 <link rel="stylesheet" href="{% static 'styles/kabaramadalapeste/game.css' %}" />
 {% endblock styles %}
-{% block base_content %}
+{% block game_base_content %}
 <div id="game-container"></div>
 <div class="jazire-info">
-    <div style="background: #333; padding: 10px 15px; border-radius: 40px 15px 0 0; color: white">
-        <h3 class="jazire-name">جزیره <span>مخوف</span></h3>
+    <div class="jazire-info-header">
+        <h3 class="jazire-name">جزیره <span></span></h3>
         <div class="my-row text-center" style="direction: rtl; line-height: 14px;">
             <div class="jazire_kind m-auto">
                 <div class="fas fa-question-circle"></div>
-                <div class="m-auto">معما</div>
+                <div class="m-auto"><span></span></div>
             </div>
             <div class="jazire_persons m-auto">
                 <div class="fas fa-users m-auto"></div>
                 <div class="m-auto">
-                    12
+                    <span></span>
                     نفر
                 </div>
             </div>
         </div>
     </div>
-    <div style="padding: 10px; border-radius:  0 0 40px 15px;">
+    <div class="jazire-info-body">
         <div class="my-row">
-            <div class="m-auto"><img src="{% static 'images/game/test.png' %}" style="height: 60px" />
-                <div>حل نشده</div>
+            <div class="m-auto jazire-info-question">
+                <img src="{% static 'images/game/test.png' %}" style="height: 60px" />
+                <div><span>حل نشده</span></div>
             </div>
-            <div class="m-auto"><img src="{% static 'images/game/ganj.png' %}" style="height: 60px" />
-                <div>باز نشده</div>
+            <div class="m-auto jazire-info-ganj">
+                <img src="{% static 'images/game/ganj.png' %}" style="height: 60px" />
+                <div><span>باز نشده</span></div>
             </div>
         </div>
         <div class="m-auto">
-            <div class="m-auto" style="font-weight: 200; font-size: 10px">
+            <div class="m-auto jazire-info-check-time" style="font-weight: 200; font-size: 10px">
                 <small>تصحیح در</small>
-                <small>۱۵ دقیقه</small>
+                <small><span></span></small>
             </div>
         </div>
-        <div class="mt-1">
-            <a class="my-btn">لنگر انداختن</a>
+        <div class="mt-1 jazire-info-action">
+            <a class="my-btn" data-toggle="modal" data-target="#travel_modal"></a>
         </div>
     </div>
-
 </div>
 
-{% endblock base_content %}
+
+<div class="right-info player-info my-row">
+    <div class="right-info-details">
+        <div>
+            <h3>خرس مهربون</h3>
+            <small class="text-right">
+                دارایی
+            </small>
+            <div>
+                <div class="player-item">
+                    <span>
+                        <b>3 </b>×
+                    </span>
+                    <img src="{% static 'images/game/coins.png' %}" />
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="right-info-btn">
+        <img src="{% static 'images/game/bagpack.png' %}" />
+    </div>
+</div>
+
+
+<div class="right-info exchange-info my-row">
+    <div class="right-info-details">
+        <div>
+            <p>
+                در این بخش می‌توانید دارایی خود را با سایر بازیکنان مبادله کنید.
+            </p>
+            <a class="my-btn w-100 mt-1" href="{% url 'kabaramadalapeste:exchange' %}">مبادله</a>
+        </div>
+
+    </div>
+    <div class="right-info-btn">
+        <img src="{% static 'images/game/exchange.png' %}" />
+    </div>
+</div>
+
+<div class="gps">
+    <img src="{% static '/images/game/gps.png' %}" />
+</div>
+
+{% include 'modal/prompt.html' with modal_id='travel_modal' %}
+{% include 'modal/prompt.html' with modal_id='resize_modal' modal_title="تغییر ابعاد" modal_question="آیا مایل به بارگذاری مجدد صفحه هستید؟" %}
+{% include 'modal/prompt.html' with modal_id='alert_modal' modal_title="موجودی ناکافی" modal_message="دارایی شما برای این عملیات کافی نیست." %}
+
+{% endblock game_base_content %}
 {% block scripts %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/konva/4.2.0/konva.min.js"></script>
 <script src="{% static 'scripts/kabaramadalapeste/data.js' %}"></script>
-<script src="{% static 'scripts/kabaramadalapeste/game.js' %}"></script>
+<script src="{% static 'scripts/kabaramadalapeste/init.js' %}"></script>
+<script src="{% static 'scripts/kabaramadalapeste/pure.js' %}"></script>
 <script>
-    let resized = false;
     $(window).on('resize', function () {
-        if (!resized) {
-            resized = true;
-            setTimeout(() => {
-                resized = false;
-            }, 2000)
-            res = window.confirm(
-                'بازی برای ابعاد صفحه ابتدایی بارگذاری شده بود.\nآیا مایل به بارگذاری مجدد صفحه هستید؟');
-            if (res) {
-                location.reload(false);
-            }
+        $("#resize_modal").modal()
+    });
+    $('#resize_modal_btn').click(function () {
+        location.reload(false);
+    })
+
+    $(".right-info-btn").click(function () {
+        if ($(this).parent().hasClass("show-details")) {
+            $(".right-info").removeClass("show-details");
+        } else {
+            $(".right-info").removeClass("show-details");
+            $(this).parent().addClass("show-details");
+        }
+    })
+
+    $(".gps").click(function () {
+        let x = data.stage.width() / 2 - data.ship.elem.x() - data.ship.elem.width() / 2
+        let y = data.stage.height() / 2 - data.ship.elem.y() - data.ship.elem.height() / 2
+
+        data.layer.margin.x = Math.max(
+            data.layer.margin.x,
+            x,
+            data.stage.width() - data.back.width - x
+        )
+        data.layer.margin.y = Math.max(
+            data.layer.margin.y,
+            y,
+            data.stage.height() - data.back.height - y
+        )
+        let gps_anime;
+        if (Math.abs(x - data.layer.x()) < 1 && Math.abs(y - data.layer.y()) < 1) {
+            gps_anime = new Konva.Animation(function (frame) {
+                if (frame.time > 300) {
+                    gps_anime.stop();
+                    data.layer.x(x);
+                    return;
+                }
+                data.layer.x(10 * Math.sin((frame.time * 2 * Math.PI) / 10) + x);
+            }, data.layer);
+        } else {
+            gps_anime = new Konva.Animation(function (frame) {
+                if (frame.time > 1000) {
+                    gps_anime.stop();
+                    return;
+                }
+                data.layer.x((data.layer.x() * (1000 - frame.time) / 1000 + x * frame.time / 1000));
+                data.layer.y((data.layer.y() * (1000 - frame.time) / 1000 + y * frame.time / 1000));
+            }, data.layer);
         }
 
-    });
+        gps_anime.start();
+    })
 </script>
 {% endblock scripts %}
