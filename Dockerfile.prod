@@ -10,6 +10,12 @@ ENV PYTHONUNBUFFERED 1
 
 RUN apk add --no-cache --virtual .build-deps gcc musl-dev
 
+# install python-dev
+RUN apk update \
+    && apk add --virtual .build-deps gcc libc-dev libxslt-dev \
+    && apk add --no-cache libxslt \
+    && pip install lxml==4.4.1
+
 # install psycopg2
 RUN apk update \
     && apk add --virtual build-deps gcc python3-dev musl-dev \

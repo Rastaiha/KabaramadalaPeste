@@ -15,9 +15,49 @@
         </div>
         <h1 class="text-center mb-5 transparent-text" style="direction: rtl">منتظر ما باشید!!!</h1>
         {% include 'homepages/countdown.html' %}
-        <div class="center-container">
-            <a href="#what-page" class="w-btn">قضیه
-                چیه؟</a>
+        <div class="center-container my-4">
+            {% if site_config.is_signup_enabled %}
+                <a href="#what-page" class="w-btn mr-1">قضیه
+                    چیه؟</a>
+                {% if not user.is_authenticated %}
+                    <a href="{% url 'accounts:signup' %}" class="signup-btn ml-1">ثبت‌نام</a>
+                {% else %}
+                    {% if user.is_participant %}
+                        {% if not user.participant.is_activated %}
+                            <a href="{% url 'accounts:request' %}" class="signup-btn ml-1">پرداخت</a>
+                        {% endif %}
+                    {% endif %}
+                {% endif %}
+            {% else %}
+                <div style="display: flex">
+                    <a href="#what-page" class="w-btn mr-1">قضیه
+                        چیه؟</a>
+                    {% if not user.is_authenticated %}
+                        <a class="signup-btn ml-1 mr-auto" style="background: #34aa05; color: white; cursor: default">
+                            ثبت‌نام
+                            <div style="position: relative">
+                                <div class="full-capacity" style="left:-50px">
+                                    ظرفیت تکمیل شد!
+                                </div>
+                            </div>
+                        </a>
+                   {% else %}
+                       {% if user.is_participant %}
+                           {% if not user.participant.is_activated %}
+                                <a class="signup-btn ml-1 mr-auto"
+                                    style="background: #34aa05; color: white; cursor: default">
+                                    پرداخت
+                                    <div style="position: relative">
+                                        <div class="full-capacity" style="left:-50px">
+                                            ظرفیت تکمیل شد!
+                                        </div>
+                                    </div>
+                                </a>
+                            {% endif %}
+                        {% endif %}
+                    {% endif %}
+                </div>
+            {% endif %}
         </div>
         <div class="center-container">
             <img src="{% static 'images/scroll.gif' %}" style="width: 30px; display:block" />
@@ -59,6 +99,20 @@
                         @Rastaiha
                     </a>
                 </p>
+                {% if not user.is_authenticated %}
+                    {% if site_config.is_signup_enabled %}
+                        <a href="{% url 'accounts:signup' %}" class="signup-btn my-2 mx-auto">همین حالا شروع کن</a>
+                    {% else %}
+                        <a class="signup-btn my-2 mx-auto" style="background: #34aa05; color: white; cursor: default">همین حالا
+                            شروع کن
+                            <div style="position: relative;">
+                                <div class="full-capacity" style="left:25%">
+                                    ظرفیت تکمیل شد!
+                                </div>
+                            </div>
+                        </a>
+                    {% endif %}
+                {% endif %}
             </div>
         </div>
     </div>

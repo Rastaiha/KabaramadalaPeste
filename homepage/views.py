@@ -1,12 +1,32 @@
 from django.shortcuts import render
 from django.http import JsonResponse
+from django.contrib import messages
+from django.conf import settings
 
 from homepage.models import *
 
-import json
-
 
 def homepage(request):
+    payment_status = request.GET.get('payment')
+    if payment_status == settings.ERROR_STATUS:
+        messages.error(request, 'پرداخت ناموفق بود')
+    if payment_status == settings.OK_STATUS:
+        messages.success(request, 'پرداخت با موفقیت انجام شد')
+
+    activate_status = request.GET.get('activate')
+    if activate_status == settings.ERROR_STATUS:
+        messages.error(request, 'لینک فعال‌سازی درست نیست')
+    if activate_status == settings.HELP_STATUS:
+        if request.user.is_authenticated:
+            messages.info(request, 'حساب قبلا فعال شده.')
+        else:
+            messages.info(request, 'حساب قبلا فعال شده، می‌تونی از صفحه‌ی ورود وارد شی.')
+    if activate_status == settings.OK_STATUS:
+        messages.success(request, 'حساب با موفقیت فعال شد')
+
+    signup_status = request.GET.get('signup')
+    if signup_status == settings.OK_STATUS:
+        messages.success(request, 'ثبت نام با موفقیت انجام شد. برای فعال‌سازی حساب به ایمیلت مراجعه کن.')
     return render(request, 'homepages/landing_page.html', {
         'not_nav_padding': True
     })
