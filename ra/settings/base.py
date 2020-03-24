@@ -130,3 +130,4 @@ django_heroku.settings(locals())
 
 OK_STATUS = 'ok'
 ERROR_STATUS = 'err'
+HELP_STATUS = 'help'
