@@ -29,8 +29,8 @@ let data = {
         height: 0.05
     },
     ship: {
-        x: 0.1,
-        y: 0.1,
+        x: 0.5,
+        y: 0.5,
         src: "ship.png",
         width: 0.05,
         height: 0.055
@@ -66,8 +66,8 @@ let data = {
             width: 0.111,
             height: 0.092,
             src: "1.png",
-            ganj_closed: true,
-            zIndex: 10
+            zIndex: 10,
+            neighborhoods: []
         },
         {
             id: 2,
@@ -76,7 +76,6 @@ let data = {
             width: 0.036,
             height: 0.115,
             src: "2.png",
-            ganj_closed: false,
             zIndex: 10
         },
         {
@@ -86,7 +85,6 @@ let data = {
             width: 0.093,
             height: 0.115,
             src: "3.png",
-            ganj_closed: true,
             zIndex: 10
         },
         {
@@ -96,7 +94,6 @@ let data = {
             width: 0.109,
             height: 0.181,
             src: "4.png",
-            ganj_closed: true,
             zIndex: 10
         },
         {
@@ -106,7 +103,6 @@ let data = {
             width: 0.135,
             height: 0.208,
             src: "5.png",
-            ganj_closed: true,
             zIndex: 10
         },
         {
@@ -116,7 +112,6 @@ let data = {
             width: 0.123,
             height: 0.19,
             src: "6.png",
-            ganj_closed: true,
             zIndex: 10
         },
         {
@@ -126,7 +121,6 @@ let data = {
             width: 0.084,
             height: 0.21,
             src: "7.png",
-            ganj_closed: false,
             zIndex: 10
         },
         {
@@ -136,7 +130,6 @@ let data = {
             width: 0.072,
             height: 0.17,
             src: "8.png",
-            ganj_closed: true,
             zIndex: 10
         },
         {
@@ -146,7 +139,6 @@ let data = {
             width: 0.099,
             height: 0.325,
             src: "9.png",
-            ganj_closed: true,
             zIndex: 10
         },
         {
@@ -156,7 +148,6 @@ let data = {
             width: 0.048,
             height: 0.085,
             src: "10.png",
-            ganj_closed: true,
             zIndex: 10
         },
         {
@@ -166,7 +157,6 @@ let data = {
             width: 0.12,
             height: 0.176,
             src: "11.png",
-            ganj_closed: false,
             zIndex: 11
         },
         {
@@ -176,7 +166,6 @@ let data = {
             width: 0.084,
             height: 0.15,
             src: "12.png",
-            ganj_closed: true,
             zIndex: 10
         },
         {
@@ -186,7 +175,6 @@ let data = {
             width: 0.085,
             height: 0.138,
             src: "13.png",
-            ganj_closed: true,
             zIndex: 11
         },
         {
@@ -196,7 +184,6 @@ let data = {
             width: 0.171,
             height: 0.15,
             src: "14.png",
-            ganj_closed: true,
             zIndex: 10
         },
         {
@@ -206,7 +193,6 @@ let data = {
             width: 0.078,
             height: 0.14,
             src: "15.png",
-            ganj_closed: false,
             zIndex: 10
         },
         {
@@ -216,7 +202,6 @@ let data = {
             width: 0.096,
             height: 0.146,
             src: "16.png",
-            ganj_closed: true,
             zIndex: 10
         },
         {
@@ -226,7 +211,6 @@ let data = {
             width: 0.18,
             height: 0.115,
             src: "17.png",
-            ganj_closed: true,
             zIndex: 10
         },
         {
@@ -236,7 +220,6 @@ let data = {
             width: 0.108,
             height: 0.078,
             src: "18.png",
-            ganj_closed: true,
             zIndex: 11
         },
         {
@@ -246,7 +229,6 @@ let data = {
             width: 0.08,
             height: 0.12,
             src: "19.png",
-            ganj_closed: false,
             zIndex: 10
         },
         {
@@ -256,7 +238,6 @@ let data = {
             width: 0.132,
             height: 0.234,
             src: "20.png",
-            ganj_closed: true,
             zIndex: 10
         },
         {
@@ -266,7 +247,6 @@ let data = {
             width: 0.084,
             height: 0.1,
             src: "21.png",
-            ganj_closed: true,
             zIndex: 11
         },
         {
@@ -276,7 +256,6 @@ let data = {
             width: 0.069,
             height: 0.145,
             src: "22.png",
-            ganj_closed: true,
             zIndex: 10
         },
         {
@@ -286,7 +265,6 @@ let data = {
             width: 0.228,
             height: 0.155,
             src: "23.png",
-            ganj_closed: false,
             zIndex: 10
         },
         {
@@ -296,7 +274,6 @@ let data = {
             width: 0.132,
             height: 0.125,
             src: "24.png",
-            ganj_closed: true,
             zIndex: 10
         },
         {
@@ -306,7 +283,6 @@ let data = {
             width: 0.15,
             height: 0.145,
             src: "25.png",
-            ganj_closed: true,
             zIndex: 10
         },
         {
@@ -316,7 +292,6 @@ let data = {
             width: 0.063,
             height: 0.11,
             src: "26.png",
-            ganj_closed: true,
             zIndex: 11
         },
         {
@@ -326,7 +301,6 @@ let data = {
             width: 0.111,
             height: 0.18,
             src: "27.png",
-            ganj_closed: true,
             zIndex: 10
         },
         {
@@ -336,7 +310,6 @@ let data = {
             width: 0.078,
             height: 0.19,
             src: "28.png",
-            ganj_closed: true,
             zIndex: 10
         },
         {
@@ -346,7 +319,6 @@ let data = {
             width: 0.048,
             height: 0.094,
             src: "29.png",
-            ganj_closed: true,
             zIndex: 10
         },
         {
@@ -356,7 +328,6 @@ let data = {
             width: 0.084,
             height: 0.195,
             src: "30.png",
-            ganj_closed: true,
             zIndex: 10
         },
         {
@@ -366,7 +337,6 @@ let data = {
             width: 0.102,
             height: 0.155,
             src: "31.png",
-            ganj_closed: false,
             zIndex: 10
         },
         {
@@ -376,7 +346,6 @@ let data = {
             width: 0.078,
             height: 0.165,
             src: "32.png",
-            ganj_closed: true,
             zIndex: 10
         },
         {
@@ -386,7 +355,6 @@ let data = {
             width: 0.048,
             height: 0.2,
             src: "33.png",
-            ganj_closed: false,
             zIndex: 10
         },
         {
@@ -396,7 +364,6 @@ let data = {
             width: 0.087,
             height: 0.18,
             src: "34.png",
-            ganj_closed: true,
             zIndex: 10
         },
         {
@@ -406,7 +373,6 @@ let data = {
             width: 0.1,
             height: 0.135,
             src: "35.png",
-            ganj_closed: true,
             zIndex: 10
         }
     ]

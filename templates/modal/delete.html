@@ -1,0 +1,11 @@
+{% extends 'modal/base.html' %}
+{% block modal_header %}
+<h5 class="modal-title">حذف</h5>
+{% endblock %}
+{% block modal_content %}
+<p>
+    آیا مایل به حذف هستید؟
+</p>
+<button type="button" class="my-btn" style="background: var(--blue-3)" data-dismiss="modal">لغو</button>
+<a id="delete_location" href="{{ delete_location }}" class="my-btn" style="background: var(--color-4)">حذف</a>
+{% endblock %}

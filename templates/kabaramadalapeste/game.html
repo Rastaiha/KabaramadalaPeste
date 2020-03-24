@@ -38,7 +38,7 @@
             </div>
         </div>
         <div class="mt-1">
-            <a class="my-btn">لنگر انداختن</a>
+            <a class="my-btn" data-toggle="modal" data-target="#travel_modal">لنگر انداختن</a>
         </div>
     </div>
 </div>
@@ -82,29 +82,62 @@
     </div>
 </div>
 
+<div class="gps">
+    <img src="{% static '/images/game/gps.png' %}" />
+</div>
+
+{% include 'modal/prompt.html' with modal_id='travel_modal' modal_title="سفر" modal_question="هزینه سفر ۲ سکه می‌باشد. آیا مایل به آن هستید؟" %}
+{% include 'modal/prompt.html' with modal_id='langar_modal' modal_title="لنگر انداختن" modal_question="هزینه لنگر انداختن ۲ سکه می‌باشد. آیا مایل به آن هستید؟" %}
+{% include 'modal/prompt.html' with modal_id='resize_modal' modal_title="تغییر ابعاد" modal_question="آیا مایل به بارگذاری مجدد صفحه هستید؟" %}
+{% include 'modal/prompt.html' with modal_id='alert_modal' modal_title="موجودی ناکافی" modal_message="دارایی شما برای این عملیات کافی نیست." %}
+
 {% endblock game_base_content %}
 {% block scripts %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/konva/4.2.0/konva.min.js"></script>
 <script src="{% static 'scripts/kabaramadalapeste/data.js' %}"></script>
-<script src="{% static 'scripts/kabaramadalapeste/game.js' %}"></script>
+<script src="{% static 'scripts/kabaramadalapeste/init.js' %}"></script>
+<script src="{% static 'scripts/kabaramadalapeste/pure.js' %}"></script>
 <script>
-    let resized = false;
     $(window).on('resize', function () {
-        if (!resized) {
-            resized = true;
-            setTimeout(() => {
-                resized = false;
-            }, 2000)
-            res = window.confirm(
-                'بازی برای ابعاد صفحه ابتدایی بارگذاری شده بود.\nآیا مایل به بارگذاری مجدد صفحه هستید؟');
-            if (res) {
-                location.reload(false);
-            }
-        }
+        $("#resize_modal").modal()
     });
+    $('#resize_modal_btn').click(function () {
+        location.reload(false);
+    })
 
     $(".right-info-btn").click(function () {
-        $(this).parent().toggleClass("show-details")
+        if ($(this).parent().hasClass("show-details")) {
+            $(".right-info").removeClass("show-details");
+        } else {
+            $(".right-info").removeClass("show-details");
+            $(this).parent().addClass("show-details");
+        }
+    })
+
+    $(".gps").click(function () {
+        let x = data.stage.width() / 2 - data.ship.elem.x() - data.ship.elem.width() / 2
+        let y = data.stage.height() / 2 - data.ship.elem.y() - data.ship.elem.height() / 2
+
+        data.layer.margin.x = Math.max(
+            data.layer.margin.x,
+            x,
+            data.stage.width() - data.back.width - x
+        )
+        data.layer.margin.y = Math.max(
+            data.layer.margin.y,
+            y,
+            data.stage.height() - data.back.height - y
+        )
+        let gps_anime = new Konva.Animation(function (frame) {
+            if (frame.time > 1000) {
+                gps_anime.stop();
+                return;
+            }
+            data.layer.x((data.layer.x() * (1000 - frame.time) / 1000 + x * frame.time / 1000));
+            data.layer.y((data.layer.y() * (1000 - frame.time) / 1000 + y * frame.time / 1000));
+        }, data.layer);
+
+        gps_anime.start();
     })
 </script>
 {% endblock scripts %}
