@@ -16,16 +16,33 @@
         <h1 class="text-center mb-5 transparent-text" style="direction: rtl">منتظر ما باشید!!!</h1>
         {% include 'homepages/countdown.html' %}
         <div class="center-container my-4">
-            <a href="#what-page" class="w-btn mr-1">قضیه
-                چیه؟</a>
-            {% if not user.is_authenticated %}
-                <a href="{% url 'accounts:signup' %}" class="signup-btn ml-1 mr-auto">ثبت‌نام</a>
+            <div style="display: flex">
+                <a href="#what-page" class="w-btn mr-1">قضیه
+                    چیه؟</a>
+                {% if not user.is_authenticated %}
+                <a class="signup-btn ml-1 mr-auto" style="background: #34aa05; color: white; cursor: default">
+                    ثبت‌نام
+                    <div style="position: relative">
+                        <div class="full-capacity" style="left:-50px">
+                            ظرفیت تکمیل شد!
+                        </div>
+                    </div>
+                </a>
+            </div>
             {% else %}
-                {% if user.is_participant %}
-                    {% if not user.participant.is_activated %}
-                        <a href="{% url 'accounts:request' %}" class="signup-btn ml-1 mr-auto">پرداخت</a>
-                    {% endif %}
-                {% endif %}
+            {% if user.is_participant %}
+            {% if not user.participant.is_activated %}
+            <a href="{% url 'accounts:request' %}" class="signup-btn ml-1 mr-auto"
+                style="background: #34aa05; color: white; cursor: default">
+                پرداخت
+                <div style="position: relative">
+                    <div class="full-capacity" style="left:-50px">
+                        ظرفیت تکمیل شد!
+                    </div>
+                </div>
+            </a>
+            {% endif %}
+            {% endif %}
             {% endif %}
         </div>
         <div class="center-container">
@@ -69,7 +86,14 @@
                     </a>
                 </p>
                 {% if not user.is_authenticated %}
-                    <a href="{% url 'accounts:signup' %}" class="signup-btn my-2 mx-auto">همین حالا شروع کن</a>
+                <a class="signup-btn my-2 mx-auto" style="background: #34aa05; color: white; cursor: default">همین حالا
+                    شروع کن
+                    <div style="position: relative;">
+                        <div class="full-capacity" style="left:25%">
+                            ظرفیت تکمیل شد!
+                        </div>
+                    </div>
+                </a>
                 {% endif %}
             </div>
         </div>
