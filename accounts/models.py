@@ -1,4 +1,4 @@
-from django.db import models
+from django.db import models, transaction
 from django.contrib.auth.models import AbstractUser
 from django.utils import timezone
 from kabaramadalapeste import models as game_models
@@ -72,15 +72,29 @@ class Participant(models.Model):
     def move(self, dest_island):
         if self.currently_at_island and not self.currently_at_island.is_neighbor_with(dest_island):
             raise game_models.Island.IslandsNotConnected
-        dest_pis = game_models.ParticipantIslandStatus.objects.get(
-            participant=self,
-            island=dest_island
-        )
-        dest_pis.did_reach = True
-        dest_pis.reached_at = timezone.now()
-        self.currently_at_island = dest_island
-        dest_pis.save()
-        self.save()
+
+        with transaction.atomic():
+            if self.currently_at_island:
+                src_pis = game_models.ParticipantIslandStatus.objects.get(
+                    participant=self,
+                    island=self.currently_at_island
+                )
+                src_pis.currently_in = False
+                src_pis.currently_anchored = False
+                src_pis.save()
+
+            dest_pis = game_models.ParticipantIslandStatus.objects.get(
+                participant=self,
+                island=dest_island
+            )
+
+            dest_pis.currently_in = True
+            dest_pis.did_reach = True
+            dest_pis.reached_at = timezone.now()
+            self.currently_at_island = dest_island
+
+            dest_pis.save()
+            self.save()
 
 
 class Judge(models.Model):

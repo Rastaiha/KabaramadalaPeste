@@ -189,11 +189,13 @@ class ParticipantIslandStatus(models.Model):
     did_open_treasure = models.BooleanField(default=False)
     treasure_opened_at = models.DateTimeField(null=True)
 
+    currently_in = models.BooleanField(default=False)
+
     did_reach = models.BooleanField(default=False)
     reached_at = models.DateTimeField(null=True)
 
-    did_anchor = models.BooleanField(default=False)
-    anchored_at = models.DateTimeField(null=True)
+    currently_anchored = models.BooleanField(default=False)
+    last_anchored_at = models.DateTimeField(null=True)
 
     did_accept_challenge = models.BooleanField(default=False)
     challenge_accepted_at = models.DateTimeField(null=True)

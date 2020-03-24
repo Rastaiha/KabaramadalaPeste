@@ -37,6 +37,7 @@ class ParticipantTest(TestCase):
             island=self.island
         )
         self.assertTrue(pis_dest.did_reach)
+        self.assertTrue(pis_dest.currently_in)
         self.assertIsNotNone(pis_dest.reached_at)
         self.assertEqual(self.participant.currently_at_island, self.island)
 
@@ -50,12 +51,19 @@ class ParticipantTest(TestCase):
         self.participant.init_pis()
         self.participant.move(self.all_islands[4])
         self.participant.move(self.island)
-
+        pis_src = ParticipantIslandStatus.objects.get(
+            participant=self.participant,
+            island=self.all_islands[4]
+        )
         pis_dest = ParticipantIslandStatus.objects.get(
             participant=self.participant,
             island=self.island
         )
+        self.assertFalse(pis_src.currently_in)
+        self.assertFalse(pis_src.currently_anchored)
+
         self.assertTrue(pis_dest.did_reach)
+        self.assertTrue(pis_dest.currently_in)
         self.assertIsNotNone(pis_dest.reached_at)
         self.assertEqual(self.participant.currently_at_island, self.island)
 
