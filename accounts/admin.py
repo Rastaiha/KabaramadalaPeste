@@ -81,15 +81,18 @@ class IsVerifiedFilter(admin.SimpleListFilter):
     def lookups(self, request, model_admin):
         return (
             ('Yes', 'Yes'),
+            ('Pending', 'Pending'),
             ('No', 'No'),
         )
 
     def queryset(self, request, queryset):
         value = self.value()
         if value == 'Yes':
-            return queryset.filter(participant__is_document_verified=True)
+            return queryset.filter(participant__document_status='Verified')
         elif value == 'No':
-            return queryset.exclude(participant__is_document_verified=True)
+            return queryset.filter(participant__document_status='Rejected')
+        elif value == 'Pending':
+            return queryset.filter(participant__document_status='Pending')
         return queryset
 
 
