@@ -76,10 +76,10 @@ def signup(request):
         member = Member.objects.create(
             first_name=request.POST['name'],
             username=username,
-            email=request.POST['email']
+            email=request.POST['email'],
+            is_active=False,
         )
         member.set_password(request.POST['password'])
-        member.is_active = False
         participant = Participant.objects.create(
             member=member,
             gender=request.POST['gender'],
