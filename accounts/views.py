@@ -123,6 +123,8 @@ def activate(request, uidb64, token):
         auth_login(request, member)
         # return redirect('home')
         return _redirect_homepage_with_action_status('activate', settings.OK_STATUS)
+    elif member is not None and member.is_active:
+        return _redirect_homepage_with_action_status('activate', settings.HELP_STATUS)
     else:
         return _redirect_homepage_with_action_status('activate', settings.ERROR_STATUS)
 

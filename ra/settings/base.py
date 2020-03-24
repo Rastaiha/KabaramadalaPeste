@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'import_export',
     'homepage',
     'kabaramadalapeste',
     'accounts'
@@ -131,3 +132,4 @@ django_heroku.settings(locals())
 
 OK_STATUS = 'ok'
 ERROR_STATUS = 'err'
+HELP_STATUS = 'help'

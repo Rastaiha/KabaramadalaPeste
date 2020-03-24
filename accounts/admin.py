@@ -4,6 +4,51 @@ from django.urls import path, reverse
 from django.shortcuts import redirect
 from accounts.models import *
 
+from import_export.admin import ExportActionMixin
+from import_export.fields import Field
+from import_export import resources
+
+
+class MemberResource(resources.ModelResource):
+    gender = Field()
+    city = Field()
+    school = Field()
+    phone_number = Field()
+    is_paid = Field()
+
+    class Meta:
+        model = Member
+
+    def dehydrate_school(self, member):
+        try:
+            return member.participant.school
+        except Exception:
+            return ''
+
+    def dehydrate_is_paid(self, member):
+        try:
+            return member.participant.is_activated
+        except Exception:
+            return ''
+
+    def dehydrate_phone_number(self, member):
+        try:
+            return member.participant.phone_number
+        except Exception:
+            return ''
+
+    def dehydrate_gender(self, member):
+        try:
+            return member.participant.gender
+        except Exception:
+            return ''
+
+    def dehydrate_city(self, member):
+        try:
+            return member.participant.city
+        except Exception:
+            return ''
+
 
 class ParticipantInline(admin.StackedInline):
     readonly_fields = ['document', 'gender', 'document_status']
@@ -48,7 +93,9 @@ class IsVerifiedFilter(admin.SimpleListFilter):
         return queryset
 
 
-class MemberAdmin(admin.ModelAdmin):
+class MemberAdmin(ExportActionMixin, admin.ModelAdmin):
+    resource_class = MemberResource
+
     list_display = ('username', 'real_name', 'get_city', 'get_school', 'is_active', 'get_is_paid', 'get_document_status',
                     'get_document', 'account_actions')
     list_filter = ('is_active', IsPaidFilter, IsVerifiedFilter)

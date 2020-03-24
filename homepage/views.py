@@ -16,6 +16,11 @@ def homepage(request):
     activate_status = request.GET.get('activate')
     if activate_status == settings.ERROR_STATUS:
         messages.error(request, 'لینک فعال‌سازی درست نیست')
+    if activate_status == settings.HELP_STATUS:
+        if request.user.is_authenticated:
+            messages.info(request, 'حساب قبلا فعال شده.')
+        else:
+            messages.info(request, 'حساب قبلا فعال شده، می‌تونی از صفحه‌ی ورود وارد شی.')
     if activate_status == settings.OK_STATUS:
         messages.success(request, 'حساب با موفقیت فعال شد')
 
