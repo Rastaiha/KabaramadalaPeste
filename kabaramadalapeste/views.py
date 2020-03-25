@@ -22,3 +22,10 @@ def exchange(request):
         'without_nav': True,
         'without_footer': True,
     })
+
+
+def jazire(request):
+    return render(request, 'kabaramadalapeste/jazire.html', {
+        'without_nav': True,
+        'without_footer': True,
+    })

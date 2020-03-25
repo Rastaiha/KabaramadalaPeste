@@ -45,45 +45,6 @@
     </div>
 </div>
 
-
-<div class="right-info player-info my-row">
-    <div class="right-info-details">
-        <div>
-            <h3>خرس مهربون</h3>
-            <small class="text-right">
-                دارایی
-            </small>
-            <div>
-                <div class="player-item">
-                    <span>
-                        <b>3 </b>×
-                    </span>
-                    <img src="{% static 'images/game/coins.png' %}" />
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="right-info-btn">
-        <img src="{% static 'images/game/bagpack.png' %}" />
-    </div>
-</div>
-
-
-<div class="right-info exchange-info my-row">
-    <div class="right-info-details">
-        <div>
-            <p>
-                در این بخش می‌توانید دارایی خود را با سایر بازیکنان مبادله کنید.
-            </p>
-            <a class="my-btn w-100 mt-1" href="{% url 'kabaramadalapeste:exchange' %}">مبادله</a>
-        </div>
-
-    </div>
-    <div class="right-info-btn">
-        <img src="{% static 'images/game/exchange.png' %}" />
-    </div>
-</div>
-
 <div class="gps">
     <img src="{% static '/images/game/gps.png' %}" />
 </div>
@@ -93,7 +54,7 @@
 {% include 'modal/prompt.html' with modal_id='alert_modal' modal_title="موجودی ناکافی" modal_message="دارایی شما برای این عملیات کافی نیست." %}
 
 {% endblock game_base_content %}
-{% block scripts %}
+{% block game_base_scripts %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/konva/4.2.0/konva.min.js"></script>
 
 <script src="{% static 'scripts/kabaramadalapeste/data.js' %}"></script>
@@ -110,15 +71,6 @@
     });
     $('#resize_modal_btn').click(function () {
         location.reload(false);
-    })
-
-    $(".right-info-btn").click(function () {
-        if ($(this).parent().hasClass("show-details")) {
-            $(".right-info").removeClass("show-details");
-        } else {
-            $(".right-info").removeClass("show-details");
-            $(this).parent().addClass("show-details");
-        }
     })
     let gps_start = 0,
         gps_animation_mode, dx, dy;
@@ -178,7 +130,7 @@
         gps_start = new Date();
     })
 </script>
-<script>
+{% comment %} <script>
     (function () {
         var script = document.createElement('script');
         script.onload = function () {
@@ -204,5 +156,5 @@
             }
         }
     }, 3000)
-</script>
-{% endblock scripts %}
+</script> {% endcomment %}
+{% endblock game_base_scripts %}
