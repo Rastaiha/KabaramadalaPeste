@@ -69,7 +69,7 @@ class ViewsTest(TestCase):
         self.participant = self.all_participants[0]
 
     def test_island_info_not_login(self):
-        response = self.client.get(reverse('game:island_info', kwargs={
+        response = self.client.get(reverse('kabaramadalapeste:island_info', kwargs={
             'island_id': self.island.island_id
         }))
         self.assertEqual(response.status_code, 302)
@@ -79,7 +79,7 @@ class ViewsTest(TestCase):
             self.all_participants[i].set_start_island(self.island)
             self.all_participants[i].put_anchor_on_current_island()
         self.client.force_login(self.participant.member)
-        response = self.client.get(reverse('game:island_info', kwargs={
+        response = self.client.get(reverse('kabaramadalapeste:island_info', kwargs={
             'island_id': self.island.island_id
         }))
         self.assertIsNotNone(response.json()['name'])
@@ -87,30 +87,30 @@ class ViewsTest(TestCase):
         self.assertEqual(response.json()['participants_inside'], 4)
 
     def test_set_start_island_not_login(self):
-        response = self.client.get(reverse('game:set_start_island', kwargs={
+        response = self.client.get(reverse('kabaramadalapeste:set_start_island', kwargs={
             'dest_island_id': self.island.island_id
         }))
         self.assertEqual(response.status_code, 302)
 
     def test_set_start_island_ok(self):
         self.client.force_login(self.participant.member)
-        response = self.client.post(reverse('game:set_start_island', kwargs={
+        response = self.client.post(reverse('kabaramadalapeste:set_start_island', kwargs={
             'dest_island_id': self.island.island_id
         }))
         self.assertEqual(response.json()['status'], settings.OK_STATUS)
 
     def test_set_start_island_second_time(self):
         self.client.force_login(self.participant.member)
-        self.client.post(reverse('game:set_start_island', kwargs={
+        self.client.post(reverse('kabaramadalapeste:set_start_island', kwargs={
             'dest_island_id': self.island.island_id
         }))
-        response = self.client.post(reverse('game:set_start_island', kwargs={
+        response = self.client.post(reverse('kabaramadalapeste:set_start_island', kwargs={
             'dest_island_id': self.all_islands[4].island_id
         }))
         self.assertEqual(response.json()['status'], settings.ERROR_STATUS)
 
     def test_move_to_not_login(self):
-        response = self.client.get(reverse('game:move_to', kwargs={
+        response = self.client.get(reverse('kabaramadalapeste:move_to', kwargs={
             'dest_island_id': self.island.island_id
         }))
         self.assertEqual(response.status_code, 302)
@@ -119,14 +119,14 @@ class ViewsTest(TestCase):
         self.participant.set_start_island(self.all_islands[4])
 
         self.client.force_login(self.participant.member)
-        response = self.client.post(reverse('game:move_to', kwargs={
+        response = self.client.post(reverse('kabaramadalapeste:move_to', kwargs={
             'dest_island_id': self.island.island_id
         }))
         self.assertEqual(response.json()['status'], settings.OK_STATUS)
 
     def test_move_to_not_set_start(self):
         self.client.force_login(self.participant.member)
-        response = self.client.post(reverse('game:move_to', kwargs={
+        response = self.client.post(reverse('kabaramadalapeste:move_to', kwargs={
             'dest_island_id': self.island.island_id
         }))
         self.assertEqual(response.json()['status'], settings.ERROR_STATUS)
@@ -134,7 +134,7 @@ class ViewsTest(TestCase):
     def test_move_to_not_neighbor(self):
         self.participant.set_start_island(self.all_islands[1])
         self.client.force_login(self.participant.member)
-        response = self.client.post(reverse('game:move_to', kwargs={
+        response = self.client.post(reverse('kabaramadalapeste:move_to', kwargs={
             'dest_island_id': self.island.island_id
         }))
         self.assertEqual(response.json()['status'], settings.ERROR_STATUS)
@@ -146,25 +146,25 @@ class ViewsTest(TestCase):
         safe_sekke = self.participant.get_safe_sekke()
         safe_sekke.amount = settings.GAME_MOVE_PRICE - 1
         safe_sekke.save()
-        response = self.client.post(reverse('game:move_to', kwargs={
+        response = self.client.post(reverse('kabaramadalapeste:move_to', kwargs={
             'dest_island_id': self.island.island_id
         }))
         self.assertEqual(response.json()['status'], settings.ERROR_STATUS)
 
     def test_put_anchor_not_login(self):
-        response = self.client.get(reverse('game:put_anchor'))
+        response = self.client.get(reverse('kabaramadalapeste:put_anchor'))
         self.assertEqual(response.status_code, 302)
 
     def test_put_anchor_ok(self):
         self.participant.set_start_island(self.island)
 
         self.client.force_login(self.participant.member)
-        response = self.client.post(reverse('game:put_anchor'))
+        response = self.client.post(reverse('kabaramadalapeste:put_anchor'))
         self.assertEqual(response.json()['status'], settings.OK_STATUS)
 
     def test_put_anchor_not_set_start_island(self):
         self.client.force_login(self.participant.member)
-        response = self.client.post(reverse('game:put_anchor'))
+        response = self.client.post(reverse('kabaramadalapeste:put_anchor'))
         self.assertEqual(response.json()['status'], settings.ERROR_STATUS)
 
     def test_put_anchor_not_enough_sekke(self):
@@ -174,7 +174,7 @@ class ViewsTest(TestCase):
         safe_sekke = self.participant.get_safe_sekke()
         safe_sekke.amount = settings.GAME_MOVE_PRICE - 1
         safe_sekke.save()
-        response = self.client.post(reverse('game:move_to', kwargs={
+        response = self.client.post(reverse('kabaramadalapeste:move_to', kwargs={
             'dest_island_id': self.island.island_id
         }))
         self.assertEqual(response.json()['status'], settings.ERROR_STATUS)
