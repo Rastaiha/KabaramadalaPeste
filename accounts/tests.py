@@ -168,6 +168,7 @@ class ParticipantTest(TestCase):
         )
 
         self.assertTrue(pis_current.currently_anchored)
+        self.assertTrue(pis_current.is_treasure_visible)
         self.assertIsNotNone(pis_current.last_anchored_at)
         self.assertEqual(prev_sekke - after_sekke, settings.GAME_PUT_ANCHOR_PRICE)
 

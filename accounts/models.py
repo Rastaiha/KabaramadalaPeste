@@ -205,6 +205,7 @@ class Participant(models.Model):
         )
         with transaction.atomic():
             current_pis.currently_anchored = True
+            current_pis.is_treasure_visible = True
             current_pis.last_anchored_at = timezone.now()
             current_pis.save()
 

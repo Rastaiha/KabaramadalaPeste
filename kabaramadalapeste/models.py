@@ -189,6 +189,8 @@ class ParticipantIslandStatus(models.Model):
 
     treasure = models.ForeignKey(Treasure, on_delete=models.SET_NULL, null=True)
 
+    is_treasure_visible = models.BooleanField(default=False)
+
     did_open_treasure = models.BooleanField(default=False)
     treasure_opened_at = models.DateTimeField(null=True)
 

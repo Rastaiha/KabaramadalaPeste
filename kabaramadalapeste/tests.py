@@ -85,6 +85,26 @@ class ViewsTest(TestCase):
         self.assertIsNotNone(response.json()['name'])
         self.assertIsNotNone(response.json()['challenge_name'])
         self.assertEqual(response.json()['participants_inside'], 4)
+        self.assertEqual(response.json()['treasure_keys'], 'unknown')
+
+    def test_island_info_keys_visible(self):
+        self.participant.set_start_island(self.island)
+        self.participant.put_anchor_on_current_island()
+        self.client.force_login(self.participant.member)
+        response = self.client.get(reverse('kabaramadalapeste:island_info', kwargs={
+            'island_id': self.island.island_id
+        }))
+        pis = ParticipantIslandStatus.objects.get(
+            participant=self.participant,
+            island=self.island
+        )
+        self.assertIsNotNone(response.json()['name'])
+        self.assertIsNotNone(response.json()['challenge_name'])
+        self.assertEqual(response.json()['participants_inside'], 1)
+        self.assertDictEqual(
+            response.json()['treasure_keys'],
+            {key.key_type: key.amount for key in pis.treasure.keys.all()}
+        )
 
     def test_participant_info_not_login(self):
         response = self.client.get(reverse('kabaramadalapeste:participant_info'))
