@@ -3,8 +3,9 @@ from django.http import Http404, JsonResponse
 from django.urls import reverse
 from django.views import View
 from django.utils.decorators import method_decorator
-
+from django.db import transaction
 from django.contrib.auth.decorators import login_required, user_passes_test
+from django.utils import timezone
 
 from accounts.models import Participant
 
@@ -207,6 +208,7 @@ class AcceptChallengeView(View):
             return default_error_response
 
 
+@transaction.atomic
 @login_activated_participant_required
 def create_offer(request):
     if request.method == 'POST':
@@ -231,7 +233,7 @@ def create_offer(request):
             request.user.participant.reduce_multiple_property(suggested_types, suggested_amounts)
             trade_offer = TradeOffer.objects.create(
                 creator_participant=request.user.participant,
-                creation_datetime=datetime.datetime.now(),
+                creation_datetime=timezone.now(),
                 status=settings.GAME_OFFER_ACTIVE,
                 accepted_participant=None,
                 close_datetime=None
@@ -293,6 +295,7 @@ def get_my_offers(request):
         return default_error_response
 
 
+@transaction.atomic
 @login_activated_participant_required
 def delete_offer(request, pk):
     try:
@@ -300,18 +303,26 @@ def delete_offer(request, pk):
             pk=pk,
             creator_participant__member__username__exact=request.user.username
         )
+        if trade_offer.status != settings.GAME_OFFER_ACTIVE:
+            raise TradeOffer.InvalidOfferSelected
         for suggested_item in trade_offer.suggested_items.all():
             request.user.participant.add_property(suggested_item.property_type, suggested_item.amount)
         trade_offer.status = settings.GAME_OFFER_DELETED
-        trade_offer.close_datetime = datetime.datetime.now()
+        trade_offer.close_datetime = timezone.now()
         trade_offer.save()
         return JsonResponse({
             'status': settings.OK_STATUS
+        })
+    except TradeOffer.InvalidOfferSelected:
+        return JsonResponse({
+            'status': settings.ERROR_STATUS,
+            'message': 'این پیشنهاد رو نمی‌تونی حذف کنی!'
         })
     except Exception:
         return default_error_response
 
 
+@transaction.atomic
 @login_activated_participant_required
 def accept_offer(request, pk):
     try:
@@ -334,7 +345,7 @@ def accept_offer(request, pk):
             trade_offer.creator_participant.add_property(requested_item.property_type, requested_item.amount)
         trade_offer.status = settings.GAME_OFFER_ACCEPTED
         trade_offer.accepted_participant = request.user.participant
-        trade_offer.close_datetime = datetime.datetime.now()
+        trade_offer.close_datetime = timezone.now()
         trade_offer.save()
         return JsonResponse({
             'status': settings.OK_STATUS
