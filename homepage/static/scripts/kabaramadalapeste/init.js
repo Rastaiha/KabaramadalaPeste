@@ -30,7 +30,7 @@ function init_layer() {
     data.layer = new Konva.Layer({
         draggable: true
     });
-    data.layer2 = new Konva.Layer({});
+    data.layer2 = new Konva.Layer();
 
     data.layer.on("dragend mouseup mouseover", function() {
         document.body.style.cursor = "grab";
@@ -235,11 +235,7 @@ function init_ship() {
     let ox = Math.random() * 200 + 500;
     let oy = Math.random() * 200 + 500;
     let or = Math.random() * 200 + 100;
-    var anim = new Konva.Animation(function(frame) {
-        data.ship.elem.offsetX(Math.sin(frame.time / ox));
-        data.ship.elem.offsetY(Math.sin(frame.time / oy));
-        data.ship.elem.rotate(Math.sin(frame.time / or) / 10);
-    }, data.layer2);
+
     data.ship.elem.on("mouseover", function(e) {
         document.body.style.cursor = "pointer";
         if (typeof e !== "undefined") {
@@ -256,7 +252,17 @@ function init_ship() {
         }
     });
     data.layer2.add(data.ship.elem);
-    anim.start();
+
+    let start = new Date();
+    function animate() {
+        let delta = new Date() - start;
+        data.ship.elem.offsetX(Math.sin(delta / ox));
+        data.ship.elem.offsetY(Math.sin(delta / oy));
+        data.ship.elem.rotate(Math.sin(delta / or) / 10);
+        data.layer2.batchDraw();
+        requestAnimationFrame(animate);
+    }
+    animate();
 }
 
 function init_game() {

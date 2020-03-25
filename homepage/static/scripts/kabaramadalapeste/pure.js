@@ -79,7 +79,7 @@ function show_jazire_info(jazire) {
         jazire_info.find(".jazire-info-action a").text("لنگر انداختن");
         $("#travel_modal .modal-title").text("لنگر انداختن");
         $("#travel_modal .modal-question").text(
-            "هزینه لنگر انداختن ۲ سکه می‌باشد. آیا مایل به آن هستید؟"
+            "هزینه لنگر انداختن ۲ سکه است. آیا مایل به آن هستید؟"
         );
         jazire_info
             .find(".jazire-info-action a")
@@ -92,7 +92,7 @@ function show_jazire_info(jazire) {
         jazire_info.find(".jazire-info-action a").text("سفر");
         $("#travel_modal .modal-title").text("سفر");
         $("#travel_modal .modal-question").text(
-            "هزینه سفر ۲ سکه می‌باشد. آیا مایل به آن هستید؟"
+            "هزینه سفر ۲ سکه است. آیا مایل به آن هستید؟"
         );
         jazire_info
             .find(".jazire-info-action a")
