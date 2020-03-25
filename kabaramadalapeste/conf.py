@@ -36,5 +36,27 @@ class GameConf(AppConf):
         (SEKKE, 'sekke'),
     ] + TREASURE_KEY_TYPE_CHOICES + ABILITY_TYPY_CHOICES
 
+    PARTICIPANT_PROPERTY_TYPE_CHOICES = TREASURE_REWARD_TYPE_CHOICES
+
+    PARTICIPANT_INITIAL_PROPERTIES = {
+        SEKKE: 100
+    }
+
+    MOVE_PRICE = 20
+    PUT_ANCHOR_PRICE = 30
+
+    DEFAULT_ISLAND_COUNT = 35
+    BANDARGAH_ISLAND_ID = 20
+
+    OFFER_DELETED = 'OD'
+    OFFER_ACCEPTED = 'OA'
+    OFFER_ACTIVE = 'OC'
+
+    OFFER_STATUS_CHOICES = [
+        (OFFER_DELETED, 'deleted'),
+        (OFFER_ACCEPTED, 'accepted'),
+        (OFFER_ACTIVE, 'active')
+    ]
+
     class Meta:
         prefix = 'game'

@@ -51,7 +51,7 @@ class MemberResource(resources.ModelResource):
 
 
 class ParticipantInline(admin.StackedInline):
-    readonly_fields = ['document', 'gender', 'document_status']
+    readonly_fields = ['document', 'gender', 'currently_at_island']
     model = Participant
 
 
