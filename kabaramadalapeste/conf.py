@@ -58,5 +58,7 @@ class GameConf(AppConf):
         (OFFER_ACTIVE, 'active')
     ]
 
+    MAXIMUM_ACTIVE_OFFERS = 4
+
     class Meta:
         prefix = 'game'

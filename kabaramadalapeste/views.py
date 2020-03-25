@@ -8,8 +8,11 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 
 from accounts.models import Participant
 
-from kabaramadalapeste.models import Island, ParticipantIslandStatus
+from kabaramadalapeste.models import Island, ParticipantIslandStatus, TradeOffer, TradeOfferRequestedItem, \
+    TradeOfferSuggestedItem
 from kabaramadalapeste.conf import settings
+
+import datetime
 
 
 def check_user_is_activated_participant(user):
@@ -120,6 +123,66 @@ class PutAnchorView(View):
             return JsonResponse({
                 'status': settings.ERROR_STATUS,
                 'message': 'سکه‌هات برای لنگر انداختن کافی نیست.'
+            })
+        except Exception:
+            return default_error_response
+
+
+@login_activated_participant_required
+def create_offer(request):
+    if request.method == 'POST':
+        try:
+            if TradeOffer.objects.filter(
+                creator_participant__member__username__exact=request.user.username,
+                status__exact=settings.GAME_OFFER_ACTIVE
+            ).count() >= settings.GAME_MAXIMUM_ACTIVE_OFFERS:
+                raise Participant.MaximumActiveOffersExceeded
+            suggested_types = []
+            requested_types = []
+            suggested_amounts = []
+            requested_amounts = []
+            for property_type in settings.GAME_PARTICIPANT_PROPERTY_TYPE_CHOICES:
+                if 'requested_' + property_type in request.POST:
+                    requested_types.append(property_type)
+                    requested_amounts.append(request.POST['requested_' + property_type])
+                if 'suggested_' + property_type in request.POST:
+                    suggested_types.append(property_type)
+                    suggested_amounts.append(request.POST['suggested_' + property_type])
+            request.user.participant.reduce_multiple_property(suggested_types, suggested_amounts)
+            trade_offer = TradeOffer.objects.create(
+                creator_participant=request.user.participant,
+                creation_datetime=datetime.datetime.now(),
+                status=settings.GAME_OFFER_ACTIVE,
+                accepted_participant=None,
+                close_datetime=None
+            )
+            for i in range(len(suggested_types)):
+                trade_suggested_item = TradeOfferSuggestedItem(
+                    offer=trade_offer,
+                    property_type=suggested_types[i],
+                    amount=int(suggested_amounts[i])
+                )
+                trade_suggested_item.save()
+            for i in range(len(requested_types)):
+                trade_requested_item = TradeOfferRequestedItem(
+                    offer=trade_offer,
+                    property_type=requested_types[i],
+                    amount=int(requested_amounts[i])
+                )
+                trade_requested_item.save()
+            trade_offer.save()
+            return JsonResponse({
+                'status': settings.OK_STATUS
+            })
+        except Participant.MaximumActiveOffersExceeded:
+            return JsonResponse({
+                'status': settings.ERROR_STATUS,
+                'message': 'به حداکثر تعداد پیش‌نهاداتت رسیدی.'
+            })
+        except Participant.PropertiesAreNotEnough:
+            return JsonResponse({
+                'status': settings.ERROR_STATUS,
+                'message': 'منابع کافی برای دادن این پیشنهاد رو نداری.'
             })
         except Exception:
             return default_error_response

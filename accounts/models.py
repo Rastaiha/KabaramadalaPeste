@@ -5,6 +5,9 @@ from kabaramadalapeste import models as game_models
 from kabaramadalapeste.conf import settings as game_settings
 
 from enum import Enum
+
+from collections import defaultdict
+
 import logging
 import random
 logger = logging.getLogger(__file__)
@@ -96,6 +99,20 @@ class Participant(models.Model):
             raise Participant.PropertiesAreNotEnough
         property_item.amount = property_item.amount - amount
         property_item.save()
+
+    def reduce_multiple_property(self, property_types, amounts):
+        if len(property_types) != len(amounts):
+            raise Participant.BadInput
+        dic = defaultdict(int)
+        for i, property_type in enumerate(property_types):
+            if amounts[i] < 0:
+                raise Participant.BadInput
+            dic[property_type] += amounts[i]
+        for property_type in dic:
+            if self.get_property(property_type).amount < dic[property_type]:
+                raise Participant.PropertiesAreNotEnough
+        for property_type in dic:
+            self.reduce_property(property_type, dic[property_type])
 
     def add_property(self, property_type, amount):
         if amount < 0:
