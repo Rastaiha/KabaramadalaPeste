@@ -13,6 +13,7 @@ from kabaramadalapeste.models import Island, ParticipantIslandStatus, TradeOffer
 from kabaramadalapeste.conf import settings
 
 import datetime
+import sys
 
 
 def check_user_is_activated_participant(user):
@@ -187,13 +188,14 @@ def create_offer(request):
             requested_types = []
             suggested_amounts = []
             requested_amounts = []
-            for property_type in settings.GAME_PARTICIPANT_PROPERTY_TYPE_CHOICES:
+            for property_tuple in settings.GAME_PARTICIPANT_PROPERTY_TYPE_CHOICES:
+                property_type = property_tuple[0]
                 if 'requested_' + property_type in request.POST:
                     requested_types.append(property_type)
-                    requested_amounts.append(request.POST['requested_' + property_type])
+                    requested_amounts.append(int(request.POST['requested_' + property_type]))
                 if 'suggested_' + property_type in request.POST:
                     suggested_types.append(property_type)
-                    suggested_amounts.append(request.POST['suggested_' + property_type])
+                    suggested_amounts.append(int(request.POST['suggested_' + property_type]))
             request.user.participant.reduce_multiple_property(suggested_types, suggested_amounts)
             trade_offer = TradeOffer.objects.create(
                 creator_participant=request.user.participant,
@@ -232,6 +234,91 @@ def create_offer(request):
             })
         except Exception:
             return default_error_response
+
+
+@login_activated_participant_required
+def get_all_offers(request):
+    try:
+        data = {'offers':[]}
+        for trade_offer in TradeOffer.objects.filter(status__exact=settings.GAME_OFFER_ACTIVE).order_by('?').all():
+            data['offers'].append(trade_offer.to_dict())
+        return JsonResponse(data)
+    except Exception:
+        return default_error_response
+
+
+@login_activated_participant_required
+def get_my_offers(request):
+    try:
+        data = {'offers':[]}
+        for trade_offer in TradeOffer.objects.filter(
+            status__exact=settings.GAME_OFFER_ACTIVE,
+            creator_participant__member__username__exact=request.user.username
+        ).order_by('?').all():
+            data['offers'].append(trade_offer.to_dict())
+        return JsonResponse(data)
+    except Exception:
+        return default_error_response
+
+
+@login_activated_participant_required
+def delete_offer(request, pk):
+    try:
+        trade_offer = TradeOffer.objects.get(
+            pk=pk,
+            creator_participant__member__username__exact=request.user.username
+        )
+        for suggested_item in trade_offer.suggested_items.all():
+            request.user.participant.add_property(suggested_item.property_type, suggested_item.amount)
+        trade_offer.status = settings.GAME_OFFER_DELETED
+        trade_offer.close_datetime = datetime.datetime.now()
+        trade_offer.save()
+        return JsonResponse({
+            'status': settings.OK_STATUS
+        })
+    except Exception:
+        return default_error_response
+
+
+@login_activated_participant_required
+def accept_offer(request, pk):
+    try:
+        trade_offer = TradeOffer.objects.get(
+            pk=pk,
+        )
+        if trade_offer.creator_participant.member.username == request.user.username:
+            raise TradeOffer.InvalidOfferSelected
+        if trade_offer.status != settings.GAME_OFFER_ACTIVE:
+            raise TradeOffer.InvalidOfferSelected
+        requested_types = []
+        requested_amounts = []
+        for requested_item in trade_offer.requested_items.all():
+            requested_types.append(requested_item.property_type)
+            requested_amounts.append(requested_item.amount)
+        request.user.participant.reduce_multiple_property(requested_types, requested_amounts)
+        for suggested_item in trade_offer.suggested_items.all():
+            request.user.participant.add_property(suggested_item.property_type, suggested_item.amount)
+        for requested_item in trade_offer.requested_items.all():
+            trade_offer.creator_participant.add_property(requested_item.property_type, requested_item.amount)
+        trade_offer.status = settings.GAME_OFFER_ACCEPTED
+        trade_offer.accepted_participant = request.user.participant
+        trade_offer.close_datetime = datetime.datetime.now()
+        trade_offer.save()
+        return JsonResponse({
+            'status': settings.OK_STATUS
+        })
+    except TradeOffer.InvalidOfferSelected:
+        return JsonResponse({
+            'status': settings.ERROR_STATUS,
+            'message': 'این پیشنهاد رو نمی‌تونی قبول کنی!'
+        })
+    except Participant.PropertiesAreNotEnough:
+        return JsonResponse({
+            'status': settings.ERROR_STATUS,
+            'message': 'منابع کافی برای قبول کردن این پیشنهاد رو نداری.'
+        })
+    except Exception:
+        return default_error_response
 
 
 @login_activated_participant_required
