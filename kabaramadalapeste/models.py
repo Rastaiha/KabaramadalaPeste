@@ -312,6 +312,20 @@ class TradeOffer(models.Model):
     def __str__(self):
         return 'creator: %s, status: %s' % (self.creator_participant.member.email, self.status)
 
+    def to_dict(self):
+        dic = {
+            'pk': self.pk,
+            'creator_participant_username': self.creator_participant.member.username
+        }
+        for offer_item in self.suggested_items.all():
+            dic['suggested_' + offer_item.property_type] = offer_item.amount
+        for offer_item in self.requested_items.all():
+            dic['requested_' + offer_item.property_type] = offer_item.amount
+        return dic
+
+    class InvalidOfferSelected(Exception):
+        pass
+
 
 class TradeOfferSuggestedItem(models.Model):
     property_type = models.CharField(

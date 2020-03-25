@@ -5,7 +5,7 @@ from django.urls import reverse
 from accounts.models import Participant
 from kabaramadalapeste.models import (
     ParticipantIslandStatus, Island, Way,
-    ShortAnswerSubmit, SubmitStatus, ShortAnswerQuestion
+    ShortAnswerSubmit, SubmitStatus, ShortAnswerQuestion, TradeOffer
 )
 from kabaramadalapeste.factory import (
     ChallengeFactory, IslandFactory, ShortAnswerQuestionFactory, TreasureFactory
@@ -419,3 +419,69 @@ class ViewsTest(TestCase):
         self.client.force_login(self.participant.member)
         response = self.client.post(reverse('kabaramadalapeste:accept_challenge'))
         self.assertEqual(response.json()['status'], settings.ERROR_STATUS)
+
+    def test_delete_and_get_offers(self):
+        self.client.force_login(self.participant.member)
+        old_sekke = self.participant.sekke.amount
+        data = {
+            'requested_' + settings.GAME_VISION: '1',
+            'suggested_' + settings.GAME_SEKKE: '1',
+        }
+        response = self.client.post(reverse('kabaramadalapeste:create_offer'), data=data)
+        self.assertEqual(response.json()['status'], settings.OK_STATUS)
+        response = self.client.get(reverse('kabaramadalapeste:get_my_offers'))
+        self.assertEqual(len(response.json()['offers']), 1)
+        pk = response.json()['offers'][0]['pk']
+        response = self.client.get(reverse('kabaramadalapeste:delete_offer', kwargs={'pk':pk}))
+        self.assertEqual(response.json()['status'], settings.OK_STATUS)
+        self.assertEqual(old_sekke, self.participant.sekke.amount)
+        response = self.client.get(reverse('kabaramadalapeste:get_my_offers'))
+        self.assertEqual(len(response.json()['offers']), 0)
+
+    def test_accept_not_enough_properties(self):
+        participant1 = self.all_participants[1]
+        self.client.force_login(self.participant.member)
+        data = {
+            'requested_' + settings.GAME_VISION: str(participant1.get_property(settings.GAME_VISION).amount + 1),
+            'suggested_' + settings.GAME_SEKKE: '1',
+        }
+        response = self.client.post(reverse('kabaramadalapeste:create_offer'), data=data)
+        self.assertEqual(response.json()['status'], settings.OK_STATUS)
+        self.client.force_login(participant1.member)
+        response = self.client.get(reverse('kabaramadalapeste:get_all_offers'))
+        self.assertEqual(len(response.json()['offers']), 1)
+        pk = response.json()['offers'][0]['pk']
+        response = self.client.get(reverse('kabaramadalapeste:accept_offer', kwargs={'pk':pk}))
+        self.assertEqual(response.json()['status'], settings.ERROR_STATUS)
+        TradeOffer.objects.all().delete()
+
+    def test_accept_offer(self):
+        participant1 = self.all_participants[1]
+        self.client.force_login(self.participant.member)
+        participant1.add_property(settings.GAME_VISION, 1)
+        old_sekke = self.participant.sekke.amount
+        old_sekke1 = participant1.sekke.amount
+        old_vision = self.participant.get_property(settings.GAME_VISION).amount
+        old_vision1 = participant1.get_property(settings.GAME_VISION).amount
+        data = {
+            'requested_' + settings.GAME_VISION: '1',
+            'suggested_' + settings.GAME_SEKKE: '1',
+        }
+        response = self.client.post(reverse('kabaramadalapeste:create_offer'), data=data)
+        self.assertEqual(response.json()['status'], settings.OK_STATUS)
+        self.client.force_login(participant1.member)
+        response = self.client.get(reverse('kabaramadalapeste:get_all_offers'))
+        self.assertEqual(len(response.json()['offers']), 1)
+        pk = response.json()['offers'][0]['pk']
+        response = self.client.get(reverse('kabaramadalapeste:accept_offer', kwargs={'pk':pk}))
+        self.assertEqual(response.json()['status'], settings.OK_STATUS)
+        response = self.client.get(reverse('kabaramadalapeste:get_all_offers'))
+        self.assertEqual(len(response.json()['offers']), 0)
+        sekke = self.participant.sekke.amount
+        sekke1 = participant1.sekke.amount
+        vision = self.participant.get_property(settings.GAME_VISION).amount
+        vision1 = participant1.get_property(settings.GAME_VISION).amount
+        self.assertEqual(sekke + 1, old_sekke)
+        self.assertEqual(sekke1, old_sekke1 + 1)
+        self.assertEqual(vision, old_vision + 1)
+        self.assertEqual(vision1 + 1, old_vision1)
