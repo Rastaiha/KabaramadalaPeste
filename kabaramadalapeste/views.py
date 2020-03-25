@@ -125,6 +125,33 @@ class PutAnchorView(View):
             return default_error_response
 
 
+@method_decorator(login_activated_participant_required, name='dispatch')
+class OpenTreasureView(View):
+    def post(self, request):
+        try:
+            request.user.participant.open_treasure_on_current_island()
+            return JsonResponse({
+                'status': settings.OK_STATUS
+            })
+        except Participant.ParticipantIsNotOnIsland:
+            return JsonResponse({
+                'status': settings.ERROR_STATUS,
+                'message': 'کشتیت روی جزیره‌ای نیست. نمی‌تونی گنجش رو باز کنی. اول انتخاب کن می‌خوای از کجا شروع کنی.'
+            })
+        except Participant.DidNotAnchored:
+            return JsonResponse({
+                'status': settings.ERROR_STATUS,
+                'message': 'توی جزیره لنگر ننداختی. نمی‌تونی گنجش رو باز کنی. اول باید لنگر بندازی.'
+            })
+        except Participant.PropertiesAreNotEnough:
+            return JsonResponse({
+                'status': settings.ERROR_STATUS,
+                'message': 'دارایی‌هات برای باز کردن گنج کافی نیست.'
+            })
+        except Exception:
+            return default_error_response
+
+
 @login_activated_participant_required
 def game(request):
     return render(request, 'kabaramadalapeste/game.html', {

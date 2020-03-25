@@ -11,6 +11,7 @@ from kabaramadalapeste.models import (
     ParticipantPropertyItem, ShortAnswerQuestion, Treasure
 )
 from kabaramadalapeste.conf import settings
+from collections import defaultdict
 
 
 # Create your tests here.
@@ -203,3 +204,91 @@ class ParticipantTest(TestCase):
         with self.settings(GAME_PARTICIPANT_INITIAL_PROPERTIES=PARTICIPANT_INITIAL_PROPERTIES):
             self.participant.init_properties()
             self.assertEqual(ParticipantPropertyItem.objects.count(), 1)
+
+    def test_open_treasure_ok(self):
+        self.participant.init_pis()
+        self.participant.init_properties()
+        self.participant.set_start_island(self.island)
+        self.participant.put_anchor_on_current_island()
+
+        pis = ParticipantIslandStatus.objects.get(
+            participant=self.participant,
+            island=self.island
+        )
+        for key in pis.treasure.keys.all():
+            if self.participant.get_property(key.key_type).amount < key.amount:
+                self.participant.add_property(
+                    key.key_type,
+                    key.amount - self.participant.get_property(key.key_type).amount
+                )
+        before_props = {
+            prop.property_type: prop.amount for prop in self.participant.properties.all()
+        }
+        self.participant.open_treasure_on_current_island()
+        after_props = {
+            prop.property_type: prop.amount for prop in self.participant.properties.all()
+        }
+        expected_change = defaultdict(int)
+        for key in pis.treasure.keys.all():
+            expected_change[key.key_type] -= key.amount
+        for reward in pis.treasure.rewards.all():
+            expected_change[reward.reward_type] += reward.amount
+        for key, change in expected_change.items():
+            self.assertEqual(after_props[key] - before_props.get(key, 0), expected_change[key])
+        pis.refresh_from_db()
+        self.assertTrue(pis.did_open_treasure)
+        self.assertIsNotNone(pis.treasure_opened_at)
+
+    def test_open_treasure_not_enough(self):
+        self.participant.init_pis()
+        self.participant.init_properties()
+        self.participant.set_start_island(self.island)
+        self.participant.put_anchor_on_current_island()
+
+        pis = ParticipantIslandStatus.objects.get(
+            participant=self.participant,
+            island=self.island
+        )
+        for key in pis.treasure.keys.all():
+            if self.participant.get_property(key.key_type).amount < key.amount:
+                self.participant.add_property(
+                    key.key_type,
+                    key.amount - self.participant.get_property(key.key_type).amount
+                )
+        key = pis.treasure.keys.first()
+        self.participant.reduce_property(
+            key.key_type,
+            (self.participant.get_property(key.key_type).amount - key.amount) + 1
+        )
+        before_props = {
+            prop.property_type: prop.amount for prop in self.participant.properties.all()
+        }
+        with self.assertRaises(Participant.PropertiesAreNotEnough):
+            self.participant.open_treasure_on_current_island()
+        after_props = {
+            prop.property_type: prop.amount for prop in self.participant.properties.all()
+        }
+        for key in pis.treasure.keys.all():
+            self.assertEqual(after_props[key.key_type] - before_props.get(key.key_type, 0), 0)
+        for reward in pis.treasure.rewards.all():
+            self.assertEqual(
+                after_props.get(reward.reward_type, 0) - before_props.get(reward.reward_type, 0), 0
+            )
+        pis.refresh_from_db()
+        self.assertFalse(pis.did_open_treasure)
+        self.assertIsNone(pis.treasure_opened_at)
+
+    def test_open_treasure_not_at_island(self):
+        self.participant.init_pis()
+        self.participant.init_properties()
+
+        with self.assertRaises(Participant.ParticipantIsNotOnIsland):
+            self.participant.open_treasure_on_current_island()
+
+    def test_open_treasure_did_not_anchor(self):
+        self.participant.init_pis()
+        self.participant.init_properties()
+        self.participant.set_start_island(self.island)
+
+        with self.assertRaises(Participant.DidNotAnchored):
+            self.participant.open_treasure_on_current_island()

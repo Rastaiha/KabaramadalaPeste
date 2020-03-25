@@ -40,6 +40,9 @@ class Participant(models.Model):
     class ParticipantIsNotOnIsland(Exception):
         pass
 
+    class DidNotAnchored(Exception):
+        pass
+
     class PropertiesAreNotEnough(Exception):
         pass
 
@@ -160,14 +163,9 @@ class Participant(models.Model):
         if not self.currently_at_island.is_neighbor_with(dest_island):
             raise game_models.Island.IslandsNotConnected
 
-        if not is_free and self.sekke.amount < game_settings.GAME_MOVE_PRICE:
-            raise Participant.PropertiesAreNotEnough
-
         with transaction.atomic():
             if not is_free:
-                safe_sekke = self.get_safe_sekke()
-                safe_sekke.amount -= game_settings.GAME_MOVE_PRICE
-                safe_sekke.save()
+                self.reduce_property(game_settings.GAME_SEKKE, game_settings.GAME_MOVE_PRICE)
 
             src_pis = game_models.ParticipantIslandStatus.objects.get(
                 participant=self,
@@ -193,8 +191,6 @@ class Participant(models.Model):
     def put_anchor_on_current_island(self):
         if not self.currently_at_island:
             raise Participant.ParticipantIsNotOnIsland
-        if self.sekke.amount < game_settings.GAME_PUT_ANCHOR_PRICE:
-            raise Participant.PropertiesAreNotEnough
 
         current_pis = game_models.ParticipantIslandStatus.objects.get(
             participant=self,
@@ -205,9 +201,26 @@ class Participant(models.Model):
             current_pis.last_anchored_at = timezone.now()
             current_pis.save()
 
-            safe_sekke = self.get_safe_sekke()
-            safe_sekke.amount -= game_settings.GAME_PUT_ANCHOR_PRICE
-            safe_sekke.save()
+            self.reduce_property(game_settings.GAME_SEKKE, game_settings.GAME_PUT_ANCHOR_PRICE)
+
+    def open_treasure_on_current_island(self):
+        if not self.currently_at_island:
+            raise Participant.ParticipantIsNotOnIsland
+        current_pis = game_models.ParticipantIslandStatus.objects.get(
+            participant=self,
+            island=self.currently_at_island
+        )
+        if not current_pis.currently_anchored:
+            raise Participant.DidNotAnchored
+        treasure = current_pis.treasure
+        with transaction.atomic():
+            for key in treasure.keys.all():
+                self.reduce_property(key.key_type, key.amount)
+            for reward in treasure.rewards.all():
+                self.add_property(reward.reward_type, reward.amount)
+            current_pis.did_open_treasure = True
+            current_pis.treasure_opened_at = timezone.now()
+            current_pis.save()
 
 
 class Judge(models.Model):
