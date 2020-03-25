@@ -2,7 +2,10 @@ from django.test import TestCase
 from django.urls import reverse
 
 # Create your tests here.
-from kabaramadalapeste.models import ParticipantIslandStatus, Island, Way, TradeOffer
+from kabaramadalapeste.models import (
+    ParticipantIslandStatus, Island, Way,
+    ShortAnswerSubmit, SubmitStatus, ShortAnswerQuestion, TradeOffer
+)
 from kabaramadalapeste.factory import (
     ChallengeFactory, IslandFactory, ShortAnswerQuestionFactory, TreasureFactory
 )
@@ -10,7 +13,7 @@ from kabaramadalapeste.conf import settings
 from accounts.factory import ParticipantFactory
 
 
-class AssignQuestionTest(TestCase):
+class ModelsTest(TestCase):
 
     def setUp(self):
         [ChallengeFactory() for i in range(10)]
@@ -49,6 +52,96 @@ class AssignQuestionTest(TestCase):
             pis.assign_question(force=True)
             self.assertNotEqual(pis_old.question_object_id, pis.question_object_id)
 
+    def test_create_answer_without_pis(self):
+        with self.assertRaises(ShortAnswerSubmit.pis.RelatedObjectDoesNotExist):
+            submit = ShortAnswerSubmit.objects.create()
+
+    def test_check_short_answer_submit(self):
+        pis = ParticipantIslandStatus(
+            participant=self.participant,
+            island=self.island
+        )
+        pis.assign_question()
+        submit = ShortAnswerSubmit.objects.create(
+            pis=pis,
+        )
+        self.assertEqual(submit.submit_status, SubmitStatus.Wrong)
+        self.assertIsNotNone(submit.submitted_at)
+
+    def test_check_short_answer_submit_wrong(self):
+        pis = ParticipantIslandStatus(
+            participant=self.participant,
+            island=self.island
+        )
+        pis.assign_question()
+        submit = ShortAnswerSubmit.objects.create(
+            pis=pis,
+            submitted_answer=ShortAnswerQuestionFactory.correct_answer
+        )
+        self.assertEqual(submit.submit_status, SubmitStatus.Correct)
+        self.assertIsNotNone(submit.submitted_at)
+        self.assertIsNotNone(pis.submit)
+
+    def test_check_short_answer_submit_wrong_type(self):
+        pis = ParticipantIslandStatus(
+            participant=self.participant,
+            island=self.island
+        )
+        pis.assign_question()
+        pis.question.answer_type = ShortAnswerQuestion.INTEGER
+        pis.question.correct_answer = 2
+        submit = ShortAnswerSubmit.objects.create(
+            pis=pis,
+            submitted_answer='ghool'
+        )
+        self.assertEqual(submit.submit_status, SubmitStatus.Wrong)
+        self.assertIsNotNone(submit.submitted_at)
+
+    def test_check_short_answer_submit_correct_int(self):
+        pis = ParticipantIslandStatus(
+            participant=self.participant,
+            island=self.island
+        )
+        pis.assign_question()
+        pis.question.answer_type = ShortAnswerQuestion.INTEGER
+        pis.question.correct_answer = 2
+        submit = ShortAnswerSubmit.objects.create(
+            pis=pis,
+            submitted_answer='2'
+        )
+        self.assertEqual(submit.submit_status, SubmitStatus.Correct)
+        self.assertIsNotNone(submit.submitted_at)
+
+    def test_check_short_answer_submit_wrong_float(self):
+        pis = ParticipantIslandStatus(
+            participant=self.participant,
+            island=self.island
+        )
+        pis.assign_question()
+        pis.question.answer_type = ShortAnswerQuestion.FLOAT
+        pis.question.correct_answer = 2.2
+        submit = ShortAnswerSubmit.objects.create(
+            pis=pis,
+            submitted_answer=2.3
+        )
+        self.assertEqual(submit.submit_status, SubmitStatus.Wrong)
+        self.assertIsNotNone(submit.submitted_at)
+
+    def test_check_short_answer_submit_correct_float(self):
+        pis = ParticipantIslandStatus(
+            participant=self.participant,
+            island=self.island
+        )
+        pis.assign_question()
+        pis.question.answer_type = ShortAnswerQuestion.FLOAT
+        pis.question.correct_answer = 2.2
+        submit = ShortAnswerSubmit.objects.create(
+            pis=pis,
+            submitted_answer=2.204
+        )
+        self.assertEqual(submit.submit_status, SubmitStatus.Correct)
+        self.assertIsNotNone(submit.submitted_at)
+
 
 class ViewsTest(TestCase):
     def setUp(self):
@@ -85,6 +178,26 @@ class ViewsTest(TestCase):
         self.assertIsNotNone(response.json()['name'])
         self.assertIsNotNone(response.json()['challenge_name'])
         self.assertEqual(response.json()['participants_inside'], 4)
+        self.assertEqual(response.json()['treasure_keys'], 'unknown')
+
+    def test_island_info_keys_visible(self):
+        self.participant.set_start_island(self.island)
+        self.participant.put_anchor_on_current_island()
+        self.client.force_login(self.participant.member)
+        response = self.client.get(reverse('kabaramadalapeste:island_info', kwargs={
+            'island_id': self.island.island_id
+        }))
+        pis = ParticipantIslandStatus.objects.get(
+            participant=self.participant,
+            island=self.island
+        )
+        self.assertIsNotNone(response.json()['name'])
+        self.assertIsNotNone(response.json()['challenge_name'])
+        self.assertEqual(response.json()['participants_inside'], 1)
+        self.assertDictEqual(
+            response.json()['treasure_keys'],
+            {key.key_type: key.amount for key in pis.treasure.keys.all()}
+        )
 
     def test_participant_info_not_login(self):
         response = self.client.get(reverse('kabaramadalapeste:participant_info'))

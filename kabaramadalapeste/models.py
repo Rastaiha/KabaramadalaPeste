@@ -4,9 +4,12 @@ from accounts.models import Participant
 
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
+from django.utils import timezone
 
 import random
 import logging
+import math
+from enum import Enum
 
 logger = logging.getLogger(__file__)
 
@@ -116,7 +119,7 @@ class ShortAnswerQuestion(BaseQuestion):
         (FLOAT, 'float'),
         (STRING, 'string')
     ]
-    correct_answer = models.CharField(max_length=50)
+    correct_answer = models.CharField(max_length=100)
     answer_type = models.CharField(
         max_length=3,
         choices=ANSWER_TYPE_CHOICES,
@@ -125,7 +128,7 @@ class ShortAnswerQuestion(BaseQuestion):
 
 
 class JudgeableQuestion(BaseQuestion):
-    pass
+    upload_required = models.BooleanField(default=True)
 
 
 class Treasure(models.Model):
@@ -189,6 +192,8 @@ class ParticipantIslandStatus(models.Model):
 
     treasure = models.ForeignKey(Treasure, on_delete=models.SET_NULL, null=True)
 
+    is_treasure_visible = models.BooleanField(default=False)
+
     did_open_treasure = models.BooleanField(default=False)
     treasure_opened_at = models.DateTimeField(null=True)
 
@@ -225,6 +230,68 @@ class ParticipantIslandStatus(models.Model):
         result_question_id = random.choice(list(valid_question_ids))
         self.question = self.island.challenge.questions.get(id=result_question_id[0])
         self.save()
+
+    @property
+    def submit(self):
+        if self.question.challenge.is_judgeable:
+            return self.judgeablesubmit
+        return self.shortanswersubmit
+
+
+class SubmitStatus(Enum):
+    Pending = 'Pending'
+    Correct = 'Correct'
+    Wrong = 'Wrong'
+
+
+class BaseSubmit(models.Model):
+
+    pis = models.OneToOneField(ParticipantIslandStatus,
+                               related_name='%(class)s',
+                               on_delete=models.CASCADE)
+    submitted_at = models.DateTimeField(default=timezone.now)
+    submit_status = models.CharField(max_length=20, default=SubmitStatus.Pending,
+                                     choices=[(tag.value, tag.name) for tag in SubmitStatus])
+    judged_at = models.DateTimeField(null=True)
+
+    class Meta:
+        abstract = True
+
+    def __str__(self):
+        return 'Submit from %s for question %s with status %s' % (
+            self.pis.participant.member.username, self.pis.question.title, self.submit_status
+        )
+
+
+
+class ShortAnswerSubmit(BaseSubmit):
+
+    submitted_answer = models.CharField(max_length=100)
+
+    def save(self, *args, **kwargs):
+        self.check_answer()
+        super().save(*args, **kwargs)
+
+    def check_answer(self):
+        question = self.pis.question
+        is_correct = False
+        try:
+            if question.answer_type == ShortAnswerQuestion.INTEGER:
+                is_correct = int(self.submitted_answer) == int(question.correct_answer)
+            elif question.answer_type == ShortAnswerQuestion.FLOAT:
+                is_correct = math.isclose(float(self.submitted_answer), float(question.correct_answer),
+                                          abs_tol=5e-3)
+            else:
+                is_correct = self.submitted_answer == question.correct_answer
+        except ValueError:
+            logger.warn('Type mismatch for %s' % self)
+        self.submit_status = SubmitStatus.Correct if is_correct else SubmitStatus.Wrong
+        self.judged_at = timezone.now()
+
+
+class JudgeableSubmit(BaseSubmit):
+    submitted_answer = models.FileField(upload_to='answers/', null=True)
+    judge_note = models.CharField(max_length=200, null=True, blank=True)
 
 
 class TradeOffer(models.Model):
