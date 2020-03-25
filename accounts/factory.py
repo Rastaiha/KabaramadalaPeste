@@ -7,6 +7,7 @@ from accounts.models import (
 class MemberFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Member
+    username = factory.Sequence(lambda n: n)
 
 
 class ParticipantFactory(factory.django.DjangoModelFactory):
