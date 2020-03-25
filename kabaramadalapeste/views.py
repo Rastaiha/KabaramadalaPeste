@@ -64,8 +64,12 @@ class ParticipantInfoView(View):
             properties_dict = {
                 prop.property_type: prop.amount for prop in request.user.participant.properties.all()
             }
+            current_island_id = None
+            if request.user.participant.currently_at_island:
+                current_island_id = request.user.participant.currently_at_island.island_id
             return JsonResponse({
                 'username': request.user.username,
+                'current_island_id': current_island_id,
                 'properties': properties_dict
             })
         except Exception:

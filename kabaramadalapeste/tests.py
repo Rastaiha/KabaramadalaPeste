@@ -91,9 +91,11 @@ class ViewsTest(TestCase):
         self.assertEqual(response.status_code, 302)
 
     def test_participant_info_ok(self):
+        self.participant.set_start_island(self.island)
         self.client.force_login(self.participant.member)
         response = self.client.get(reverse('kabaramadalapeste:participant_info'))
         self.assertEqual(response.json()['username'], self.participant.member.username)
+        self.assertEqual(response.json()['current_island_id'], self.participant.currently_at_island.island_id)
         for key, value in settings.GAME_PARTICIPANT_INITIAL_PROPERTIES.items():
             self.assertEqual(response.json()['properties'][key], value)
 
