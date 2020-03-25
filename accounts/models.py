@@ -1,6 +1,7 @@
 from django.db import models, transaction
 from django.contrib.auth.models import AbstractUser
 from django.utils import timezone
+from datetime import timedelta
 from kabaramadalapeste import models as game_models
 from kabaramadalapeste.conf import settings as game_settings
 
@@ -50,6 +51,9 @@ class Participant(models.Model):
         pass
 
     class MaximumActiveOffersExceeded(Exception):
+        pass
+
+    class MaximumChallengePerDayExceeded(Exception):
         pass
 
     class BadInput(Exception):
@@ -133,6 +137,20 @@ class Participant(models.Model):
 
     def get_safe_sekke(self):
         return self.get_safe_property(game_settings.GAME_SEKKE)
+
+    def today_challenges_opened_count(self):
+        today_begin = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
+        today_end = today_begin + timedelta(days=1)
+        return game_models.ParticipantIslandStatus.objects.filter(
+            participant=self,
+            did_accept_challenge=True,
+            challenge_accepted_at__gte=today_begin,
+            challenge_accepted_at__lt=today_end,
+        ).count()
+
+    def can_open_new_challenge(self):
+        # TODO: handle challenge plus ability here
+        return self.today_challenges_opened_count() < game_settings.GAME_BASE_CHALLENGE_PER_DAY
 
     def init_pis(self):
         if game_models.ParticipantIslandStatus.objects.filter(participant=self).count():
@@ -245,6 +263,27 @@ class Participant(models.Model):
                 self.add_property(reward.reward_type, reward.amount)
             current_pis.did_open_treasure = True
             current_pis.treasure_opened_at = timezone.now()
+            current_pis.save()
+
+    def accept_challenge_on_current_island(self):
+        if not self.currently_at_island:
+            raise Participant.ParticipantIsNotOnIsland
+        current_pis = game_models.ParticipantIslandStatus.objects.get(
+            participant=self,
+            island=self.currently_at_island
+        )
+        if not current_pis.currently_anchored:
+            raise Participant.DidNotAnchored
+        if not self.can_open_new_challenge():
+            raise Participant.MaximumChallengePerDayExceeded
+
+        current_pis = game_models.ParticipantIslandStatus.objects.get(
+            participant=self,
+            island=self.currently_at_island
+        )
+        with transaction.atomic():
+            current_pis.did_accept_challenge = True
+            current_pis.challenge_accepted_at = timezone.now()
             current_pis.save()
 
 

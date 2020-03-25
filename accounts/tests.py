@@ -12,6 +12,9 @@ from kabaramadalapeste.models import (
 )
 from kabaramadalapeste.conf import settings
 from collections import defaultdict
+from django.utils import timezone
+from datetime import datetime, timedelta
+from unittest import mock
 
 
 # Create your tests here.
@@ -293,3 +296,93 @@ class ParticipantTest(TestCase):
 
         with self.assertRaises(Participant.DidNotAnchored):
             self.participant.open_treasure_on_current_island()
+
+    def test_accept_challenge_ok(self):
+        self.participant.init_pis()
+        self.participant.init_properties()
+        self.participant.set_start_island(self.island)
+        self.participant.put_anchor_on_current_island()
+
+        pis = ParticipantIslandStatus.objects.get(
+            participant=self.participant,
+            island=self.island
+        )
+        self.participant.accept_challenge_on_current_island()
+        pis.refresh_from_db()
+        self.assertTrue(pis.did_accept_challenge)
+        self.assertIsNotNone(pis.challenge_accepted_at)
+
+    def test_accept_challenge_not_at_island(self):
+        self.participant.init_pis()
+        self.participant.init_properties()
+
+        with self.assertRaises(Participant.ParticipantIsNotOnIsland):
+            self.participant.accept_challenge_on_current_island()
+
+    def test_accept_challenge_did_not_anchor(self):
+        self.participant.init_pis()
+        self.participant.init_properties()
+        self.participant.set_start_island(self.island)
+
+        with self.assertRaises(Participant.DidNotAnchored):
+            self.participant.accept_challenge_on_current_island()
+
+    @mock.patch('accounts.models.timezone.now')
+    def test_accept_challenge_limit(self, now_mock):
+        base_now = datetime.now().replace(tzinfo=timezone.get_current_timezone())
+        now_mock.return_value = base_now
+
+        self.participant.init_pis()
+        self.participant.init_properties()
+        self.participant.set_start_island(self.island)
+        self.participant.put_anchor_on_current_island()
+
+        for i, island in enumerate(self.all_islands[5:5 + settings.GAME_BASE_CHALLENGE_PER_DAY]):
+            pis = ParticipantIslandStatus.objects.get(
+                participant=self.participant,
+                island=island
+            )
+            pis.did_accept_challenge = True
+            if i == 0:
+                pis.challenge_accepted_at = base_now.replace(
+                    hour=0,
+                    minute=0,
+                    second=1
+                )
+            else:
+                pis.challenge_accepted_at = base_now
+            pis.save()
+
+        with self.assertRaises(Participant.MaximumChallengePerDayExceeded):
+            self.participant.accept_challenge_on_current_island()
+
+    @mock.patch('accounts.models.timezone.now')
+    def test_accept_challenge_ok_one_less(self, now_mock):
+        base_now = datetime.now().replace(tzinfo=timezone.get_current_timezone())
+        now_mock.return_value = base_now
+
+        self.participant.init_pis()
+        self.participant.init_properties()
+        self.participant.set_start_island(self.island)
+        self.participant.put_anchor_on_current_island()
+
+        for i, island in enumerate(self.all_islands[5:5 + settings.GAME_BASE_CHALLENGE_PER_DAY]):
+            pis = ParticipantIslandStatus.objects.get(
+                participant=self.participant,
+                island=island
+            )
+            pis.did_accept_challenge = True
+            if i == 0:
+                pis.challenge_accepted_at = (base_now + timedelta(days=1)).replace(
+                    hour=0,
+                    minute=0,
+                    second=1
+                )
+            else:
+                pis.challenge_accepted_at = base_now
+            pis.save()
+
+        self.participant.accept_challenge_on_current_island()
+        pis.refresh_from_db()
+        self.assertTrue(pis.did_accept_challenge)
+        self.assertIsNotNone(pis.challenge_accepted_at)

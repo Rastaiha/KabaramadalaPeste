@@ -2,6 +2,7 @@ from django.test import TestCase
 from django.urls import reverse
 
 # Create your tests here.
+from accounts.models import Participant
 from kabaramadalapeste.models import (
     ParticipantIslandStatus, Island, Way,
     ShortAnswerSubmit, SubmitStatus, ShortAnswerQuestion
@@ -11,6 +12,7 @@ from kabaramadalapeste.factory import (
 )
 from kabaramadalapeste.conf import settings
 from accounts.factory import ParticipantFactory
+from unittest import mock
 
 
 class ModelsTest(TestCase):
@@ -394,4 +396,26 @@ class ViewsTest(TestCase):
             'suggested_' + settings.GAME_SEKKE: str(self.participant.sekke.amount + 1),
         }
         response = self.client.post(reverse('kabaramadalapeste:create_offer'), data=data)
+        self.assertEqual(response.json()['status'], settings.ERROR_STATUS)
+
+    def test_accept_challenge_not_login(self):
+        response = self.client.get(reverse('kabaramadalapeste:accept_challenge'))
+        self.assertEqual(response.status_code, 302)
+
+    def test_accept_challenge_ok(self):
+        self.participant.set_start_island(self.island)
+        self.participant.put_anchor_on_current_island()
+
+        self.client.force_login(self.participant.member)
+        response = self.client.post(reverse('kabaramadalapeste:accept_challenge'))
+        self.assertEqual(response.json()['status'], settings.OK_STATUS)
+
+    @mock.patch('accounts.views.Participant.accept_challenge_on_current_island')
+    def test_accept_challenge_maximum(self, accept_mock):
+        accept_mock.side_effect = Participant.MaximumChallengePerDayExceeded
+        self.participant.set_start_island(self.island)
+        self.participant.put_anchor_on_current_island()
+
+        self.client.force_login(self.participant.member)
+        response = self.client.post(reverse('kabaramadalapeste:accept_challenge'))
         self.assertEqual(response.json()['status'], settings.ERROR_STATUS)

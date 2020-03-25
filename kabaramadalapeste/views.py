@@ -179,6 +179,33 @@ class OpenTreasureView(View):
             return default_error_response
 
 
+@method_decorator(login_activated_participant_required, name='dispatch')
+class AcceptChallengeView(View):
+    def post(self, request):
+        try:
+            request.user.participant.accept_challenge_on_current_island()
+            return JsonResponse({
+                'status': settings.OK_STATUS
+            })
+        except Participant.ParticipantIsNotOnIsland:
+            return JsonResponse({
+                'status': settings.ERROR_STATUS,
+                'message': 'کشتیت روی جزیره‌ای نیست. نمی‌تونی چالش رو بپذیری. اول انتخاب کن می‌خوای از کجا شروع کنی.'
+            })
+        except Participant.DidNotAnchored:
+            return JsonResponse({
+                'status': settings.ERROR_STATUS,
+                'message': 'توی جزیره لنگر ننداختی. نمی‌تونی چالشش رو بپذیری. اول باید لنگر بندازی.'
+            })
+        except Participant.MaximumChallengePerDayExceeded:
+            return JsonResponse({
+                'status': settings.ERROR_STATUS,
+                'message': 'تعداد چالش‌های روزت رو استفاده کردی. تا فردا نمی‌تونی چالش جدیدی بپذیری'
+            })
+        except Exception:
+            return default_error_response
+
+
 @login_activated_participant_required
 def create_offer(request):
     if request.method == 'POST':
