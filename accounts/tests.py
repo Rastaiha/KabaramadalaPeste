@@ -107,7 +107,7 @@ class ParticipantTest(TestCase):
         safe_sekke.amount = settings.GAME_MOVE_PRICE - 1
         safe_sekke.save()
 
-        with self.assertRaises(Participant.ProprtiesAreNotEnough):
+        with self.assertRaises(Participant.PropertiesAreNotEnough):
             self.participant.move(self.island)
 
     def test_move_less_sekke_free(self):
@@ -183,7 +183,7 @@ class ParticipantTest(TestCase):
         safe_sekke = self.participant.get_safe_sekke()
         safe_sekke.amount = settings.GAME_PUT_ANCHOR_PRICE - 1
         safe_sekke.save()
-        with self.assertRaises(Participant.ProprtiesAreNotEnough):
+        with self.assertRaises(Participant.PropertiesAreNotEnough):
             self.participant.put_anchor_on_current_island()
 
     def test_init_properties(self):

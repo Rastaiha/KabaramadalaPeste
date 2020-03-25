@@ -40,7 +40,10 @@ class Participant(models.Model):
     class ParticipantIsNotOnIsland(Exception):
         pass
 
-    class ProprtiesAreNotEnough(Exception):
+    class PropertiesAreNotEnough(Exception):
+        pass
+
+    class MaximumActiveOffersExceeded(Exception):
         pass
 
     member = models.OneToOneField(Member, related_name='participant', on_delete=models.CASCADE)
@@ -62,15 +65,47 @@ class Participant(models.Model):
     def __str__(self):
         return str(self.member)
 
+    def get_property(self, property_type):
+        if self.properties.filter(property_type__exact=property_type).count() == 0:
+            property_item = game_models.ParticipantPropertyItem.objects.create(
+                participant=self,
+                property_type=property_type,
+                amount=0
+            )
+            property_item.save()
+        return self.properties.get(property_type__exact=property_type)
+
+    def get_safe_property(self, property_type):
+        if self.properties.filter(property_type__exact=property_type).count() == 0:
+            property_item = game_models.ParticipantPropertyItem.objects.create(
+                participant=self,
+                property_type=property_type,
+                amount=0
+            )
+            property_item.save()
+        return self.properties.select_for_update().get(property_type__exact=property_type)
+
+    def reduce_property(self, property_type, amount):
+        property_item = self.get_safe_property(property_type)
+        if property_item.amount < amount:
+            raise Participant.PropertiesAreNotEnough
+        property_item.amount = property_item.amount - amount
+        property_item.save()
+
+    def add_property(self, property_type, amount):
+        property_item = self.get_safe_property(property_type)
+        property_item.amount = property_item.amount + amount
+        property_item.save()
+
     @property
     def sekke(self):
         """
         Warning changes on this property wont be applied if you want to make changes use get_safe_sekke
         """
-        return self.properties.get(property_type=game_settings.GAME_SEKKE)
+        return self.get_property(game_settings.GAME_SEKKE)
 
     def get_safe_sekke(self):
-        return self.properties.select_for_update().get(property_type=game_settings.GAME_SEKKE)
+        return self.get_safe_property(game_settings.GAME_SEKKE)
 
     def init_pis(self):
         if game_models.ParticipantIslandStatus.objects.filter(participant=self).count():
@@ -126,7 +161,7 @@ class Participant(models.Model):
             raise game_models.Island.IslandsNotConnected
 
         if not is_free and self.sekke.amount < game_settings.GAME_MOVE_PRICE:
-            raise Participant.ProprtiesAreNotEnough
+            raise Participant.PropertiesAreNotEnough
 
         with transaction.atomic():
             if not is_free:
@@ -159,7 +194,7 @@ class Participant(models.Model):
         if not self.currently_at_island:
             raise Participant.ParticipantIsNotOnIsland
         if self.sekke.amount < game_settings.GAME_PUT_ANCHOR_PRICE:
-            raise Participant.ProprtiesAreNotEnough
+            raise Participant.PropertiesAreNotEnough
 
         current_pis = game_models.ParticipantIslandStatus.objects.get(
             participant=self,

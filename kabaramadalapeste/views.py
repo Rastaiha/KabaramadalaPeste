@@ -94,7 +94,7 @@ class MoveToIslandView(View):
                 'status': settings.ERROR_STATUS,
                 'message': 'به جزیره‌ی مقصد از اینجا راه مستقیم نیست.'
             })
-        except Participant.ProprtiesAreNotEnough:
+        except Participant.PropertiesAreNotEnough:
             return JsonResponse({
                 'status': settings.ERROR_STATUS,
                 'message': 'سکه‌هات برای حرکت کافی نیست.'
@@ -116,7 +116,7 @@ class PutAnchorView(View):
                 'status': settings.ERROR_STATUS,
                 'message': 'کشتیت روی جزیره‌ای نیست. نمی‌تونی لنگر بندازی. اول انتخاب کن می‌خوای از کجا شروع کنی.'
             })
-        except Participant.ProprtiesAreNotEnough:
+        except Participant.PropertiesAreNotEnough:
             return JsonResponse({
                 'status': settings.ERROR_STATUS,
                 'message': 'سکه‌هات برای لنگر انداختن کافی نیست.'
