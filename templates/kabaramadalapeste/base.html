@@ -5,3 +5,17 @@
     {% block game_base_content %}{% endblock game_base_content %}
 </div>
 {% endblock base_content %}
+{% block scripts %}
+<script>
+    $(".right-info-btn").click(function () {
+        if ($(this).parent().hasClass("show-details")) {
+            $(".right-info").removeClass("show-details");
+        } else {
+            $(".right-info").removeClass("show-details");
+            $(this).parent().addClass("show-details");
+        }
+    })
+</script>
+{% block game_base_scripts %}
+{% endblock game_base_scripts %}
+{% endblock scripts %}
