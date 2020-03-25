@@ -30,15 +30,20 @@ function init_layer() {
     data.layer = new Konva.Layer({
         draggable: true
     });
+    data.layer2 = new Konva.Layer({});
 
     data.layer.on("dragend mouseup mouseover", function() {
         document.body.style.cursor = "grab";
+        data.layer2.x(data.layer.x());
+        data.layer2.y(data.layer.y());
     });
 
     data.layer.on("dragstart click touchend", function() {
         jazire_info.addClass("hide");
         jazire_info.removeClass("show");
-        change_target(data.layer, null);
+        change_target(null);
+        data.layer2.x(data.layer.x());
+        data.layer2.y(data.layer.y());
     });
 
     init_margin();
@@ -87,9 +92,12 @@ function init_layer() {
                 data.stage.height() - data.back.height - data.layer.margin.y
             );
         }
+        data.layer2.x(data.layer.x());
+        data.layer2.y(data.layer.y());
     });
 
     data.stage.add(data.layer);
+    data.stage.add(data.layer2);
 }
 
 function init_backgronud() {
@@ -231,7 +239,7 @@ function init_ship() {
         data.ship.elem.offsetX(Math.sin(frame.time / ox));
         data.ship.elem.offsetY(Math.sin(frame.time / oy));
         data.ship.elem.rotate(Math.sin(frame.time / or) / 10);
-    }, data.layer);
+    }, data.layer2);
     data.ship.elem.on("mouseover", function(e) {
         document.body.style.cursor = "pointer";
         if (typeof e !== "undefined") {
@@ -247,7 +255,7 @@ function init_ship() {
             e.cancelBubble = true;
         }
     });
-    data.layer.add(data.ship.elem);
+    data.layer2.add(data.ship.elem);
     anim.start();
 }
 
@@ -265,6 +273,7 @@ function init_game() {
 
     init_ship();
     data.layer.batchDraw();
+    data.layer2.batchDraw();
 }
 
 let sources = [
