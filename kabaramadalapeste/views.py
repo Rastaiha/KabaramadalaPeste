@@ -40,7 +40,8 @@ class IslandInfoView(View):
     def get(self, request, island_id):
         try:
             island = Island.objects.get(island_id=island_id)
-            pis = ParticipantIslandStatus.objects.get(participant=request.user.participant, island=island)
+            pis = ParticipantIslandStatus.objects.get(
+                participant=request.user.participant, island=island)
             return JsonResponse({
                 'name': island.name,
                 'challenge_name': island.challenge.name,
@@ -133,6 +134,7 @@ def game(request):
     })
 
 
+@login_activated_participant_required
 def game2(request):
     return render(request, 'kabaramadalapeste/game.html', {
         'without_nav': True,
@@ -141,6 +143,7 @@ def game2(request):
     })
 
 
+@login_activated_participant_required
 def exchange(request):
     return render(request, 'kabaramadalapeste/exchange.html', {
         'without_nav': True,
@@ -148,8 +151,9 @@ def exchange(request):
     })
 
 
-def jazire(request):
-    return render(request, 'kabaramadalapeste/jazire.html', {
+@login_activated_participant_required
+def island(request):
+    return render(request, 'kabaramadalapeste/island.html', {
         'without_nav': True,
         'without_footer': True,
     })

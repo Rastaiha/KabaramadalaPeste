@@ -2,18 +2,22 @@
 {% load static %}
 {% block styles %}
 <link rel="stylesheet" href="{% static 'styles/kabaramadalapeste/game.css' %}" />
+<link rel="stylesheet" href="{% static 'styles/kabaramadalapeste/player_info.css' %}" />
 {% endblock styles %}
 {% block game_base_content %}
 <div id="game-container"></div>
-<div class="jazire-info">
-    <div class="jazire-info-header">
-        <h3 class="jazire-name">جزیره <span></span></h3>
+
+{% include 'kabaramadalapeste/player_info.html' %}
+
+<div class="island-info">
+    <div class="island-info-header">
+        <h3 class="island-name">جزیره <span></span></h3>
         <div class="my-row text-center" style="direction: rtl; line-height: 14px;">
-            <div class="jazire_kind m-auto">
+            <div class="island_kind m-auto">
                 <div class="fas fa-question-circle"></div>
                 <div class="m-auto"><span></span></div>
             </div>
-            <div class="jazire_persons m-auto">
+            <div class="island_persons m-auto">
                 <div class="fas fa-users m-auto"></div>
                 <div class="m-auto">
                     <span></span>
@@ -22,24 +26,24 @@
             </div>
         </div>
     </div>
-    <div class="jazire-info-body">
+    <div class="island-info-body">
         <div class="my-row">
-            <div class="m-auto jazire-info-question">
+            <div class="m-auto island-info-question">
                 <img src="{% static 'images/game/test.png' %}" style="height: 60px" />
                 <div><span>حل نشده</span></div>
             </div>
-            <div class="m-auto jazire-info-ganj">
+            <div class="m-auto island-info-ganj">
                 <img src="{% static 'images/game/ganj.png' %}" style="height: 60px" />
                 <div><span>باز نشده</span></div>
             </div>
         </div>
         <div class="m-auto">
-            <div class="m-auto jazire-info-check-time" style="font-weight: 200; font-size: 10px">
+            <div class="m-auto island-info-check-time" style="font-weight: 200; font-size: 10px">
                 <small>تصحیح در</small>
                 <small><span></span></small>
             </div>
         </div>
-        <div class="mt-1 jazire-info-action">
+        <div class="mt-1 island-info-action">
             <a class="my-btn" data-toggle="modal" data-target="#travel_modal"></a>
         </div>
     </div>
@@ -48,6 +52,7 @@
 <div class="gps">
     <img src="{% static '/images/game/gps.png' %}" />
 </div>
+<img class="kabaramadalapeste_logo" src="{% static 'images/game/logo.png' %}" />
 
 {% include 'modal/prompt.html' with modal_id='travel_modal' %}
 {% include 'modal/prompt.html' with modal_id='resize_modal' modal_title="تغییر ابعاد" modal_question="آیا مایل به بارگذاری مجدد صفحه هستید؟" %}

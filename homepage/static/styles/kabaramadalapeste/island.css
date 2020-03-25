@@ -1,0 +1,9 @@
+.island-page {
+    width: 100vw;
+    height: 100vh;
+    background: url('/static/images/game/island.jpg') no-repeat 30% 100% fixed;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+}
