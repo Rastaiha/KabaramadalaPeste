@@ -279,3 +279,26 @@ class ViewsTest(TestCase):
         )
         response = self.client.post(reverse('kabaramadalapeste:open_treasure'))
         self.assertEqual(response.json()['status'], settings.ERROR_STATUS)
+
+    def text_maximum_active_offers_error(self):
+        self.client.force_login(self.participant.member)
+        data = {
+            'requested_' + settings.GAME_VISION: '1',
+            'suggested_' + settings.GAME_SEKKE: '1',
+        }
+        for i in range(settings.GAME_MAXIMUM_ACTIVE_OFFERS):
+            response = self.client.post(reverse('kabaramadalapeste:create_offer'), data=data)
+            self.assertEqual(response.json()['status'], settings.OK_STATUS)
+        response = self.client.post(reverse('kabaramadalapeste:create_offer'), data=data)
+        self.assertEqual(response.json()['status'], settings.ERROR_STATUS)
+        for offer in self.participant.created_trade_offers.all():
+            offer.delete()
+
+    def test_create_offer_not_enough_property(self):
+        self.client.force_login(self.participant.member)
+        data = {
+            'requested_' + settings.GAME_VISION: '1',
+            'suggested_' + settings.GAME_SEKKE: str(self.participant.sekke.amount + 1),
+        }
+        response = self.client.post(reverse('kabaramadalapeste:create_offer'), data=data)
+        self.assertEqual(response.json()['status'], settings.ERROR_STATUS)
