@@ -225,3 +225,48 @@ class ParticipantIslandStatus(models.Model):
         result_question_id = random.choice(list(valid_question_ids))
         self.question = self.island.challenge.questions.get(id=result_question_id[0])
         self.save()
+
+
+class TradeOffer(models.Model):
+    creator_participant = models.ForeignKey(Participant, related_name='created_trade_offers', on_delete=models.CASCADE)
+    status = models.CharField(
+        max_length=2,
+        choices=settings.GAME_OFFER_STATUS_CHOICES,
+        default=settings.GAME_OFFER_ACTIVE,
+    )
+    creation_datetime = models.DateTimeField(auto_now_add=True)
+    close_datetime = models.DateTimeField(null=True, blank=True)
+    accepted_participant = models.ForeignKey(Participant,
+                                             related_name='accepted_trade_offers',
+                                             on_delete=models.SET_NULL,
+                                             null=True,
+                                             blank=True)
+
+    def __str__(self):
+        return 'creator: %s, status: %s' % (self.creator_participant.member.email, self.status)
+
+
+class TradeOfferSuggestedItem(models.Model):
+    property_type = models.CharField(
+        max_length=3,
+        choices=settings.GAME_PARTICIPANT_PROPERTY_TYPE_CHOICES,
+        default=settings.GAME_SEKKE,
+    )
+    amount = models.IntegerField(default=0)
+    offer = models.ForeignKey(TradeOffer, related_name='suggested_items', on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = (("offer", "property_type"),)
+
+
+class TradeOfferRequestedItem(models.Model):
+    property_type = models.CharField(
+        max_length=3,
+        choices=settings.GAME_PARTICIPANT_PROPERTY_TYPE_CHOICES,
+        default=settings.GAME_SEKKE,
+    )
+    amount = models.IntegerField(default=0)
+    offer = models.ForeignKey(TradeOffer, related_name='requested_items', on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = (("offer", "property_type"),)

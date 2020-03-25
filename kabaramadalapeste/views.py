@@ -124,6 +124,7 @@ class PutAnchorView(View):
         except Exception:
             return default_error_response
 
+
 @login_activated_participant_required
 def game(request):
     return render(request, 'kabaramadalapeste/game.html', {
