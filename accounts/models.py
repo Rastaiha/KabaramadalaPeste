@@ -46,6 +46,9 @@ class Participant(models.Model):
     class MaximumActiveOffersExceeded(Exception):
         pass
 
+    class BadInput(Exception):
+        pass
+
     member = models.OneToOneField(Member, related_name='participant', on_delete=models.CASCADE)
     school = models.CharField(max_length=200)
     city = models.CharField(max_length=40)
@@ -86,6 +89,8 @@ class Participant(models.Model):
         return self.properties.select_for_update().get(property_type__exact=property_type)
 
     def reduce_property(self, property_type, amount):
+        if amount < 0:
+            raise Participant.BadInput
         property_item = self.get_safe_property(property_type)
         if property_item.amount < amount:
             raise Participant.PropertiesAreNotEnough
@@ -93,6 +98,8 @@ class Participant(models.Model):
         property_item.save()
 
     def add_property(self, property_type, amount):
+        if amount < 0:
+            raise Participant.BadInput
         property_item = self.get_safe_property(property_type)
         property_item.amount = property_item.amount + amount
         property_item.save()
