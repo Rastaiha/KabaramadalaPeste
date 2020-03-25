@@ -58,6 +58,21 @@ class IslandInfoView(View):
 
 
 @method_decorator(login_activated_participant_required, name='dispatch')
+class ParticipantInfoView(View):
+    def get(self, request):
+        try:
+            properties_dict = {
+                prop.property_type: prop.amount for prop in request.user.participant.properties.all()
+            }
+            return JsonResponse({
+                'username': request.user.username,
+                'properties': properties_dict
+            })
+        except Exception:
+            return default_error_response
+
+
+@method_decorator(login_activated_participant_required, name='dispatch')
 class SetStartIslandView(View):
     def post(self, request, dest_island_id):
         dest_island = Island.objects.get(island_id=dest_island_id)

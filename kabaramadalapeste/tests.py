@@ -86,8 +86,19 @@ class ViewsTest(TestCase):
         self.assertIsNotNone(response.json()['challenge_name'])
         self.assertEqual(response.json()['participants_inside'], 4)
 
+    def test_participant_info_not_login(self):
+        response = self.client.get(reverse('kabaramadalapeste:participant_info'))
+        self.assertEqual(response.status_code, 302)
+
+    def test_participant_info_ok(self):
+        self.client.force_login(self.participant.member)
+        response = self.client.get(reverse('kabaramadalapeste:participant_info'))
+        self.assertEqual(response.json()['username'], self.participant.member.username)
+        for key, value in settings.GAME_PARTICIPANT_INITIAL_PROPERTIES.items():
+            self.assertEqual(response.json()['properties'][key], value)
+
     def test_set_start_island_not_login(self):
-        response = self.client.get(reverse('kabaramadalapeste:set_start_island', kwargs={
+        response = self.client.post(reverse('kabaramadalapeste:set_start_island', kwargs={
             'dest_island_id': self.island.island_id
         }))
         self.assertEqual(response.status_code, 302)
