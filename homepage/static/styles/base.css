@@ -102,7 +102,9 @@ select:focus,
 .material-input input {
     direction: ltr;
     font-size: 18px;
-    padding: 10px 10px 10px 5px;
+    line-height: 26px;
+    height: 33px;
+    padding: 3px 10px;
     display: block;
     width: 100%;
     border: none;
@@ -290,6 +292,7 @@ table.table td {
     animation: message_move 10s;
     z-index: 10000;
     list-style-type: none;
+    direction: rtl;
 }
 
 .back_messages li {
@@ -308,6 +311,10 @@ table.table td {
 .back_messages li.success {
     color: white;
     background: green;
+}
+.back_messages li.info {
+    color: white;
+    background: #17a2b8;
 }
 
 .my-btn {

@@ -17,6 +17,7 @@ class TeamType(Enum):
 
 class SiteConfiguration(SingletonModel):
     countdown_date = models.DateTimeField(default=datetime.datetime(2020, 3, 23, 8))
+    is_signup_enabled = models.BooleanField(default=True)
 
 
 class TeamMember(models.Model):

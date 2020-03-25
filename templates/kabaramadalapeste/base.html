@@ -1,2 +1,7 @@
 {% extends 'base/base.html' %}
 {% block title %}کابارآمادالاپسته{% endblock title %}
+{% block base_content %}
+<div style="overflow: hidden; width: 100vw; position: relative">
+    {% block game_base_content %}{% endblock game_base_content %}
+</div>
+{% endblock base_content %}

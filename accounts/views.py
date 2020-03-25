@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import JsonResponse, Http404, HttpResponse
 from django.contrib import messages
-from django.shortcuts import redirect
+from django.shortcuts import redirect, get_object_or_404
 from django.urls import reverse
 from django.core.mail import send_mail, EmailMessage, EmailMultiAlternatives
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
@@ -16,6 +16,8 @@ from accounts.tokens import account_activation_token
 from accounts.models import *
 from accounts.forms import *
 
+from homepage.models import *
+
 from zeep import Client
 
 import requests
@@ -26,7 +28,16 @@ import datetime
 
 MERCHANT = '8b469980-683d-11ea-806a-000c295eb8fc'
 payment_amount = int(settings.REGISTRATION_FEE)
-client = Client('https://www.zarinpal.com/pg/services/WebGate/wsdl')
+
+
+class ZarinpalClient:
+    instance = None
+
+    @classmethod
+    def get_instance(cls):
+        if cls.instance is None:
+            cls.instance = Client('https://www.zarinpal.com/pg/services/WebGate/wsdl')
+        return cls.instance
 
 
 def check_bibot_response(request):
@@ -56,6 +67,8 @@ def _redirect_homepage_with_action_status(action='payment', status=settings.OK_S
 def signup(request):
     if request.user.is_authenticated:
         raise Http404
+    if not SiteConfiguration.get_solo().is_signup_enabled:
+        return redirect('homepage:homepage')
     if request.method == 'POST' and check_bibot_response(request):
         form = SignUpForm(request.POST, request.FILES)
         if not form.is_valid():
@@ -76,10 +89,10 @@ def signup(request):
         member = Member.objects.create(
             first_name=request.POST['name'],
             username=username,
-            email=request.POST['email']
+            email=request.POST['email'],
+            is_active=False,
         )
         member.set_password(request.POST['password'])
-        member.is_active = False
         participant = Participant.objects.create(
             member=member,
             gender=request.POST['gender'],
@@ -119,6 +132,8 @@ def activate(request, uidb64, token):
         auth_login(request, member)
         # return redirect('home')
         return _redirect_homepage_with_action_status('activate', settings.OK_STATUS)
+    elif member is not None and member.is_active:
+        return _redirect_homepage_with_action_status('activate', settings.HELP_STATUS)
     else:
         return _redirect_homepage_with_action_status('activate', settings.ERROR_STATUS)
 
@@ -155,7 +170,9 @@ def logout(request):
 
 def verify(request):
     if request.GET.get('Status') == 'OK':
-        result = client.service.PaymentVerification(MERCHANT, request.GET['Authority'], payment_amount)
+        result = ZarinpalClient.get_instance().service.PaymentVerification(
+            MERCHANT, request.GET['Authority'], payment_amount
+        )
         payment_attempt = PaymentAttempt.objects.get(
             participant__member__email__exact=request.user.email,
             authority__exact=request.GET['Authority']
@@ -208,8 +225,10 @@ def send_request(request):
         raise Http404
     if request.user.participant.is_activated:
         raise Http404
+    if not SiteConfiguration.get_solo().is_signup_enabled:
+        return redirect('homepage:homepage')
     callback_url = request.build_absolute_uri(reverse('accounts:verify'))
-    result = client.service.PaymentRequest(
+    result = ZarinpalClient.get_instance().service.PaymentRequest(
         MERCHANT,
         payment_amount,
         'ثبت‌نام در رویداد «در جست‌وجوی کابارآمادالاپسته»',

@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'import_export',
     'homepage',
     'kabaramadalapeste',
     'accounts'
@@ -65,6 +66,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'homepage.context_processors.site_configuration_processor',
             ],
         },
     },
@@ -130,3 +132,4 @@ django_heroku.settings(locals(), test_runner=False)
 
 OK_STATUS = 'ok'
 ERROR_STATUS = 'err'
+HELP_STATUS = 'help'
