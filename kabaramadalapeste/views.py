@@ -61,6 +61,25 @@ class IslandInfoView(View):
 
 
 @method_decorator(login_activated_participant_required, name='dispatch')
+class ParticipantInfoView(View):
+    def get(self, request):
+        try:
+            properties_dict = {
+                prop.property_type: prop.amount for prop in request.user.participant.properties.all()
+            }
+            current_island_id = None
+            if request.user.participant.currently_at_island:
+                current_island_id = request.user.participant.currently_at_island.island_id
+            return JsonResponse({
+                'username': request.user.username,
+                'current_island_id': current_island_id,
+                'properties': properties_dict
+            })
+        except Exception:
+            return default_error_response
+
+
+@method_decorator(login_activated_participant_required, name='dispatch')
 class SetStartIslandView(View):
     def post(self, request, dest_island_id):
         dest_island = Island.objects.get(island_id=dest_island_id)
@@ -123,6 +142,33 @@ class PutAnchorView(View):
             return JsonResponse({
                 'status': settings.ERROR_STATUS,
                 'message': 'سکه‌هات برای لنگر انداختن کافی نیست.'
+            })
+        except Exception:
+            return default_error_response
+
+
+@method_decorator(login_activated_participant_required, name='dispatch')
+class OpenTreasureView(View):
+    def post(self, request):
+        try:
+            request.user.participant.open_treasure_on_current_island()
+            return JsonResponse({
+                'status': settings.OK_STATUS
+            })
+        except Participant.ParticipantIsNotOnIsland:
+            return JsonResponse({
+                'status': settings.ERROR_STATUS,
+                'message': 'کشتیت روی جزیره‌ای نیست. نمی‌تونی گنجش رو باز کنی. اول انتخاب کن می‌خوای از کجا شروع کنی.'
+            })
+        except Participant.DidNotAnchored:
+            return JsonResponse({
+                'status': settings.ERROR_STATUS,
+                'message': 'توی جزیره لنگر ننداختی. نمی‌تونی گنجش رو باز کنی. اول باید لنگر بندازی.'
+            })
+        except Participant.PropertiesAreNotEnough:
+            return JsonResponse({
+                'status': settings.ERROR_STATUS,
+                'message': 'دارایی‌هات برای باز کردن گنج کافی نیست.'
             })
         except Exception:
             return default_error_response

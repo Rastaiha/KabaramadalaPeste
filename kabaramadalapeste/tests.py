@@ -86,8 +86,21 @@ class ViewsTest(TestCase):
         self.assertIsNotNone(response.json()['challenge_name'])
         self.assertEqual(response.json()['participants_inside'], 4)
 
+    def test_participant_info_not_login(self):
+        response = self.client.get(reverse('kabaramadalapeste:participant_info'))
+        self.assertEqual(response.status_code, 302)
+
+    def test_participant_info_ok(self):
+        self.participant.set_start_island(self.island)
+        self.client.force_login(self.participant.member)
+        response = self.client.get(reverse('kabaramadalapeste:participant_info'))
+        self.assertEqual(response.json()['username'], self.participant.member.username)
+        self.assertEqual(response.json()['current_island_id'], self.participant.currently_at_island.island_id)
+        for key, value in settings.GAME_PARTICIPANT_INITIAL_PROPERTIES.items():
+            self.assertEqual(response.json()['properties'][key], value)
+
     def test_set_start_island_not_login(self):
-        response = self.client.get(reverse('kabaramadalapeste:set_start_island', kwargs={
+        response = self.client.post(reverse('kabaramadalapeste:set_start_island', kwargs={
             'dest_island_id': self.island.island_id
         }))
         self.assertEqual(response.status_code, 302)
@@ -177,6 +190,74 @@ class ViewsTest(TestCase):
         response = self.client.post(reverse('kabaramadalapeste:move_to', kwargs={
             'dest_island_id': self.island.island_id
         }))
+        self.assertEqual(response.json()['status'], settings.ERROR_STATUS)
+
+    def test_open_treasure_not_login(self):
+        response = self.client.get(reverse('kabaramadalapeste:open_treasure'))
+        self.assertEqual(response.status_code, 302)
+
+    def test_open_treasure_ok(self):
+        self.participant.set_start_island(self.island)
+        self.participant.put_anchor_on_current_island()
+
+        pis = ParticipantIslandStatus.objects.get(
+            participant=self.participant,
+            island=self.island
+        )
+        for key in pis.treasure.keys.all():
+            if self.participant.get_property(key.key_type).amount < key.amount:
+                self.participant.add_property(
+                    key.key_type,
+                    key.amount - self.participant.get_property(key.key_type).amount
+                )
+
+        self.client.force_login(self.participant.member)
+        response = self.client.post(reverse('kabaramadalapeste:open_treasure'))
+        self.assertEqual(response.json()['status'], settings.OK_STATUS)
+
+    def test_open_treasure_not_set_start_island(self):
+        self.client.force_login(self.participant.member)
+        response = self.client.post(reverse('kabaramadalapeste:open_treasure'))
+        self.assertEqual(response.json()['status'], settings.ERROR_STATUS)
+
+    def test_open_treasure_did_not_anchor(self):
+        self.participant.set_start_island(self.island)
+
+        pis = ParticipantIslandStatus.objects.get(
+            participant=self.participant,
+            island=self.island
+        )
+        for key in pis.treasure.keys.all():
+            if self.participant.get_property(key.key_type).amount < key.amount:
+                self.participant.add_property(
+                    key.key_type,
+                    key.amount - self.participant.get_property(key.key_type).amount
+                )
+
+        self.client.force_login(self.participant.member)
+        response = self.client.post(reverse('kabaramadalapeste:open_treasure'))
+        self.assertEqual(response.json()['status'], settings.ERROR_STATUS)
+
+    def test_open_treasure_not_enough_props(self):
+        self.participant.set_start_island(self.island)
+        self.client.force_login(self.participant.member)
+
+        pis = ParticipantIslandStatus.objects.get(
+            participant=self.participant,
+            island=self.island
+        )
+        for key in pis.treasure.keys.all():
+            if self.participant.get_property(key.key_type).amount < key.amount:
+                self.participant.add_property(
+                    key.key_type,
+                    key.amount - self.participant.get_property(key.key_type).amount
+                )
+        key = pis.treasure.keys.first()
+        self.participant.reduce_property(
+            key.key_type,
+            (self.participant.get_property(key.key_type).amount - key.amount) + 1
+        )
+        response = self.client.post(reverse('kabaramadalapeste:open_treasure'))
         self.assertEqual(response.json()['status'], settings.ERROR_STATUS)
 
     def text_maximum_active_offers_error(self):
