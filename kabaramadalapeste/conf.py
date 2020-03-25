@@ -48,5 +48,15 @@ class GameConf(AppConf):
     DEFAULT_ISLAND_COUNT = 35
     BANDARGAH_ISLAND_ID = 20
 
+    OFFER_DELETED = 'OD'
+    OFFER_ACCEPTED = 'OA'
+    OFFER_ACTIVE = 'OC'
+
+    OFFER_STATUS_CHOICES = [
+        (OFFER_DELETED, 'deleted'),
+        (OFFER_ACCEPTED, 'accepted'),
+        (OFFER_ACTIVE, 'active')
+    ]
+
     class Meta:
         prefix = 'game'
