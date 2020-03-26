@@ -37,7 +37,9 @@ def login_activated_participant_required(view_func):
 default_error_response = JsonResponse({
     'status': settings.ERROR_STATUS,
     'message': 'خطایی رخ داد. موضوع رو بهمون بگو.'
-})
+},
+    status=400
+)
 
 
 @method_decorator(login_activated_participant_required, name='dispatch')
@@ -45,7 +47,8 @@ class IslandInfoView(View):
     def get(self, request, island_id):
         try:
             island = Island.objects.get(island_id=island_id)
-            pis = ParticipantIslandStatus.objects.get(participant=request.user.participant, island=island)
+            pis = ParticipantIslandStatus.objects.get(
+                participant=request.user.participant, island=island)
             treasure_keys = 'unknown'
             if pis.is_treasure_visible:
                 treasure_keys = {
@@ -226,11 +229,14 @@ def create_offer(request):
                 property_type = property_tuple[0]
                 if 'requested_' + property_type in request.POST:
                     requested_types.append(property_type)
-                    requested_amounts.append(int(request.POST['requested_' + property_type]))
+                    requested_amounts.append(
+                        int(request.POST['requested_' + property_type]))
                 if 'suggested_' + property_type in request.POST:
                     suggested_types.append(property_type)
-                    suggested_amounts.append(int(request.POST['suggested_' + property_type]))
-            request.user.participant.reduce_multiple_property(suggested_types, suggested_amounts)
+                    suggested_amounts.append(
+                        int(request.POST['suggested_' + property_type]))
+            request.user.participant.reduce_multiple_property(
+                suggested_types, suggested_amounts)
             trade_offer = TradeOffer.objects.create(
                 creator_participant=request.user.participant,
                 creation_datetime=timezone.now(),
@@ -273,7 +279,7 @@ def create_offer(request):
 @login_activated_participant_required
 def get_all_offers(request):
     try:
-        data = {'offers':[]}
+        data = {'offers': []}
         for trade_offer in TradeOffer.objects.filter(status__exact=settings.GAME_OFFER_ACTIVE).order_by('?').all():
             data['offers'].append(trade_offer.to_dict())
         return JsonResponse(data)
@@ -284,7 +290,7 @@ def get_all_offers(request):
 @login_activated_participant_required
 def get_my_offers(request):
     try:
-        data = {'offers':[]}
+        data = {'offers': []}
         for trade_offer in TradeOffer.objects.filter(
             status__exact=settings.GAME_OFFER_ACTIVE,
             creator_participant__member__username__exact=request.user.username
@@ -306,7 +312,8 @@ def delete_offer(request, pk):
         if trade_offer.status != settings.GAME_OFFER_ACTIVE:
             raise TradeOffer.InvalidOfferSelected
         for suggested_item in trade_offer.suggested_items.all():
-            request.user.participant.add_property(suggested_item.property_type, suggested_item.amount)
+            request.user.participant.add_property(
+                suggested_item.property_type, suggested_item.amount)
         trade_offer.status = settings.GAME_OFFER_DELETED
         trade_offer.close_datetime = timezone.now()
         trade_offer.save()
@@ -338,11 +345,14 @@ def accept_offer(request, pk):
         for requested_item in trade_offer.requested_items.all():
             requested_types.append(requested_item.property_type)
             requested_amounts.append(requested_item.amount)
-        request.user.participant.reduce_multiple_property(requested_types, requested_amounts)
+        request.user.participant.reduce_multiple_property(
+            requested_types, requested_amounts)
         for suggested_item in trade_offer.suggested_items.all():
-            request.user.participant.add_property(suggested_item.property_type, suggested_item.amount)
+            request.user.participant.add_property(
+                suggested_item.property_type, suggested_item.amount)
         for requested_item in trade_offer.requested_items.all():
-            trade_offer.creator_participant.add_property(requested_item.property_type, requested_item.amount)
+            trade_offer.creator_participant.add_property(
+                requested_item.property_type, requested_item.amount)
         trade_offer.status = settings.GAME_OFFER_ACCEPTED
         trade_offer.accepted_participant = request.user.participant
         trade_offer.close_datetime = timezone.now()
