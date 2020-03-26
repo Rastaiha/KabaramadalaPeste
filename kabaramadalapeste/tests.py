@@ -204,6 +204,27 @@ class ViewsTest(TestCase):
         self.assertIsNotNone(response.json()['challenge_name'])
         self.assertEqual(response.json()['participants_inside'], 4)
         self.assertEqual(response.json()['treasure_keys'], 'unknown')
+        self.assertEqual(response.json()['submit_status'], 'No')
+
+    def test_island_info_with_submit(self):
+        for i in range(4, 8):
+            self.all_participants[i].set_start_island(self.island)
+            self.all_participants[i].put_anchor_on_current_island()
+        self.participant.set_start_island(self.island)
+        self.client.force_login(self.participant.member)
+        pis = ParticipantIslandStatus.objects.get(
+            participant=self.participant,
+            island=self.island
+        )
+        ShortAnswerSubmit.objects.create(pis=pis, submit_status=BaseSubmit.SubmitStatus.Pending)
+        response = self.client.get(reverse('kabaramadalapeste:island_info', kwargs={
+            'island_id': self.island.island_id
+        }))
+        self.assertIsNotNone(response.json()['name'])
+        self.assertIsNotNone(response.json()['challenge_name'])
+        self.assertEqual(response.json()['participants_inside'], 4)
+        self.assertEqual(response.json()['treasure_keys'], 'unknown')
+        self.assertEqual(response.json()['submit_status'], BaseSubmit.SubmitStatus.Pending)
 
     def test_island_info_keys_visible(self):
         self.participant.set_start_island(self.island)

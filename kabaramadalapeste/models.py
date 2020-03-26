@@ -247,9 +247,13 @@ class ParticipantIslandStatus(models.Model):
 
     @property
     def submit(self):
-        if self.question.challenge.is_judgeable:
-            return self.judgeablesubmit
-        return self.shortanswersubmit
+        try:
+            if self.question.challenge.is_judgeable:
+                return self.judgeablesubmit
+            return self.shortanswersubmit
+        except (ParticipantIslandStatus.judgeablesubmit.RelatedObjectDoesNotExist,
+                ParticipantIslandStatus.shortanswersubmit.RelatedObjectDoesNotExist):
+            return None
 
 
 class BaseSubmit(models.Model):

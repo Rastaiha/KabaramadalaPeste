@@ -68,6 +68,7 @@ class IslandInfoView(View):
                 treasure_keys = {
                     key.key_type: key.amount for key in pis.treasure.keys.all()
                 }
+            submit_status = pis.submit.submit_status if pis.submit else 'No'
             return JsonResponse({
                 'name': island.name,
                 'challenge_name': island.challenge.name,
@@ -78,7 +79,7 @@ class IslandInfoView(View):
                     island=island, currently_anchored=True
                 ).count(),
                 'judge_estimated_minutes': 0,  # TODO: fill here
-                'answer_status': '',  # TODO: fill here
+                'submit_status': submit_status,
             })
         except Exception as e:
             logger.error(e, exc_info=True)
