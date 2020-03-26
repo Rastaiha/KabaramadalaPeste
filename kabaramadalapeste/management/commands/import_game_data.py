@@ -21,14 +21,24 @@ def import_treasure_row(row):
     treasure.rewards.add(TreasureRewardItem(reward_type=settings.GAME_KEY1, amount=row[4]), bulk=False)
     treasure.rewards.add(TreasureRewardItem(reward_type=settings.GAME_KEY2, amount=row[5]), bulk=False)
     treasure.rewards.add(TreasureRewardItem(reward_type=settings.GAME_KEY3, amount=row[6]), bulk=False)
+    treasure.rewards.add(TreasureRewardItem(reward_type=settings.GAME_VISION, amount=row[7]), bulk=False)
+    treasure.rewards.add(TreasureRewardItem(reward_type=settings.GAME_TRAVEL_EXPRESS, amount=row[8]), bulk=False)
+    treasure.rewards.add(TreasureRewardItem(reward_type=settings.GAME_CHALLENGE_PLUS, amount=row[9]), bulk=False)
+    treasure.rewards.add(TreasureRewardItem(reward_type=settings.GAME_BULLY, amount=row[10]), bulk=False)
 
 
 def import_island_row(row):
-    island = Island.objects.create(
-        island_id=row[0],
-        name=row[1],
-        challenge=Challenge.objects.get(challenge_id=row[2])
-    )
+    if int(row[0]) == settings.GAME_BANDARGAH_ISLAND_ID:
+        island = Island.objects.create(
+            island_id=row[0],
+            name=row[1],
+        )
+    else:
+        island = Island.objects.create(
+            island_id=row[0],
+            name=row[1],
+            challenge=Challenge.objects.get(challenge_id=row[2])
+        )
     if int(row[3]):
         Peste.objects.create(
             island=island
