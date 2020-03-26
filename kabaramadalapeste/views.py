@@ -37,13 +37,7 @@ def login_activated_participant_required(view_func):
 default_error_response = JsonResponse({
     'status': settings.ERROR_STATUS,
     'message': 'خطایی رخ داد. موضوع رو بهمون بگو.'
-<<<<<<< HEAD
-},
-    status=400
-)
-=======
 }, status=400)
->>>>>>> 061621165c80ad673b724b1aa81be35bab3f4801
 
 
 @method_decorator(login_activated_participant_required, name='dispatch')
