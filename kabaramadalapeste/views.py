@@ -10,7 +10,7 @@ from django.utils import timezone
 from accounts.models import Participant
 
 from kabaramadalapeste.models import Island, ParticipantIslandStatus, TradeOffer, TradeOfferRequestedItem, \
-    TradeOfferSuggestedItem, AbilityUsage, BandargahInvestment, BandargahConfiguration
+    TradeOfferSuggestedItem, AbilityUsage, BandargahInvestment, BandargahConfiguration, Bully
 from kabaramadalapeste.conf import settings
 
 import datetime
@@ -439,6 +439,7 @@ def accept_offer(request, pk):
         trade_offer.accepted_participant = request.user.participant
         trade_offer.close_datetime = timezone.now()
         trade_offer.save()
+        trade_offer.creator_participant.send_msg_offer_accepted(trade_offer)
         return JsonResponse({
             'status': settings.OK_STATUS
         })
@@ -466,6 +467,15 @@ def use_ability(request):
             ability_type = request.POST.get('ability_type')
             if ability_type not in [ability_tuple[0] for ability_tuple in settings.GAME_ABILITY_TYPE_CHOICES]:
                 raise AbilityUsage.InvalidAbility
+            if ability_type == settings.GAME_BULLY:
+                if current_island.island_id == settings.GAME_BANDARGAH_ISLAND_ID:
+                    raise Bully.CantBeOnBandargah
+                pis = ParticipantIslandStatus.objects.get(
+                    participant=request.user.participant,
+                    island=current_island
+                )
+                if not pis.currently_anchored:
+                    raise Participant.DidNotAnchored
             request.user.participant.reduce_property(ability_type, 1)
             ability_usage = AbilityUsage.objects.create(
                 datetime=timezone.now(),
@@ -485,7 +495,23 @@ def use_ability(request):
                     )
                     pis.is_treasure_visible = True
                     pis.save()
-            #TODO need to fill this part for bully & prophecy
+
+            if ability_type == settings.GAME_BULLY:
+                active_bullies = Bully.objects.filter(
+                    island=current_island,
+                    is_expired=False
+                )
+                for active_bully in active_bullies:
+                    active_bully.expired_datetime = timezone.now()
+                    active_bully.is_expired = True
+                    active_bully.owner.send_msg_bully_expired(active_bully)
+                bully = Bully.objects.create(
+                    owner=request.user.participant,
+                    is_expired=False,
+                    island=current_island,
+                    creation_datetime=timezone.now()
+                )
+                bully.save()
             ability_usage.save()
             return JsonResponse({
                 'status': settings.OK_STATUS
@@ -504,6 +530,16 @@ def use_ability(request):
             return JsonResponse({
                 'status': settings.ERROR_STATUS,
                 'message': 'از این توانایی چیزی برای مصرف نداری.'
+            })
+        except Bully.CantBeOnBandargah:
+            return JsonResponse({
+                'status': settings.ERROR_STATUS,
+                'message': 'این توانایی رو نمی‌تونی توی بندرگاه استفاده کنی.'
+            })
+        except Participant.DidNotAnchored:
+            return JsonResponse({
+                'status': settings.ERROR_STATUS,
+                'message': 'برای استفاده از این توانایی باید لنگر انداخته باشی.'
             })
         except Exception as e:
             logger.error(e, exc_info=True)
@@ -568,6 +604,7 @@ def invest(request):
                 'message': 'این مقدار سکه برای سرمایه‌گذاری نداری.'
             })
         except Exception:
+            logger.error(e, exc_info=True)
             return default_error_response
 
 

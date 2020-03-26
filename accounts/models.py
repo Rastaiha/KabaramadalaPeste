@@ -281,12 +281,28 @@ class Participant(models.Model):
             raise Participant.CantPutAnchorAgain
 
         with transaction.atomic():
+            self.reduce_property(game_settings.GAME_SEKKE, game_settings.GAME_PUT_ANCHOR_PRICE)
+
             current_pis.currently_anchored = True
             current_pis.is_treasure_visible = True
             current_pis.last_anchored_at = timezone.now()
             current_pis.save()
 
-            self.reduce_property(game_settings.GAME_SEKKE, game_settings.GAME_PUT_ANCHOR_PRICE)
+            active_bullies = self.get_current_island().bullies.all().filter(is_expired=False)
+            if active_bullies.count() > 0:
+                bully = active_bullies[0]
+                if bully.owner.pk != self.pk:
+                    try:
+                        self.reduce_property(game_settings.GAME_SEKKE, game_settings.GAME_BULLY_DAMAGE)
+                        self.send_msg_fall_in_bully(bully, game_settings.GAME_BULLY_DAMAGE)
+                        bully.owner.add_property(game_settings.GAME_SEKKE, game_settings.GAME_BULLY_DAMAGE)
+                        bully.owner.send_msg_sb_fall_in_your_bully(bully, self, game_settings.GAME_BULLY_DAMAGE)
+                    except Participant.PropertiesAreNotEnough:
+                        damage = self.sekke.amount
+                        self.reduce_property(game_settings.GAME_SEKKE, damage)
+                        self.send_msg_fall_in_bully(bully, damage)
+                        bully.owner.add_property(game_settings.GAME_SEKKE, damage)
+                        bully.owner.send_msg_sb_fall_in_your_bully(bully, self, damage)
 
     def open_treasure_on_current_island(self):
         current_pis = game_models.ParticipantIslandStatus.objects.get(
@@ -354,6 +370,18 @@ class Participant(models.Model):
                 return True
             except game_models.Island.peste.RelatedObjectDoesNotExist:
                 return False
+
+    def send_msg_bully_expired(self, bully):
+        pass  # TODO must be filled with sending appropriate message
+
+    def send_msg_offer_accepted(self, trade_offer):
+        pass  # TODO must be filled with sending appropriate message
+
+    def send_msg_fall_in_bully(self, bully, amount):
+        pass  # TODO must be filled with sending appropriate message
+
+    def send_msg_sb_fall_in_your_bully(self, bully, victim_participant, amount):
+        pass  # TODO must be filled with sending appropriate message
 
 
 class JudgeManager(models.Manager):

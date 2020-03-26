@@ -439,3 +439,14 @@ class BandargahInvestment(models.Model):
 
     class CantInvestTwiceToday(Exception):
         pass
+
+
+class Bully(models.Model):
+    owner = models.ForeignKey(Participant, related_name='bullies', on_delete=models.CASCADE)
+    island = models.ForeignKey(Island, related_name='bullies', on_delete=models.CASCADE)
+    creation_datetime = models.DateTimeField(auto_now_add=True)
+    is_expired = models.BooleanField(default=False)
+    expired_datetime = models.DateTimeField(null=True, blank=True)
+
+    class CantBeOnBandargah(Exception):
+        pass

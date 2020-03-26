@@ -676,6 +676,38 @@ class ViewsTest(TestCase):
         with self.assertRaises(Participant.MaximumChallengePerDayExceeded):
             self.participant.accept_challenge_on_current_island()
 
+    def test_bully_not_anchored(self):
+        self.participant.add_property(settings.GAME_BULLY, 1)
+        self.participant.set_start_island(self.island)
+        self.participant.put_anchor_on_current_island()
+        self.client.force_login(self.participant.member)
+        data = {
+            'ability_type': settings.GAME_BULLY
+        }
+        response = self.client.post(reverse('kabaramadalapeste:use_ability'), data=data)
+        self.assertEqual(response.json()['status'], settings.OK_STATUS)
+        participant1 = self.all_participants[1]
+        participant1.set_start_island(self.island)
+        participant1.add_property(settings.GAME_SEKKE, settings.GAME_BULLY_DAMAGE)
+        old_sekke = self.participant.sekke.amount
+        old_sekke1 = participant1.sekke.amount
+        participant1.add_property(settings.GAME_SEKKE, settings.GAME_PUT_ANCHOR_PRICE)
+        participant1.put_anchor_on_current_island()
+        sekke = self.participant.sekke.amount
+        sekke1 = participant1.sekke.amount
+        self.assertEqual(old_sekke + settings.GAME_BULLY_DAMAGE, sekke)
+        self.assertEqual(old_sekke1, sekke1 + settings.GAME_BULLY_DAMAGE)
+
+    def test_bully_ok(self):
+        self.participant.add_property(settings.GAME_BULLY, 1)
+        self.participant.set_start_island(self.island)
+        self.client.force_login(self.participant.member)
+        data = {
+            'ability_type': settings.GAME_BULLY
+        }
+        response = self.client.post(reverse('kabaramadalapeste:use_ability'), data=data)
+        self.assertEqual(response.json()['status'], settings.ERROR_STATUS)
+
     def test_spade_not_login(self):
         self.participant.set_start_island(self.island)
         self.participant.put_anchor_on_current_island()

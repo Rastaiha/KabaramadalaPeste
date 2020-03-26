@@ -45,6 +45,8 @@ class GameConf(AppConf):
     MOVE_PRICE = 100
     PUT_ANCHOR_PRICE = 200
 
+    BULLY_DAMAGE = 300
+
     DEFAULT_ISLAND_COUNT = 35
     BANDARGAH_ISLAND_ID = 20
 
