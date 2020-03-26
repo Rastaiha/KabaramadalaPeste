@@ -3,7 +3,7 @@ from django.db import transaction
 from kabaramadalapeste.conf import settings
 from kabaramadalapeste.models import (
     Challenge, Island, Way, Treasure,
-    TreasureKeyItem, TreasureRewardItem
+    TreasureKeyItem, TreasureRewardItem, Peste
 )
 import os
 import csv
@@ -23,15 +23,28 @@ def import_treasure_row(row):
     treasure.rewards.add(TreasureRewardItem(reward_type=settings.GAME_KEY3, amount=row[6]), bulk=False)
 
 
+def import_island_row(row):
+    island = Island.objects.create(
+        island_id=row[0],
+        name=row[1],
+        challenge=Challenge.objects.get(challenge_id=row[2])
+    )
+    if int(row[3]):
+        Peste.objects.create(
+            island=island
+        )
+
+
 class Command(BaseCommand):
     help = 'Imports game data like islands, and challenges data'
 
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
         self.base_dir = os.path.join(settings.BASE_DIR, 'kabaramadalapeste/initial_data')
         self.challenges_file = os.path.join(self.base_dir, 'challenges.csv')
         self.islands_file = os.path.join(self.base_dir, 'islands.csv')
         self.ways_file = os.path.join(self.base_dir, 'ways.csv')
         self.treasures_file = os.path.join(self.base_dir, 'treasures.csv')
+        super(Command, self).__init__(*args, **kwargs)
 
     def add_arguments(self, parser):
         pass
@@ -45,11 +58,7 @@ class Command(BaseCommand):
                                     is_judgeable=bool(row[2])
                                 ))
             self.import_objects(self.islands_file, Island,
-                                lambda row: Island.objects.create(
-                                    island_id=row[0],
-                                    name=row[1],
-                                    challenge=Challenge.objects.get(challenge_id=row[2])
-                                ))
+                                import_island_row)
             self.import_objects(self.ways_file, Way,
                                 lambda row: Way.objects.create(
                                     first_end=Island.objects.get(island_id=row[0]),
@@ -61,12 +70,12 @@ class Command(BaseCommand):
     def import_objects(self, csv_path, Model, create_func):
         with open(csv_path, newline='') as csvfile:
             start_count = Model.objects.count()
-            logger.info('%s currently has %s records' % (Model.__name__, start_count))
+            self.stdout.write('%s currently has %s records' % (Model.__name__, start_count))
             reader = csv.reader(csvfile, delimiter=',', quotechar='|')
             for i, row in enumerate(reader):
                 if not i:
-                    logger.info('Headers: ' + ', '.join(row))
+                    self.stdout.write('Headers: ' + ', '.join(row))
                 else:
                     create_func(row)
-            logger.info('Created %s new %ss' % (Model.objects.count() - start_count, Model.__name__.lower()))
-            logger.info('%s currently has %s records' % (Model.__name__, Model.objects.count()))
+            self.stdout.write('Created %s new %ss' % (Model.objects.count() - start_count, Model.__name__.lower()))
+            self.stdout.write('%s currently has %s records' % (Model.__name__, Model.objects.count()))

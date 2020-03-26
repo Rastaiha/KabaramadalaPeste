@@ -212,6 +212,45 @@ class OpenTreasureView(View):
                 'status': settings.ERROR_STATUS,
                 'message': 'دارایی‌هات برای باز کردن گنج کافی نیست.'
             }, status=400)
+        except Participant.CantOpenTreasureAgain:
+            return JsonResponse({
+                'status': settings.ERROR_STATUS,
+                'message': 'قبلا این گنج رو باز کردی. نمیشه دوباره باز کنی.'
+            }, status=400)
+        except Exception as e:
+            logger.error(e, exc_info=True)
+            return default_error_response
+
+
+@method_decorator(login_activated_participant_required, name='dispatch')
+class SpadeView(View):
+    def post(self, request):
+        try:
+            found = request.user.participant.spade_on_current_island()
+            return JsonResponse({
+                'status': settings.OK_STATUS,
+                'found': found
+            })
+        except Participant.ParticipantIsNotOnIsland:
+            return JsonResponse({
+                'status': settings.ERROR_STATUS,
+                'message': 'کشتیت روی جزیره‌ای نیست. نمی‌تونی بیل بزنی. اول انتخاب کن می‌خوای از کجا شروع کنی.'
+            }, status=400)
+        except Participant.DidNotAnchored:
+            return JsonResponse({
+                'status': settings.ERROR_STATUS,
+                'message': 'توی جزیره لنگر ننداختی. نمی‌تونی بیل بزنی. اول باید لنگر بندازی.'
+            }, status=400)
+        except Participant.PropertiesAreNotEnough:
+            return JsonResponse({
+                'status': settings.ERROR_STATUS,
+                'message': 'دارایی‌هات برای بیل زدن کافی نیست.'
+            }, status=400)
+        except Participant.CantSpadeAgain:
+            return JsonResponse({
+                'status': settings.ERROR_STATUS,
+                'message': 'قبلا اینجا رو بیل زدی. نمیشه دوباره بیل بزنی.'
+            }, status=400)
         except Exception as e:
             logger.error(e, exc_info=True)
             return default_error_response
@@ -239,6 +278,11 @@ class AcceptChallengeView(View):
             return JsonResponse({
                 'status': settings.ERROR_STATUS,
                 'message': 'تعداد چالش‌های روزت رو استفاده کردی. تا فردا نمی‌تونی چالش جدیدی بپذیری'
+            }, status=400)
+        except Participant.CantAcceptChallengeAgain:
+            return JsonResponse({
+                'status': settings.ERROR_STATUS,
+                'message': 'قبلا این چالش رو پذیرفتی. نمیشه دوباره بپذیریش.'
             }, status=400)
         except Exception as e:
             logger.error(e, exc_info=True)

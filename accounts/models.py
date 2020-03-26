@@ -8,7 +8,7 @@ from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags, strip_spaces_between_tags
-
+from homepage.models import SiteConfiguration
 
 from enum import Enum
 
@@ -66,6 +66,15 @@ class Participant(models.Model):
         pass
 
     class CantPutAnchorAgain(Exception):
+        pass
+
+    class CantSpadeAgain(Exception):
+        pass
+
+    class CantAcceptChallengeAgain(Exception):
+        pass
+
+    class CantOpenTreasureAgain(Exception):
         pass
 
     member = models.OneToOneField(Member, related_name='participant', on_delete=models.CASCADE)
@@ -264,12 +273,9 @@ class Participant(models.Model):
             self.save()
 
     def put_anchor_on_current_island(self):
-        if not self.currently_at_island:
-            raise Participant.ParticipantIsNotOnIsland
-
         current_pis = game_models.ParticipantIslandStatus.objects.get(
             participant=self,
-            island=self.currently_at_island
+            island=self.get_current_island()
         )
         if current_pis.currently_anchored:
             raise Participant.CantPutAnchorAgain
@@ -283,14 +289,15 @@ class Participant(models.Model):
             self.reduce_property(game_settings.GAME_SEKKE, game_settings.GAME_PUT_ANCHOR_PRICE)
 
     def open_treasure_on_current_island(self):
-        if not self.currently_at_island:
-            raise Participant.ParticipantIsNotOnIsland
         current_pis = game_models.ParticipantIslandStatus.objects.get(
             participant=self,
-            island=self.currently_at_island
+            island=self.get_current_island()
         )
         if not current_pis.currently_anchored:
             raise Participant.DidNotAnchored
+        if current_pis.did_open_treasure:
+            raise Participant.CantOpenTreasureAgain
+
         treasure = current_pis.treasure
         with transaction.atomic():
             for key in treasure.keys.all():
@@ -302,14 +309,14 @@ class Participant(models.Model):
             current_pis.save()
 
     def accept_challenge_on_current_island(self):
-        if not self.currently_at_island:
-            raise Participant.ParticipantIsNotOnIsland
         current_pis = game_models.ParticipantIslandStatus.objects.get(
             participant=self,
-            island=self.currently_at_island
+            island=self.get_current_island()
         )
         if not current_pis.currently_anchored:
             raise Participant.DidNotAnchored
+        if current_pis.did_accept_challenge:
+            raise Participant.CantAcceptChallengeAgain
         if not self.can_open_new_challenge():
             raise Participant.MaximumChallengePerDayExceeded
 
@@ -321,6 +328,32 @@ class Participant(models.Model):
             current_pis.did_accept_challenge = True
             current_pis.challenge_accepted_at = timezone.now()
             current_pis.save()
+
+    def spade_on_current_island(self):
+        current_pis = game_models.ParticipantIslandStatus.objects.get(
+            participant=self,
+            island=self.get_current_island()
+        )
+        if not current_pis.currently_anchored:
+            raise Participant.DidNotAnchored
+        if current_pis.did_spade:
+            raise Participant.CantSpadeAgain
+        with transaction.atomic():
+            self.reduce_property(settings.GAME_SEKKE, SiteConfiguration.get_solo().island_spade_cost)
+            current_pis.did_spade = True
+            current_pis.spaded_at = timezone.now()
+            current_pis.save()
+            try:
+                if self.currently_at_island.peste.is_found:
+                    return False
+                self.add_property(settings.GAME_SEKKE, SiteConfiguration.get_solo().peste_reward)
+                self.currently_at_island.peste.is_found = True
+                self.currently_at_island.peste.found_by = self
+                self.currently_at_island.peste.found_at = timezone.now()
+                self.save()
+                return True
+            except game_models.Island.peste.RelatedObjectDoesNotExist:
+                return False
 
 
 class JudgeManager(models.Manager):
