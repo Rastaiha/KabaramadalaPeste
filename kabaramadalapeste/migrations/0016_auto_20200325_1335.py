@@ -14,11 +14,11 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='judgeablesubmit',
             name='submit_status',
-            field=models.CharField(choices=[('Pending', 'Pending'), ('Correct', 'Correct'), ('Wrong', 'Wrong')], default=kabaramadalapeste.models.SubmitStatus['Pending'], max_length=20),
+            field=models.CharField(choices=[('Pending', 'Pending'), ('Correct', 'Correct'), ('Wrong', 'Wrong')], default=kabaramadalapeste.models.BaseSubmit.SubmitStatus['Pending'], max_length=20),
         ),
         migrations.AlterField(
             model_name='shortanswersubmit',
             name='submit_status',
-            field=models.CharField(choices=[('Pending', 'Pending'), ('Correct', 'Correct'), ('Wrong', 'Wrong')], default=kabaramadalapeste.models.SubmitStatus['Pending'], max_length=20),
+            field=models.CharField(choices=[('Pending', 'Pending'), ('Correct', 'Correct'), ('Wrong', 'Wrong')], default=kabaramadalapeste.models.BaseSubmit.SubmitStatus['Pending'], max_length=20),
         ),
     ]

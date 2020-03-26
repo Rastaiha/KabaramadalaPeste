@@ -1,9 +1,14 @@
 from django.db import models, transaction
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, Group, Permission
 from django.utils import timezone
 from datetime import timedelta
 from kabaramadalapeste import models as game_models
 from kabaramadalapeste.conf import settings as game_settings
+from django.conf import settings
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags, strip_spaces_between_tags
+
 
 from enum import Enum
 
@@ -11,6 +16,7 @@ from collections import defaultdict
 
 import logging
 import random
+import re
 logger = logging.getLogger(__file__)
 
 # Create your models here.
@@ -312,11 +318,44 @@ class Participant(models.Model):
             current_pis.save()
 
 
+class JudgeManager(models.Manager):
+    @transaction.atomic
+    def create_judge(self, email, password, *args, **kwargs):
+        try:
+            g = Group.objects.get(name="Judge")
+        except Group.DoesNotExist:
+            g = Group.objects.create(name="Judge")
+            g.permissions.add(Permission.objects.get(codename="view_judgeablesubmit"))
+            g.permissions.add(Permission.objects.get(codename="change_judgeablesubmit"))
+            g.save()
+        member = Member.objects.create_user(username=email, email=email, password=password)
+        member.is_staff = True
+        member.groups.add(g)
+        member.save()
+        judge = Judge.objects.create(member=member)
+        return judge
+
+
 class Judge(models.Model):
+    objects = JudgeManager()
+
     member = models.OneToOneField(Member, related_name='judge', on_delete=models.CASCADE)
 
     def __str__(self):
         return str(self.member)
+
+    def send_greeting_email(self, username, password):
+        html_content = strip_spaces_between_tags(render_to_string('auth/judge_greet_email.html', {
+            'login_url': '%s/admin' % settings.DOMAIN,
+            'username': username,
+            'password': password
+        }))
+        text_content = re.sub('<style[^<]+?</style>', '', html_content)
+        text_content = strip_tags(text_content)
+
+        msg = EmailMultiAlternatives('اطلاعات کاربری مصحح', text_content, 'Rastaiha <info@rastaiha.ir>', [username])
+        msg.attach_alternative(html_content, "text/html")
+        msg.send()
 
 
 class PaymentAttempt(models.Model):

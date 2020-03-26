@@ -49,3 +49,4 @@ REGISTRATION_FEE = get_environment_var('REGISTRATION_FEE', '500')
 
 # Activate Django-Heroku.
 django_heroku.settings(locals(), test_runner=False)
+DOMAIN = get_environment_var('DOMAIN', 'http://kabaraamadalapeste.herokuapp.com')

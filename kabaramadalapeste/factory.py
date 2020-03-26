@@ -1,7 +1,7 @@
 import factory
 from kabaramadalapeste.models import (
     Island, Challenge, ShortAnswerQuestion, Treasure,
-    TreasureKeyItem, TreasureRewardItem
+    TreasureKeyItem, TreasureRewardItem, JudgeableQuestion
 )
 from kabaramadalapeste.conf import settings
 
@@ -34,6 +34,15 @@ class ShortAnswerQuestionFactory(factory.django.DjangoModelFactory):
     challenge = factory.Iterator(Challenge.objects.filter(is_judgeable=False))
     answer_type = 'STR'  # factory.Iterator(models.ShortAnswerQuestion.ANSWER_TYPE_CHOICES)
     correct_answer = 'javab'
+
+
+class JudgeableQuestionFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = JudgeableQuestion
+
+    title = factory.Faker('sentence', nb_words=4)
+    question = factory.django.FileField(filename='q.pdf')
+    challenge = factory.Iterator(Challenge.objects.filter(is_judgeable=True))
 
 
 class TreasureFactory(factory.django.DjangoModelFactory):

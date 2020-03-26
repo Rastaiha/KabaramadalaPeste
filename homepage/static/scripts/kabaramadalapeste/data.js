@@ -34,7 +34,7 @@ let data = {
         src: "ship.png",
         width: 0.06,
         height: 0.065,
-        jazire_id: 20
+        island_id: 20
     },
     players: [
         {
@@ -59,7 +59,7 @@ let data = {
             height: 0.026
         }
     ],
-    jazireha: [
+    islands: [
         {
             id: 1,
             x: 0.842,
