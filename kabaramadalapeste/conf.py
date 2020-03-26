@@ -24,7 +24,7 @@ class GameConf(AppConf):
     PROPHECY = 'PRC'
     BULLY = 'BLY'
 
-    ABILITY_TYPY_CHOICES = [
+    ABILITY_TYPE_CHOICES = [
         (VISION, 'vision'),
         (TRAVEL_EXPRESS, 'travel express'),
         (CHALLENGE_PLUS, 'challenge plus'),
@@ -34,7 +34,7 @@ class GameConf(AppConf):
 
     TREASURE_REWARD_TYPE_CHOICES = [
         (SEKKE, 'sekke'),
-    ] + TREASURE_KEY_TYPE_CHOICES + ABILITY_TYPY_CHOICES
+    ] + TREASURE_KEY_TYPE_CHOICES + ABILITY_TYPE_CHOICES
 
     PARTICIPANT_PROPERTY_TYPE_CHOICES = TREASURE_REWARD_TYPE_CHOICES
 

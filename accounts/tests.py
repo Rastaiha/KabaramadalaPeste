@@ -94,14 +94,14 @@ class ParticipantTest(TestCase):
         self.assertIsNotNone(pis_dest.reached_at)
         self.assertEqual(self.participant.currently_at_island, self.island)
 
-    def test_move_free(self):
-        self.participant.init_pis()
-        self.participant.init_properties()
-        self.participant.set_start_island(self.all_islands[4])
-        prev_sekke = self.participant.sekke.amount
-        self.participant.move(self.island, is_free=True)
-        after_sekke = self.participant.sekke.amount
-        self.assertEqual(prev_sekke - after_sekke, 0)
+    # def test_move_free(self):
+    #     self.participant.init_pis()
+    #     self.participant.init_properties()
+    #     self.participant.set_start_island(self.all_islands[4])
+    #     prev_sekke = self.participant.sekke.amount
+    #     self.participant.move(self.island, is_free=True)
+    #     after_sekke = self.participant.sekke.amount
+    #     self.assertEqual(prev_sekke - after_sekke, 0)
 
     def test_move_less_sekke(self):
         self.participant.init_pis()
@@ -114,15 +114,15 @@ class ParticipantTest(TestCase):
         with self.assertRaises(Participant.PropertiesAreNotEnough):
             self.participant.move(self.island)
 
-    def test_move_less_sekke_free(self):
-        self.participant.init_pis()
-        self.participant.init_properties()
-        self.participant.set_start_island(self.all_islands[4])
-        safe_sekke = self.participant.get_safe_sekke()
-        safe_sekke.amount = settings.GAME_MOVE_PRICE - 1
-        safe_sekke.save()
-
-        self.participant.move(self.island, is_free=True)
+    # def test_move_less_sekke_free(self):
+    #     self.participant.init_pis()
+    #     self.participant.init_properties()
+    #     self.participant.set_start_island(self.all_islands[4])
+    #     safe_sekke = self.participant.get_safe_sekke()
+    #     safe_sekke.amount = settings.GAME_MOVE_PRICE - 1
+    #     safe_sekke.save()
+    #
+    #     self.participant.move(self.island, is_free=True)
 
     def test_move_not_linked(self):
         self.participant.init_pis()

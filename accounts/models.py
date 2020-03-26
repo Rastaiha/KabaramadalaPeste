@@ -148,9 +148,20 @@ class Participant(models.Model):
             challenge_accepted_at__lt=today_end,
         ).count()
 
+
+    def today_challenge_pluses_count(self):
+        today_begin = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
+        today_end = today_begin + timedelta(days=1)
+        return game_models.AbilityUsage.objects.filter(
+            participant=self,
+            ability_type__exact=game_settings.GAME_CHALLENGE_PLUS,
+            datetime__gte=today_begin,
+            datetime__lt=today_end,
+        ).count()
+
     def can_open_new_challenge(self):
-        # TODO: handle challenge plus ability here
-        return self.today_challenges_opened_count() < game_settings.GAME_BASE_CHALLENGE_PER_DAY
+        return self.today_challenges_opened_count() < \
+               game_settings.GAME_BASE_CHALLENGE_PER_DAY + self.today_challenge_pluses_count()
 
     def init_pis(self):
         if game_models.ParticipantIslandStatus.objects.filter(participant=self).count():
@@ -199,15 +210,29 @@ class Participant(models.Model):
             self.currently_at_island = dest_island
             self.save()
 
-    def move(self, dest_island, is_free=False):
+    def get_current_island(self):
+        if not self.currently_at_island:
+            raise Participant.ParticipantIsNotOnIsland
+        return self.currently_at_island
+
+    def move(self, dest_island):
         if not self.currently_at_island:
             raise Participant.ParticipantIsNotOnIsland
         if not self.currently_at_island.is_neighbor_with(dest_island):
             raise game_models.Island.IslandsNotConnected
 
         with transaction.atomic():
-            if not is_free:
+            active_expresses = game_models.AbilityUsage.objects.filter(
+                participant=self,
+                ability_type=game_settings.GAME_TRAVEL_EXPRESS,
+                is_active=True
+            ).all()
+            if active_expresses.count() == 0:
                 self.reduce_property(game_settings.GAME_SEKKE, game_settings.GAME_MOVE_PRICE)
+            else:
+                express = active_expresses[0]
+                express.is_active = False
+                express.save()
 
             src_pis = game_models.ParticipantIslandStatus.objects.get(
                 participant=self,

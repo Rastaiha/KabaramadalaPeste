@@ -10,7 +10,7 @@ from django.utils import timezone
 from accounts.models import Participant
 
 from kabaramadalapeste.models import Island, ParticipantIslandStatus, TradeOffer, TradeOfferRequestedItem, \
-    TradeOfferSuggestedItem
+    TradeOfferSuggestedItem, AbilityUsage
 from kabaramadalapeste.conf import settings
 
 import datetime
@@ -362,6 +362,58 @@ def accept_offer(request, pk):
         })
     except Exception:
         return default_error_response
+
+
+@transaction.atomic
+@login_activated_participant_required
+def use_ability(request):
+    if request.method == 'POST':
+        try:
+            current_island = request.user.participant.get_current_island()
+            ability_type = request.POST.get('ability_type')
+            if ability_type not in [ability_tuple[0] for ability_tuple in settings.GAME_ABILITY_TYPE_CHOICES]:
+                raise AbilityUsage.InvalidAbility
+            request.user.participant.reduce_property(ability_type, 1)
+            ability_usage = AbilityUsage.objects.create(
+                datetime=timezone.now(),
+                participant=request.user.participant,
+                ability_type=ability_type
+            )
+
+            if ability_type == settings.GAME_TRAVEL_EXPRESS:
+                ability_usage.is_active = True
+
+            if ability_type == settings.GAME_VISION:
+                islands = [current_island] + [island for island in current_island.neighbors]
+                for island in islands:
+                    pis = ParticipantIslandStatus.objects.get(
+                        participant=request.user.participant,
+                        island=island
+                    )
+                    pis.is_treasure_visible = True
+                    pis.save()
+            #TODO need to fill this part for bully & prophecy
+            ability_usage.save()
+            return JsonResponse({
+                'status': settings.OK_STATUS
+            })
+        except AbilityUsage.InvalidAbility:
+            return JsonResponse({
+                'status': settings.ERROR_STATUS,
+                'message': 'باید یک توانایی مجاز انتخاب کنی.'
+            })
+        except Participant.ParticipantIsNotOnIsland:
+            return JsonResponse({
+                'status': settings.ERROR_STATUS,
+                'message': 'کشتیت روی جزیره‌ای نیست. باید اول انتخاب کنی می‌خوای از کجا شروع کنی.'
+            })
+        except Participant.PropertiesAreNotEnough:
+            return JsonResponse({
+                'status': settings.ERROR_STATUS,
+                'message': 'از این توانایی چیزی برای مصرف نداری.'
+            })
+        except Exception:
+            return default_error_response
 
 
 @login_activated_participant_required
