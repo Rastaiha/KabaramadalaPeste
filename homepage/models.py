@@ -1,4 +1,5 @@
 from solo.models import SingletonModel
+from django.db import models
 from enum import Enum
 
 import datetime
