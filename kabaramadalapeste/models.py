@@ -279,7 +279,7 @@ class BaseSubmit(models.Model):
         self.initial_submit_status = self.submit_status
 
     def is_bad_change(self, *args, **kwargs):
-        if (self.initial_submit_status != SubmitStatus.Pending and
+        if (self.initial_submit_status != BaseSubmit.SubmitStatus.Pending and
                 self.initial_submit_status != self.submit_status):
             return True
         return False
@@ -302,7 +302,7 @@ class ShortAnswerSubmit(BaseSubmit):
                 is_correct = self.submitted_answer == question.correct_answer
         except ValueError:
             logger.warn('Type mismatch for %s' % self)
-        self.submit_status = SubmitStatus.Correct if is_correct else SubmitStatus.Wrong
+        self.submit_status = BaseSubmit.SubmitStatus.Correct if is_correct else BaseSubmit.SubmitStatus.Wrong
         self.judged_at = timezone.now()
         self.save()
 
