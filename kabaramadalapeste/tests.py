@@ -14,6 +14,9 @@ from kabaramadalapeste.conf import settings
 from accounts.factory import ParticipantFactory
 from unittest import mock
 
+from django.utils import timezone
+from datetime import datetime, timedelta
+
 
 class ModelsTest(TestCase):
 
@@ -491,3 +494,90 @@ class ViewsTest(TestCase):
         self.assertEqual(sekke1, old_sekke1 + 1)
         self.assertEqual(vision, old_vision + 1)
         self.assertEqual(vision1 + 1, old_vision1)
+
+    def test_not_enough_abilities(self):
+        vision = self.participant.get_safe_property(settings.GAME_VISION)
+        vision.amount = 0
+        vision.save()
+        self.client.force_login(self.participant.member)
+        data = {
+            'ability_type': settings.GAME_VISION
+        }
+        response = self.client.post(reverse('kabaramadalapeste:use_ability'), data=data)
+        self.assertEqual(response.json()['status'], settings.ERROR_STATUS)
+
+    def test_travel_express_ok(self):
+        self.participant.add_property(settings.GAME_TRAVEL_EXPRESS, 1)
+        self.participant.set_start_island(self.all_islands[4])
+        self.client.force_login(self.participant.member)
+        data = {
+            'ability_type': settings.GAME_TRAVEL_EXPRESS
+        }
+        response = self.client.post(reverse('kabaramadalapeste:use_ability'), data=data)
+        self.assertEqual(response.json()['status'], settings.OK_STATUS)
+        old_sekke = self.participant.sekke.amount
+        self.client.force_login(self.participant.member)
+        response = self.client.post(reverse('kabaramadalapeste:move_to', kwargs={
+            'dest_island_id': self.island.island_id
+        }))
+        self.assertEqual(response.json()['status'], settings.OK_STATUS)
+        self.assertEqual(old_sekke, self.participant.sekke.amount)
+        response = self.client.post(reverse('kabaramadalapeste:move_to', kwargs={
+            'dest_island_id': self.all_islands[4].island_id
+        }))
+        self.assertEqual(response.json()['status'], settings.OK_STATUS)
+        self.assertNotEqual(old_sekke, self.participant.sekke.amount)
+
+    def test_vision_ok(self):
+        self.participant.add_property(settings.GAME_VISION, 1)
+        self.participant.set_start_island(self.island)
+        pis = ParticipantIslandStatus.objects.get(
+            participant=self.participant,
+            island=self.all_islands[1]
+        )
+        pis.is_treasure_visible = False
+        pis.save()
+        self.client.force_login(self.participant.member)
+        data = {
+            'ability_type': settings.GAME_VISION
+        }
+        response = self.client.post(reverse('kabaramadalapeste:use_ability'), data=data)
+        self.assertEqual(response.json()['status'], settings.OK_STATUS)
+        pis = ParticipantIslandStatus.objects.get(
+            participant=self.participant,
+            island=self.island
+        )
+        self.assertTrue(pis.is_treasure_visible)
+        pis = ParticipantIslandStatus.objects.get(
+            participant=self.participant,
+            island=self.all_islands[4]
+        )
+        self.assertTrue(pis.is_treasure_visible)
+        pis = ParticipantIslandStatus.objects.get(
+            participant=self.participant,
+            island=self.all_islands[1]
+        )
+        self.assertFalse(pis.is_treasure_visible)
+
+    def test_challenge_plus_ok(self):
+        self.participant.add_property(settings.GAME_CHALLENGE_PLUS, 1)
+        self.participant.set_start_island(self.island)
+        self.participant.put_anchor_on_current_island()
+        self.client.force_login(self.participant.member)
+        data = {
+            'ability_type': settings.GAME_CHALLENGE_PLUS
+        }
+        response = self.client.post(reverse('kabaramadalapeste:use_ability'), data=data)
+        self.assertEqual(response.json()['status'], settings.OK_STATUS)
+
+        for i, island in enumerate(self.all_islands[5:5 + settings.GAME_BASE_CHALLENGE_PER_DAY + 1]):
+            pis = ParticipantIslandStatus.objects.get(
+                participant=self.participant,
+                island=island
+            )
+            pis.did_accept_challenge = True
+            pis.challenge_accepted_at = timezone.now()
+            pis.save()
+
+        with self.assertRaises(Participant.MaximumChallengePerDayExceeded):
+            self.participant.accept_challenge_on_current_island()

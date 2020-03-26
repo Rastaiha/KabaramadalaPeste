@@ -64,7 +64,7 @@
     font-weight: 600;
 }
 
-.player-item {
+.player-proprty {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -72,17 +72,17 @@
 }
 
 
-.player-item span {
+.player-proprty span {
     color: white;
     font-size: 30px;
     font-weight: 400;
 }
 
-.player-item b {
+.player-proprty b {
     font-weight: 900;
 }
 
-.player-item img {
+.player-proprty img {
     height: 20px;
     margin-left: 10px;
 }

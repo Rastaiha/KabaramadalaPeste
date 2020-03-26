@@ -1,4 +1,5 @@
 {% extends 'base/base.html' %}
+{% load static %}
 {% block title %}کابارآمادالاپسته{% endblock title %}
 {% block base_content %}
 <div style="overflow: hidden; width: 100vw; position: relative">
@@ -6,16 +7,7 @@
 </div>
 {% endblock base_content %}
 {% block scripts %}
-<script>
-    $(".right-info-btn").click(function () {
-        if ($(this).parent().hasClass("show-details")) {
-            $(".right-info").removeClass("show-details");
-        } else {
-            $(".right-info").removeClass("show-details");
-            $(this).parent().addClass("show-details");
-        }
-    })
-</script>
+<script src="{% static 'scripts/kabaramadalapeste/base.js' %}"></script>
 {% block game_base_scripts %}
 {% endblock game_base_scripts %}
 {% endblock scripts %}

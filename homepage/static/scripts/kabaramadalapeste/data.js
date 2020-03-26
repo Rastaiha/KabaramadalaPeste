@@ -28,14 +28,6 @@ let data = {
         width: 0.05,
         height: 0.05
     },
-    ship: {
-        x: 0.5,
-        y: 0.5,
-        src: "ship.png",
-        width: 0.06,
-        height: 0.065,
-        island_id: 20
-    },
     players: [
         {
             x: 0.2,

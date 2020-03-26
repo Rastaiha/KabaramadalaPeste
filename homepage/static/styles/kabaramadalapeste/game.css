@@ -28,6 +28,7 @@
 .island-name {
     font-weight: 900;
     font-size: 28px;
+    direction: rtl;
 }
 
 .island-info.show {

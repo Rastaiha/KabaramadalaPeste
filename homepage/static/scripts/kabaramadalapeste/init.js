@@ -181,10 +181,24 @@ function init_islands() {
 
             island.elem.on("click tap", function(e) {
                 document.body.style.cursor = "pointer";
-                if (data.target !== island) {
+                if (typeof data.ship === "undefined") {
+                    set_start_island(island.id)
+                        .done(function() {
+                            init_ship_data(island.id);
+                            init_ship();
+                        })
+                        .fail(function(jqXHR, textStatus) {
+                            let err_message = textStatus;
+                            if (typeof jqXHR.responseJSON !== "undefined") {
+                                err_message = jqXHR.responseJSON.message || textStatus;
+                            }
+                            my_alert(err_message, "خطا");
+                        });
+                } else if (data.target !== island) {
                     change_target(island);
                     show_island_info(island);
                 }
+
                 if (typeof e !== "undefined") {
                     e.evt.preventDefault();
                     e.cancelBubble = true;
@@ -225,16 +239,13 @@ function init_ways() {
 
 function init_ship() {
     data.ship.elem = new Konva.Image({
-        x: Math.floor(data.ship.x * data.back.width),
-        y: Math.floor(data.ship.y * data.back.height),
+        x: Math.floor(data.ship.x),
+        y: Math.floor(data.ship.y),
         image: data.images[data.ship.src],
         width: Math.floor(data.ship.width * data.back.width),
         height: Math.floor(data.ship.height * data.back.height),
         perfectDrawEnabled: false
     });
-    let ox = Math.random() * 200 + 500;
-    let oy = Math.random() * 200 + 500;
-    let or = Math.random() * 200 + 100;
 
     data.ship.elem.on("mouseover", function(e) {
         document.body.style.cursor = "pointer";
@@ -243,6 +254,7 @@ function init_ship() {
             e.cancelBubble = true;
         }
     });
+
     data.ship.elem.on("click tap", function(e) {
         document.body.style.cursor = "pointer";
         show_player_info();
@@ -251,9 +263,14 @@ function init_ship() {
             e.cancelBubble = true;
         }
     });
+
     data.layer2.add(data.ship.elem);
 
     let start = new Date();
+
+    let ox = Math.random() * 200 + 500;
+    let oy = Math.random() * 200 + 500;
+    let or = Math.random() * 200 + 100;
     function animate() {
         let delta = new Date() - start;
         data.ship.elem.offsetX(Math.sin(delta / ox));
@@ -265,6 +282,18 @@ function init_ship() {
     animate();
 }
 
+function init_ship_data(island_id) {
+    let island = get_island(island_id);
+    data.ship = {
+        x: island.elem.x() - 15,
+        y: island.elem.y() - 15,
+        src: "ship.png",
+        width: 0.06,
+        height: 0.065,
+        island_id: island_id
+    };
+}
+
 function init_game() {
     data.stage = new Konva.Stage({
         container: "game-container",
@@ -274,10 +303,26 @@ function init_game() {
 
     init_layer();
     init_backgronud();
+
+    get_player_info().done(function(response) {
+        if (response.current_island_id) {
+            init_ship_data(response.current_island_id);
+            init_ship();
+        } else {
+            my_alert(
+                "در ابتدای بازی شما باید جزیره‌ای را برای شروع انتخاب کنید.",
+                "انتخاب جزیره اولیه"
+            );
+        }
+    });
+
     init_islands();
     init_ways();
 
-    init_ship();
+    if (typeof data.ship !== "undefined") {
+        data.ship.elem.moveToTop();
+    }
+
     data.layer.batchDraw();
     data.layer2.batchDraw();
 }
@@ -288,7 +333,7 @@ let sources = [
     data.ganj.src,
     data.ganj_open.src,
     data.seagull.src,
-    data.ship.src
+    "ship.png"
 ];
 data.islands.forEach(island => {
     sources.push(island.src);

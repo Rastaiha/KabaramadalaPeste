@@ -10,7 +10,7 @@ from django.utils import timezone
 from accounts.models import Participant
 
 from kabaramadalapeste.models import Island, ParticipantIslandStatus, TradeOffer, TradeOfferRequestedItem, \
-    TradeOfferSuggestedItem
+    TradeOfferSuggestedItem, AbilityUsage
 from kabaramadalapeste.conf import settings
 
 import datetime
@@ -45,7 +45,8 @@ class IslandInfoView(View):
     def get(self, request, island_id):
         try:
             island = Island.objects.get(island_id=island_id)
-            pis = ParticipantIslandStatus.objects.get(participant=request.user.participant, island=island)
+            pis = ParticipantIslandStatus.objects.get(
+                participant=request.user.participant, island=island)
             treasure_keys = 'unknown'
             if pis.is_treasure_visible:
                 treasure_keys = {
@@ -226,11 +227,14 @@ def create_offer(request):
                 property_type = property_tuple[0]
                 if 'requested_' + property_type in request.POST:
                     requested_types.append(property_type)
-                    requested_amounts.append(int(request.POST['requested_' + property_type]))
+                    requested_amounts.append(
+                        int(request.POST['requested_' + property_type]))
                 if 'suggested_' + property_type in request.POST:
                     suggested_types.append(property_type)
-                    suggested_amounts.append(int(request.POST['suggested_' + property_type]))
-            request.user.participant.reduce_multiple_property(suggested_types, suggested_amounts)
+                    suggested_amounts.append(
+                        int(request.POST['suggested_' + property_type]))
+            request.user.participant.reduce_multiple_property(
+                suggested_types, suggested_amounts)
             trade_offer = TradeOffer.objects.create(
                 creator_participant=request.user.participant,
                 creation_datetime=timezone.now(),
@@ -273,7 +277,7 @@ def create_offer(request):
 @login_activated_participant_required
 def get_all_offers(request):
     try:
-        data = {'offers':[]}
+        data = {'offers': []}
         for trade_offer in TradeOffer.objects.filter(status__exact=settings.GAME_OFFER_ACTIVE).order_by('?').all():
             data['offers'].append(trade_offer.to_dict())
         return JsonResponse(data)
@@ -284,7 +288,7 @@ def get_all_offers(request):
 @login_activated_participant_required
 def get_my_offers(request):
     try:
-        data = {'offers':[]}
+        data = {'offers': []}
         for trade_offer in TradeOffer.objects.filter(
             status__exact=settings.GAME_OFFER_ACTIVE,
             creator_participant__member__username__exact=request.user.username
@@ -306,7 +310,8 @@ def delete_offer(request, pk):
         if trade_offer.status != settings.GAME_OFFER_ACTIVE:
             raise TradeOffer.InvalidOfferSelected
         for suggested_item in trade_offer.suggested_items.all():
-            request.user.participant.add_property(suggested_item.property_type, suggested_item.amount)
+            request.user.participant.add_property(
+                suggested_item.property_type, suggested_item.amount)
         trade_offer.status = settings.GAME_OFFER_DELETED
         trade_offer.close_datetime = timezone.now()
         trade_offer.save()
@@ -338,11 +343,14 @@ def accept_offer(request, pk):
         for requested_item in trade_offer.requested_items.all():
             requested_types.append(requested_item.property_type)
             requested_amounts.append(requested_item.amount)
-        request.user.participant.reduce_multiple_property(requested_types, requested_amounts)
+        request.user.participant.reduce_multiple_property(
+            requested_types, requested_amounts)
         for suggested_item in trade_offer.suggested_items.all():
-            request.user.participant.add_property(suggested_item.property_type, suggested_item.amount)
+            request.user.participant.add_property(
+                suggested_item.property_type, suggested_item.amount)
         for requested_item in trade_offer.requested_items.all():
-            trade_offer.creator_participant.add_property(requested_item.property_type, requested_item.amount)
+            trade_offer.creator_participant.add_property(
+                requested_item.property_type, requested_item.amount)
         trade_offer.status = settings.GAME_OFFER_ACCEPTED
         trade_offer.accepted_participant = request.user.participant
         trade_offer.close_datetime = timezone.now()
@@ -362,6 +370,58 @@ def accept_offer(request, pk):
         }, status=400)
     except Exception:
         return default_error_response
+
+
+@transaction.atomic
+@login_activated_participant_required
+def use_ability(request):
+    if request.method == 'POST':
+        try:
+            current_island = request.user.participant.get_current_island()
+            ability_type = request.POST.get('ability_type')
+            if ability_type not in [ability_tuple[0] for ability_tuple in settings.GAME_ABILITY_TYPE_CHOICES]:
+                raise AbilityUsage.InvalidAbility
+            request.user.participant.reduce_property(ability_type, 1)
+            ability_usage = AbilityUsage.objects.create(
+                datetime=timezone.now(),
+                participant=request.user.participant,
+                ability_type=ability_type
+            )
+
+            if ability_type == settings.GAME_TRAVEL_EXPRESS:
+                ability_usage.is_active = True
+
+            if ability_type == settings.GAME_VISION:
+                islands = [current_island] + [island for island in current_island.neighbors]
+                for island in islands:
+                    pis = ParticipantIslandStatus.objects.get(
+                        participant=request.user.participant,
+                        island=island
+                    )
+                    pis.is_treasure_visible = True
+                    pis.save()
+            #TODO need to fill this part for bully & prophecy
+            ability_usage.save()
+            return JsonResponse({
+                'status': settings.OK_STATUS
+            })
+        except AbilityUsage.InvalidAbility:
+            return JsonResponse({
+                'status': settings.ERROR_STATUS,
+                'message': 'باید یک توانایی مجاز انتخاب کنی.'
+            })
+        except Participant.ParticipantIsNotOnIsland:
+            return JsonResponse({
+                'status': settings.ERROR_STATUS,
+                'message': 'کشتیت روی جزیره‌ای نیست. باید اول انتخاب کنی می‌خوای از کجا شروع کنی.'
+            })
+        except Participant.PropertiesAreNotEnough:
+            return JsonResponse({
+                'status': settings.ERROR_STATUS,
+                'message': 'از این توانایی چیزی برای مصرف نداری.'
+            })
+        except Exception:
+            return default_error_response
 
 
 @login_activated_participant_required

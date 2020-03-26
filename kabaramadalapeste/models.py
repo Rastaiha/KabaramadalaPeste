@@ -379,3 +379,17 @@ class TradeOfferRequestedItem(models.Model):
 
     class Meta:
         unique_together = (("offer", "property_type"),)
+
+
+class AbilityUsage(models.Model):
+    datetime = models.DateTimeField(auto_now_add=True)
+    participant = models.ForeignKey(Participant, related_name='used_abilities', on_delete=models.CASCADE)
+    ability_type = models.CharField(
+        max_length=3,
+        choices=settings.GAME_ABILITY_TYPE_CHOICES,
+        default=settings.GAME_VISION,
+    )
+    is_active = models.BooleanField(default=False)
+
+    class InvalidAbility(Exception):
+        pass
