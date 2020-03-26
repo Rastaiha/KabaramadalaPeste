@@ -39,11 +39,11 @@ class GameConf(AppConf):
     PARTICIPANT_PROPERTY_TYPE_CHOICES = TREASURE_REWARD_TYPE_CHOICES
 
     PARTICIPANT_INITIAL_PROPERTIES = {
-        SEKKE: 100
+        SEKKE: 1500
     }
 
-    MOVE_PRICE = 20
-    PUT_ANCHOR_PRICE = 30
+    MOVE_PRICE = 100
+    PUT_ANCHOR_PRICE = 200
 
     DEFAULT_ISLAND_COUNT = 35
     BANDARGAH_ISLAND_ID = 20
@@ -59,7 +59,7 @@ class GameConf(AppConf):
     ]
 
     MAXIMUM_ACTIVE_OFFERS = 4
-    BASE_CHALLENGE_PER_DAY = 7
+    BASE_CHALLENGE_PER_DAY = 5
 
     class Meta:
         prefix = 'game'

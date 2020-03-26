@@ -5,7 +5,7 @@ from .views import (
     SetStartIslandView, PutAnchorView, OpenTreasureView,
     ParticipantInfoView, create_offer, get_all_offers,
     get_my_offers, delete_offer, accept_offer,
-    AcceptChallengeView, use_ability, SettingsView, SpadeView
+    AcceptChallengeView, use_ability, SettingsView, SpadeView, invest
 )
 
 
@@ -34,6 +34,8 @@ urlpatterns = [
     path('accept_offer/<int:pk>/', accept_offer, name="accept_offer"),
 
     path('use_ability', use_ability, name="use_ability"),
+
+    path('invest', invest, name="invest_bandargah"),
 
     path('', game, name="game"),
     path('low/', game2, name="game2"),
