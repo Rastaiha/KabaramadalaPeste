@@ -188,7 +188,11 @@ function init_islands() {
                             init_ship();
                         })
                         .fail(function(jqXHR, textStatus) {
-                            my_alert(textStatus, "خطا");
+                            let err_message = textStatus;
+                            if (typeof jqXHR.responseJSON !== "undefined") {
+                                err_message = jqXHR.responseJSON.message || textStatus;
+                            }
+                            my_alert(err_message, "خطا");
                         });
                 } else if (data.target !== island) {
                     change_target(island);

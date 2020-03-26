@@ -12,6 +12,13 @@ function toggle_right_info(elem) {
             .addClass("show-details");
     }
 }
+player_property_img = {
+    SK: "coins.png",
+    K1: "key1.png",
+    K2: "key2.png",
+    K3: "key3.png"
+};
+
 $(".right-info-btn").click(function() {
     let elem = this;
     if (
@@ -21,7 +28,6 @@ $(".right-info-btn").click(function() {
     ) {
         get_player_info()
             .done(function(response) {
-                console.log(response);
                 $(".player-info .right-info-details h3").text(
                     response.username
                 );
@@ -31,7 +37,9 @@ $(".right-info-btn").click(function() {
                         $(".player-propties").append(
                             '<div class="player-proprty"><span><b class="proprty-count">' +
                                 response.properties[key] +
-                                ' </b>×</span><img src="/static/images/game/coins.png" /></div>'
+                                ' </b>×</span><img src="/static/images/game/' +
+                                player_property_img[key] +
+                                '" /></div>'
                         );
                         const proprty_count = response.properties[key];
                     }
@@ -39,7 +47,11 @@ $(".right-info-btn").click(function() {
                 toggle_right_info(elem);
             })
             .fail(function(jqXHR, textStatus) {
-                my_alert(textStatus, "خطا");
+                let err_message = textStatus;
+                if (typeof jqXHR.responseJSON !== "undefined") {
+                    err_message = jqXHR.responseJSON.message || textStatus;
+                }
+                my_alert(err_message, "خطا");
             });
     } else {
         toggle_right_info(elem);

@@ -96,7 +96,7 @@ function show_island_info(island) {
                 island_info.find(".island-info-action a").text("لنگر انداختن");
                 $("#travel_modal .modal-title").text("لنگر انداختن");
                 $("#travel_modal .modal-question").text(
-                    "هزینه لنگر انداختن ۲ سکه است. آیا مایل به آن هستید؟"
+                    "هزینه لنگر انداختن ۲۰ سکه است. آیا مایل به آن هستید؟"
                 );
                 island_info
                     .find(".island-info-action a")
@@ -111,7 +111,7 @@ function show_island_info(island) {
                 island_info.find(".island-info-action a").text("سفر");
                 $("#travel_modal .modal-title").text("سفر");
                 $("#travel_modal .modal-question").text(
-                    "هزینه سفر ۲ سکه است. آیا مایل به آن هستید؟"
+                    "هزینه سفر ۲۰ سکه است. آیا مایل به آن هستید؟"
                 );
                 island_info
                     .find(".island-info-action a")
@@ -137,7 +137,11 @@ function show_island_info(island) {
             }, 100);
         })
         .fail(function(jqXHR, textStatus) {
-            my_alert(textStatus, "خطا");
+            let err_message = textStatus;
+            if (typeof jqXHR.responseJSON !== "undefined") {
+                err_message = jqXHR.responseJSON.message || textStatus;
+            }
+            my_alert(err_message, "خطا");
         });
 }
 
@@ -157,15 +161,19 @@ $("#travel_modal_btn").click(function() {
         let island_id = $(this).data("island_id");
         move_to(island_id)
             .done(function() {
-                $("#travel_modal").modal("hide");
                 travel(island_id);
             })
             .fail(function(jqXHR, textStatus) {
-                my_alert(textStatus, "خطا");
+                let err_message = textStatus;
+                if (typeof jqXHR.responseJSON !== "undefined") {
+                    err_message = jqXHR.responseJSON.message || textStatus;
+                }
+                my_alert(err_message, "خطا");
             });
     } else if ($(this).data("kind") === "langar") {
         window.location.href = "/game/island/";
     }
+    $("#travel_modal").modal("hide");
     island_info.addClass("hide");
     island_info.removeClass("show");
     change_target(null);
