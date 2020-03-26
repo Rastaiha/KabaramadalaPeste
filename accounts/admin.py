@@ -2,7 +2,10 @@ from django.contrib import admin
 from django.utils.safestring import mark_safe
 from django.urls import path, reverse
 from django.shortcuts import redirect
+
 from accounts.models import *
+from kabaramadalapeste.models import ParticipantPropertyItem
+from nested_inline.admin import NestedStackedInline, NestedModelAdmin
 
 from import_export.admin import ExportActionMixin
 from import_export.fields import Field
@@ -50,9 +53,14 @@ class MemberResource(resources.ModelResource):
             return ''
 
 
-class ParticipantInline(admin.StackedInline):
+class ParticipantPropertyItemInline(NestedStackedInline):
+    model = ParticipantPropertyItem
+
+
+class ParticipantInline(NestedStackedInline):
     readonly_fields = ['document', 'gender', 'currently_at_island']
     model = Participant
+    inlines = [ParticipantPropertyItemInline]
 
 
 class IsPaidFilter(admin.SimpleListFilter):
@@ -96,7 +104,7 @@ class IsVerifiedFilter(admin.SimpleListFilter):
         return queryset
 
 
-class MemberAdmin(ExportActionMixin, admin.ModelAdmin):
+class MemberAdmin(ExportActionMixin, NestedModelAdmin):
     resource_class = MemberResource
 
     list_display = ('username', 'real_name', 'get_city', 'get_school', 'is_active', 'get_is_paid', 'get_document_status',
@@ -131,7 +139,6 @@ class MemberAdmin(ExportActionMixin, admin.ModelAdmin):
         try:
             if 'Pending' in obj.participant.document_status:
                 return None
-            print(obj.participant.document_status)
             return obj.participant.document_status == 'Verified'
         except:
             return None

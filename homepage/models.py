@@ -1,7 +1,3 @@
-from django.db import models
-
-# Create your models here.
-
 from solo.models import SingletonModel
 from django.db import models
 from enum import Enum

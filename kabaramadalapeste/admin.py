@@ -1,14 +1,18 @@
 from django.contrib import admin
 from django.db import transaction
+from django.urls import path, reverse
+from django.shortcuts import redirect
 # Register your models here.
 from kabaramadalapeste.models import (
     Island, Challenge, ChallengeRewardItem, ShortAnswerQuestion, JudgeableQuestion,
     TreasureRewardItem, TreasureKeyItem, Treasure, Way, JudgeableSubmit,
-    BaseSubmit
+    BaseSubmit, TradeOffer, TradeOfferRequestedItem, TradeOfferSuggestedItem,
+    AbilityUsage, BandargahConfiguration, BandargahInvestment
 )
 from kabaramadalapeste.conf import settings
 from django.utils import timezone
 from django.forms.models import BaseInlineFormSet
+from solo.admin import SingletonModelAdmin
 
 
 class ChallengeRewardInlineFormSet(BaseInlineFormSet):
@@ -140,5 +144,54 @@ class JudgeableSubmitAdmin(admin.ModelAdmin):
     get_question_title.short_description = 'Question'
 
 
+class TradeOfferSuggestedItemInline(admin.StackedInline):
+    model = TradeOfferSuggestedItem
+
+
+class TradeOfferRequestedItemInline(admin.StackedInline):
+    model = TradeOfferRequestedItem
+
+
+@admin.register(TradeOffer)
+class TradeOfferAdmin(admin.ModelAdmin):
+    inlines = [TradeOfferRequestedItemInline, TradeOfferSuggestedItemInline]
+
+
+@admin.register(BandargahConfiguration)
+class BandargahConfigurationAdmin(SingletonModelAdmin):
+    change_form_template = 'admin/kabaramadalapeste/BandargahConfiguration/change_form.html'
+
+    def get_urls(self):
+        urls = super().get_urls()
+        custom_urls = [
+            path(
+                'compute_bandargah/',
+                self.compute_bandargah,
+                name='compute_bandargah',
+            ),
+        ]
+        return custom_urls + urls
+
+    @transaction.atomic
+    def compute_bandargah(self, request, *args, **kwargs):
+        not_applied_investments = BandargahInvestment.objects.filter(is_applied=False).all()
+        s = 0
+        for investment in not_applied_investments:
+            s += investment.amount
+        if BandargahConfiguration.get_solo().min_interval_investments < s < BandargahConfiguration.get_solo().max_interval_investments:
+            for investment in not_applied_investments:
+                investment.participant.add_property(
+                    settings.GAME_SEKKE, BandargahConfiguration.get_solo().profit_coefficient * investment.amount)
+        else:
+            for investment in not_applied_investments:
+                investment.participant.add_property(
+                    settings.GAME_SEKKE, BandargahConfiguration.get_solo().loss_coefficient * investment.amount)
+        not_applied_investments.update(is_applied=True)
+        return redirect('/admin/')
+
+
 admin.site.register(Island)
 admin.site.register(Way)
+admin.site.register(AbilityUsage)
+admin.site.register(BandargahInvestment)
+

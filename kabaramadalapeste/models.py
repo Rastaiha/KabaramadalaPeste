@@ -9,6 +9,8 @@ from django.utils import timezone
 import random
 import logging
 import math
+
+from solo.models import SingletonModel
 from enum import Enum
 
 logger = logging.getLogger(__file__)
@@ -392,4 +394,29 @@ class AbilityUsage(models.Model):
     is_active = models.BooleanField(default=False)
 
     class InvalidAbility(Exception):
+        pass
+
+
+class BandargahConfiguration(SingletonModel):
+    min_possible_invest = models.IntegerField(default=3000)
+    max_possible_invest = models.IntegerField(default=4000)
+    profit_coefficient = models.FloatField(default=1.5)
+    loss_coefficient = models.FloatField(default=0.5)
+    min_interval_investments = models.IntegerField(default=30000)
+    max_interval_investments = models.IntegerField(default=42000)
+
+
+class BandargahInvestment(models.Model):
+    participant = models.ForeignKey(Participant, related_name='investments', on_delete=models.CASCADE)
+    amount = models.IntegerField(default=0)
+    datetime = models.DateTimeField(auto_now_add=True)
+    is_applied = models.BooleanField(default=False)
+
+    class InvalidAmount(Exception):
+        pass
+
+    class LocationIsNotBandargah(Exception):
+        pass
+
+    class CantInvestTwiceToday(Exception):
         pass

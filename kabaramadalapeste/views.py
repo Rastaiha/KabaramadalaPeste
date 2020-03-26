@@ -10,7 +10,7 @@ from django.utils import timezone
 from accounts.models import Participant
 
 from kabaramadalapeste.models import Island, ParticipantIslandStatus, TradeOffer, TradeOfferRequestedItem, \
-    TradeOfferSuggestedItem, AbilityUsage
+    TradeOfferSuggestedItem, AbilityUsage, BandargahInvestment, BandargahConfiguration
 from kabaramadalapeste.conf import settings
 
 import datetime
@@ -419,6 +419,67 @@ def use_ability(request):
             return JsonResponse({
                 'status': settings.ERROR_STATUS,
                 'message': 'از این توانایی چیزی برای مصرف نداری.'
+            })
+        except Exception:
+            return default_error_response
+
+
+@transaction.atomic
+@login_activated_participant_required
+def invest(request):
+    if request.method == 'POST':
+        try:
+            current_island = request.user.participant.get_current_island()
+            if current_island.island_id != settings.GAME_BANDARGAH_ISLAND_ID:
+                raise BandargahInvestment.LocationIsNotBandargah
+            amount = int(request.POST.get('amount'))
+            if amount > BandargahConfiguration.get_solo().max_possible_invest:
+                raise BandargahInvestment.InvalidAmount
+            if amount < BandargahConfiguration.get_solo().min_possible_invest:
+                raise BandargahInvestment.InvalidAmount
+            today_begin = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
+            today_end = today_begin + datetime.timedelta(days=1)
+            if BandargahInvestment.objects.filter(
+                participant=request.user.participant,
+                datetime__gte=today_begin,
+                datetime__lt=today_end,
+            ).count() > 0:
+                raise BandargahInvestment.CantInvestTwiceToday
+            request.user.participant.reduce_property(settings.GAME_SEKKE, amount)
+            investment = BandargahInvestment.objects.create(
+                participant=request.user.participant,
+                amount=amount,
+                datetime=timezone.now(),
+                is_applied=False
+            )
+            investment.save()
+            return JsonResponse({
+                'status': settings.OK_STATUS
+            })
+        except Participant.ParticipantIsNotOnIsland:
+            return JsonResponse({
+                'status': settings.ERROR_STATUS,
+                'message': 'کشتیت روی جزیره‌ای نیست. باید اول انتخاب کنی می‌خوای از کجا شروع کنی.'
+            })
+        except BandargahInvestment.LocationIsNotBandargah:
+            return JsonResponse({
+                'status': settings.ERROR_STATUS,
+                'message': 'الان روی بندرگاه نیستی. باید اول به بندرگاه بری.'
+            })
+        except BandargahInvestment.InvalidAmount:
+            return JsonResponse({
+                'status': settings.ERROR_STATUS,
+                'message': 'مقدار سرمایه‌گذاری درست نیست. مقدار سرمایه‌گذاری باید در بازه‌ی معتبر باشه!'
+            })
+        except BandargahInvestment.CantInvestTwiceToday:
+            return JsonResponse({
+                'status': settings.ERROR_STATUS,
+                'message': 'امروز قبلا سرمایه‌گذاری کردی! روزی فقط یه بار می‌تونی سرمایه‌گذاری کنی.'
+            })
+        except Participant.PropertiesAreNotEnough:
+            return JsonResponse({
+                'status': settings.ERROR_STATUS,
+                'message': 'این مقدار سکه برای سرمایه‌گذاری نداری.'
             })
         except Exception:
             return default_error_response

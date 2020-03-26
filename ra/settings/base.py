@@ -40,7 +40,9 @@ INSTALLED_APPS = [
     'import_export',
     'homepage',
     'kabaramadalapeste',
-    'accounts'
+    'accounts',
+    'solo',
+    'nested_inline',
 ]
 
 MIDDLEWARE = [

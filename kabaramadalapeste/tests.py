@@ -5,7 +5,7 @@ from django.db.utils import IntegrityError
 from accounts.models import Participant
 from kabaramadalapeste.models import (
     ParticipantIslandStatus, Island, Way,
-    ShortAnswerSubmit, ShortAnswerQuestion, TradeOffer, BaseSubmit
+    ShortAnswerSubmit, ShortAnswerQuestion, TradeOffer, BaseSubmit, BandargahInvestment
 )
 from kabaramadalapeste.factory import (
     ChallengeFactory, IslandFactory, ShortAnswerQuestionFactory, TreasureFactory
@@ -581,3 +581,18 @@ class ViewsTest(TestCase):
 
         with self.assertRaises(Participant.MaximumChallengePerDayExceeded):
             self.participant.accept_challenge_on_current_island()
+
+    def test_bandargah_ok(self):
+        bandar = Island.objects.get(island_id=settings.GAME_BANDARGAH_ISLAND_ID)
+        self.participant.add_property(settings.GAME_SEKKE, 3000)
+        old_sekke = self.participant.sekke.amount
+        self.participant.set_start_island(bandar)
+        self.client.force_login(self.participant.member)
+        data = {
+            'amount': '3000'
+        }
+        response = self.client.post(reverse('kabaramadalapeste:invest_bandargah'), data=data)
+        self.assertEqual(response.json()['status'], settings.OK_STATUS)
+        self.assertEqual(1, BandargahInvestment.objects.all().count())
+        self.assertEqual(old_sekke, self.participant.sekke.amount + 3000)
+        BandargahInvestment.objects.all().delete()
