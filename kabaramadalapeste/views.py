@@ -37,7 +37,7 @@ def login_activated_participant_required(view_func):
 default_error_response = JsonResponse({
     'status': settings.ERROR_STATUS,
     'message': 'خطایی رخ داد. موضوع رو بهمون بگو.'
-})
+}, status=400)
 
 
 @method_decorator(login_activated_participant_required, name='dispatch')
@@ -99,7 +99,7 @@ class SetStartIslandView(View):
             return JsonResponse({
                 'status': settings.ERROR_STATUS,
                 'message': 'قبلا انتخاب کردی که از کدوم جزیره شروع کنی. نمی‌تونی دوباره انتخاب کنی.'
-            })
+            }, status=400)
         except Exception:
             return default_error_response
 
@@ -117,17 +117,17 @@ class MoveToIslandView(View):
             return JsonResponse({
                 'status': settings.ERROR_STATUS,
                 'message': 'کشتیت روی جزیره‌ای نیست. نمی‌تونی حرکت کنی. اول انتخاب کن می‌خوای از کجا شروع کنی.'
-            })
+            }, status=400)
         except Island.IslandsNotConnected:
             return JsonResponse({
                 'status': settings.ERROR_STATUS,
                 'message': 'به جزیره‌ی مقصد از اینجا راه مستقیم نیست.'
-            })
+            }, status=400)
         except Participant.PropertiesAreNotEnough:
             return JsonResponse({
                 'status': settings.ERROR_STATUS,
                 'message': 'سکه‌هات برای حرکت کافی نیست.'
-            })
+            }, status=400)
         except Exception:
             return default_error_response
 
@@ -144,12 +144,12 @@ class PutAnchorView(View):
             return JsonResponse({
                 'status': settings.ERROR_STATUS,
                 'message': 'کشتیت روی جزیره‌ای نیست. نمی‌تونی لنگر بندازی. اول انتخاب کن می‌خوای از کجا شروع کنی.'
-            })
+            }, status=400)
         except Participant.PropertiesAreNotEnough:
             return JsonResponse({
                 'status': settings.ERROR_STATUS,
                 'message': 'سکه‌هات برای لنگر انداختن کافی نیست.'
-            })
+            }, status=400)
         except Exception:
             return default_error_response
 
@@ -166,17 +166,17 @@ class OpenTreasureView(View):
             return JsonResponse({
                 'status': settings.ERROR_STATUS,
                 'message': 'کشتیت روی جزیره‌ای نیست. نمی‌تونی گنجش رو باز کنی. اول انتخاب کن می‌خوای از کجا شروع کنی.'
-            })
+            }, status=400)
         except Participant.DidNotAnchored:
             return JsonResponse({
                 'status': settings.ERROR_STATUS,
                 'message': 'توی جزیره لنگر ننداختی. نمی‌تونی گنجش رو باز کنی. اول باید لنگر بندازی.'
-            })
+            }, status=400)
         except Participant.PropertiesAreNotEnough:
             return JsonResponse({
                 'status': settings.ERROR_STATUS,
                 'message': 'دارایی‌هات برای باز کردن گنج کافی نیست.'
-            })
+            }, status=400)
         except Exception:
             return default_error_response
 
@@ -193,17 +193,17 @@ class AcceptChallengeView(View):
             return JsonResponse({
                 'status': settings.ERROR_STATUS,
                 'message': 'کشتیت روی جزیره‌ای نیست. نمی‌تونی چالش رو بپذیری. اول انتخاب کن می‌خوای از کجا شروع کنی.'
-            })
+            }, status=400)
         except Participant.DidNotAnchored:
             return JsonResponse({
                 'status': settings.ERROR_STATUS,
                 'message': 'توی جزیره لنگر ننداختی. نمی‌تونی چالشش رو بپذیری. اول باید لنگر بندازی.'
-            })
+            }, status=400)
         except Participant.MaximumChallengePerDayExceeded:
             return JsonResponse({
                 'status': settings.ERROR_STATUS,
                 'message': 'تعداد چالش‌های روزت رو استفاده کردی. تا فردا نمی‌تونی چالش جدیدی بپذیری'
-            })
+            }, status=400)
         except Exception:
             return default_error_response
 
@@ -260,12 +260,12 @@ def create_offer(request):
             return JsonResponse({
                 'status': settings.ERROR_STATUS,
                 'message': 'به حداکثر تعداد پیش‌نهاداتت رسیدی.'
-            })
+            }, status=400)
         except Participant.PropertiesAreNotEnough:
             return JsonResponse({
                 'status': settings.ERROR_STATUS,
                 'message': 'منابع کافی برای دادن این پیشنهاد رو نداری.'
-            })
+            }, status=400)
         except Exception:
             return default_error_response
 
@@ -317,7 +317,7 @@ def delete_offer(request, pk):
         return JsonResponse({
             'status': settings.ERROR_STATUS,
             'message': 'این پیشنهاد رو نمی‌تونی حذف کنی!'
-        })
+        }, status=400)
     except Exception:
         return default_error_response
 
@@ -354,12 +354,12 @@ def accept_offer(request, pk):
         return JsonResponse({
             'status': settings.ERROR_STATUS,
             'message': 'این پیشنهاد رو نمی‌تونی قبول کنی!'
-        })
+        }, status=400)
     except Participant.PropertiesAreNotEnough:
         return JsonResponse({
             'status': settings.ERROR_STATUS,
             'message': 'منابع کافی برای قبول کردن این پیشنهاد رو نداری.'
-        })
+        }, status=400)
     except Exception:
         return default_error_response
 
