@@ -89,7 +89,7 @@ class JudgeableSubmitAdmin(admin.ModelAdmin):
         )
     list_display = ('get_username', 'submitted_at', 'get_challenge_name', 'get_question_title',)
     search_fields = ('submit_status', )
-    exclude = ('judged_at', 'pis', )
+    exclude = ('judged_at', 'pis', 'judged_by')
     readonly_fields = ('submitted_answer', 'submitted_at', 'get_challenge_name', 'get_question_title')
 
     def get_search_results(self, request, queryset, search_term):
@@ -130,9 +130,9 @@ class JudgeableSubmitAdmin(admin.ModelAdmin):
         with transaction.atomic():
             if (obj.initial_submit_status == BaseSubmit.SubmitStatus.Pending and
                     obj.submit_status == BaseSubmit.SubmitStatus.Correct):
-                for reward in obj.pis.question.challenge.rewards.all():
-                    obj.pis.participant.add_property(reward.key, reward.amount)
+                obj.give_rewards_to_participant()
             obj.judged_at = timezone.now()
+            obj.judged_by = request.user
             obj.save()
 
     get_username.short_description = 'Username'

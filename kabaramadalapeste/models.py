@@ -284,6 +284,11 @@ class BaseSubmit(models.Model):
             return True
         return False
 
+    @transaction.atomic
+    def give_rewards_to_participant(self):
+        for reward in self.pis.question.challenge.rewards.all():
+            self.pis.participant.add_property(reward.key, reward.amount)
+
 
 class ShortAnswerSubmit(BaseSubmit):
 
@@ -310,6 +315,11 @@ class ShortAnswerSubmit(BaseSubmit):
 class JudgeableSubmit(BaseSubmit):
     submitted_answer = models.FileField(upload_to='answers/', null=True, blank=True)
     judge_note = models.CharField(max_length=200, null=True, blank=True)
+
+    judged_by = models.ForeignKey('accounts.Member',
+                                  on_delete=models.SET_NULL,
+                                  null=True,
+                                  blank=True)
 
 
 class TradeOffer(models.Model):
