@@ -181,6 +181,14 @@ class ParticipantTest(TestCase):
         with self.assertRaises(Participant.ParticipantIsNotOnIsland):
             self.participant.put_anchor_on_current_island()
 
+    def test_put_anchor_again(self):
+        self.participant.init_pis()
+        self.participant.init_properties()
+        self.participant.set_start_island(self.island)
+        self.participant.put_anchor_on_current_island()
+        with self.assertRaises(Participant.CantPutAnchorAgain):
+            self.participant.put_anchor_on_current_island()
+
     def test_put_anchor_not_enough_sekke(self):
         self.participant.init_pis()
         self.participant.init_properties()

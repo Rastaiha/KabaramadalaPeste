@@ -171,6 +171,11 @@ class PutAnchorView(View):
                 'status': settings.ERROR_STATUS,
                 'message': 'سکه‌هات برای لنگر انداختن کافی نیست.'
             }, status=400)
+        except Participant.CantPutAnchorAgain:
+            return JsonResponse({
+                'status': settings.ERROR_STATUS,
+                'message': 'روی این جزیره لنگر انداختی. نمی‌تونی دوباره لنگر بندازی.'
+            }, status=400)
         except Exception as e:
             logger.error(e, exc_info=True)
             return default_error_response

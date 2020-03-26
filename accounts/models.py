@@ -65,6 +65,9 @@ class Participant(models.Model):
     class BadInput(Exception):
         pass
 
+    class CantPutAnchorAgain(Exception):
+        pass
+
     member = models.OneToOneField(Member, related_name='participant', on_delete=models.CASCADE)
     school = models.CharField(max_length=200)
     city = models.CharField(max_length=40)
@@ -153,7 +156,6 @@ class Participant(models.Model):
             challenge_accepted_at__gte=today_begin,
             challenge_accepted_at__lt=today_end,
         ).count()
-
 
     def today_challenge_pluses_count(self):
         today_begin = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
@@ -269,6 +271,9 @@ class Participant(models.Model):
             participant=self,
             island=self.currently_at_island
         )
+        if current_pis.currently_anchored:
+            raise Participant.CantPutAnchorAgain
+
         with transaction.atomic():
             current_pis.currently_anchored = True
             current_pis.is_treasure_visible = True

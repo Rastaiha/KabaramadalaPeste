@@ -318,6 +318,13 @@ class ViewsTest(TestCase):
         response = self.client.post(reverse('kabaramadalapeste:put_anchor'))
         self.assertEqual(response.json()['status'], settings.ERROR_STATUS)
 
+    def test_put_anchor_again(self):
+        self.participant.set_start_island(self.island)
+        self.client.force_login(self.participant.member)
+        self.client.post(reverse('kabaramadalapeste:put_anchor'))
+        response = self.client.post(reverse('kabaramadalapeste:put_anchor'))
+        self.assertEqual(response.json()['status'], settings.ERROR_STATUS)
+
     def test_put_anchor_not_enough_sekke(self):
         self.participant.set_start_island(self.all_islands[4])
         self.client.force_login(self.participant.member)
