@@ -7,9 +7,10 @@ from kabaramadalapeste.factory import (
     ShortAnswerQuestionFactory
 )
 from kabaramadalapeste.models import (
-    Way, ParticipantIslandStatus, Island,
+    Way, ParticipantIslandStatus, Island, Peste,
     ParticipantPropertyItem, ShortAnswerQuestion, Treasure
 )
+from homepage.models import SiteConfiguration
 from kabaramadalapeste.conf import settings
 from collections import defaultdict
 from django.utils import timezone
@@ -196,8 +197,17 @@ class ParticipantTest(TestCase):
         safe_sekke = self.participant.get_safe_sekke()
         safe_sekke.amount = settings.GAME_PUT_ANCHOR_PRICE - 1
         safe_sekke.save()
+
+        pis = ParticipantIslandStatus.objects.get(
+            participant=self.participant,
+            island=self.island
+        )
         with self.assertRaises(Participant.PropertiesAreNotEnough):
             self.participant.put_anchor_on_current_island()
+        pis.refresh_from_db()
+        self.assertFalse(pis.currently_anchored)
+        self.assertFalse(pis.is_treasure_visible)
+        self.assertIsNone(pis.last_anchored_at)
 
     def test_init_properties(self):
         PARTICIPANT_INITIAL_PROPERTIES = {
@@ -250,6 +260,26 @@ class ParticipantTest(TestCase):
         pis.refresh_from_db()
         self.assertTrue(pis.did_open_treasure)
         self.assertIsNotNone(pis.treasure_opened_at)
+
+    def test_open_treasure_twice(self):
+        self.participant.init_pis()
+        self.participant.init_properties()
+        self.participant.set_start_island(self.island)
+        self.participant.put_anchor_on_current_island()
+
+        pis = ParticipantIslandStatus.objects.get(
+            participant=self.participant,
+            island=self.island
+        )
+        for key in pis.treasure.keys.all():
+            if self.participant.get_property(key.key_type).amount < key.amount:
+                self.participant.add_property(
+                    key.key_type,
+                    key.amount - self.participant.get_property(key.key_type).amount
+                )
+        self.participant.open_treasure_on_current_island()
+        with self.assertRaises(Participant.CantOpenTreasureAgain):
+            self.participant.open_treasure_on_current_island()
 
     def test_open_treasure_not_enough(self):
         self.participant.init_pis()
@@ -319,6 +349,16 @@ class ParticipantTest(TestCase):
         pis.refresh_from_db()
         self.assertTrue(pis.did_accept_challenge)
         self.assertIsNotNone(pis.challenge_accepted_at)
+
+    def test_accept_challenge_twice(self):
+        self.participant.init_pis()
+        self.participant.init_properties()
+        self.participant.set_start_island(self.island)
+        self.participant.put_anchor_on_current_island()
+
+        self.participant.accept_challenge_on_current_island()
+        with self.assertRaises(Participant.CantAcceptChallengeAgain):
+            self.participant.accept_challenge_on_current_island()
 
     def test_accept_challenge_not_at_island(self):
         self.participant.init_pis()
@@ -394,3 +434,126 @@ class ParticipantTest(TestCase):
         pis.refresh_from_db()
         self.assertTrue(pis.did_accept_challenge)
         self.assertIsNotNone(pis.challenge_accepted_at)
+
+    def test_spade_ok_no_peste(self):
+        self.participant.init_pis()
+        self.participant.init_properties()
+        self.participant.set_start_island(self.island)
+        self.participant.put_anchor_on_current_island()
+        self.participant.add_property(
+            settings.GAME_SEKKE,
+            SiteConfiguration.get_solo().island_spade_cost - self.participant.sekke.amount
+        )
+        result = self.participant.spade_on_current_island()
+        pis = ParticipantIslandStatus.objects.get(
+            participant=self.participant,
+            island=self.island
+        )
+        self.assertFalse(result)
+        self.assertEqual(self.participant.sekke.amount, 0)
+        self.assertTrue(pis.did_spade)
+        self.assertIsNotNone(pis.spaded_at)
+
+    def test_spade_ok_with_peste(self):
+        peste = Peste.objects.create(
+            island=self.island
+        )
+        self.participant.init_pis()
+        self.participant.init_properties()
+        self.participant.set_start_island(self.island)
+        self.participant.put_anchor_on_current_island()
+        self.participant.add_property(
+            settings.GAME_SEKKE,
+            SiteConfiguration.get_solo().island_spade_cost - self.participant.sekke.amount
+        )
+        result = self.participant.spade_on_current_island()
+        pis = ParticipantIslandStatus.objects.get(
+            participant=self.participant,
+            island=self.island
+        )
+        self.assertTrue(result)
+        self.assertEqual(
+            self.participant.sekke.amount,
+            SiteConfiguration.get_solo().peste_reward
+        )
+        self.assertTrue(pis.did_spade)
+        self.assertIsNotNone(pis.spaded_at)
+        self.assertTrue(peste.is_found)
+        self.assertIsNotNone(peste.found_by)
+        self.assertIsNotNone(peste.found_at)
+
+    def test_spade_ok_with_peste_found_before(self):
+        other_participant = ParticipantFactory()
+        peste = Peste.objects.create(
+            island=self.island,
+            is_found=True,
+            found_by=other_participant
+        )
+        self.participant.init_pis()
+        self.participant.init_properties()
+        self.participant.set_start_island(self.island)
+        self.participant.put_anchor_on_current_island()
+        self.participant.add_property(
+            settings.GAME_SEKKE,
+            SiteConfiguration.get_solo().island_spade_cost - self.participant.sekke.amount
+        )
+        result = self.participant.spade_on_current_island()
+        pis = ParticipantIslandStatus.objects.get(
+            participant=self.participant,
+            island=self.island
+        )
+        self.assertFalse(result)
+        self.assertEqual(self.participant.sekke.amount, 0)
+        self.assertTrue(pis.did_spade)
+        self.assertIsNotNone(pis.spaded_at)
+        self.assertTrue(peste.is_found)
+        self.assertEqual(peste.found_by, other_participant)
+
+    def test_spade_ok_with_peste_not_enough_property(self):
+        other_participant = ParticipantFactory()
+        Peste.objects.create(
+            island=self.island,
+            is_found=True,
+            found_by=other_participant
+        )
+        self.participant.init_pis()
+        self.participant.init_properties()
+        self.participant.set_start_island(self.island)
+        self.participant.put_anchor_on_current_island()
+        self.participant.add_property(
+            settings.GAME_SEKKE,
+            (SiteConfiguration.get_solo().island_spade_cost - self.participant.sekke.amount) - 1
+        )
+        with self.assertRaises(Participant.PropertiesAreNotEnough):
+            self.participant.spade_on_current_island()
+        pis = ParticipantIslandStatus.objects.get(
+            participant=self.participant,
+            island=self.island
+        )
+        self.assertIsNone(pis.spaded_at)
+
+    def test_spade_twice(self):
+        other_participant = ParticipantFactory()
+        Peste.objects.create(
+            island=self.island,
+            is_found=True,
+            found_by=other_participant
+        )
+        self.participant.init_pis()
+        self.participant.init_properties()
+        self.participant.set_start_island(self.island)
+        self.participant.put_anchor_on_current_island()
+        self.participant.add_property(
+            settings.GAME_SEKKE,
+            (2 * SiteConfiguration.get_solo().island_spade_cost - self.participant.sekke.amount)
+        )
+        self.participant.spade_on_current_island()
+        with self.assertRaises(Participant.CantSpadeAgain):
+            self.participant.spade_on_current_island()
+
+    def test_spade_not_at_island(self):
+        self.participant.init_pis()
+        self.participant.init_properties()
+
+        with self.assertRaises(Participant.ParticipantIsNotOnIsland):
+            self.participant.spade_on_current_island()

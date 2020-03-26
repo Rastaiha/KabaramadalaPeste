@@ -9,6 +9,8 @@ from django.utils import timezone
 import random
 import logging
 import math
+
+from solo.models import SingletonModel
 from enum import Enum
 
 logger = logging.getLogger(__file__)
@@ -21,6 +23,8 @@ class Island(models.Model):
                                   on_delete=models.SET_NULL,
                                   blank=True,
                                   null=True)
+
+    peste_guidance = models.TextField(null=True, blank=True)
 
     class IslandsNotConnected(Exception):
         pass
@@ -39,6 +43,16 @@ class Island(models.Model):
             Way.objects.filter(first_end=self, second_end=other_island).count() != 0 or
             Way.objects.filter(first_end=other_island, second_end=self).count() != 0
         )
+
+
+class Peste(models.Model):
+    island = models.OneToOneField(Island,
+                                  on_delete=models.CASCADE)
+    is_found = models.BooleanField(default=False)
+    found_by = models.ForeignKey('accounts.Participant',
+                                 on_delete=models.SET_NULL,
+                                 null=True,
+                                 blank=True)
 
 
 class Way(models.Model):
@@ -222,6 +236,9 @@ class ParticipantIslandStatus(models.Model):
     did_accept_challenge = models.BooleanField(default=False)
     challenge_accepted_at = models.DateTimeField(null=True)
 
+    did_spade = models.BooleanField(default=False)
+    spaded_at = models.DateTimeField(null=True)
+
     question_content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, null=True)
     question_object_id = models.PositiveIntegerField(null=True)
     question = GenericForeignKey('question_content_type', 'question_object_id')
@@ -252,7 +269,7 @@ class ParticipantIslandStatus(models.Model):
                 return self.judgeablesubmit
             return self.shortanswersubmit
         except (ParticipantIslandStatus.judgeablesubmit.RelatedObjectDoesNotExist,
-                ParticipantIslandStatus.shortanswersubmit.RelatedObjectDoesNotExist):
+                ParticipantIslandStatus.shortanswersubmit.RelatedObjectDoesNotExist, AttributeError):
             return None
 
 
@@ -396,4 +413,40 @@ class AbilityUsage(models.Model):
     is_active = models.BooleanField(default=False)
 
     class InvalidAbility(Exception):
+        pass
+
+
+class BandargahConfiguration(SingletonModel):
+    min_possible_invest = models.IntegerField(default=3000)
+    max_possible_invest = models.IntegerField(default=4000)
+    profit_coefficient = models.FloatField(default=1.5)
+    loss_coefficient = models.FloatField(default=0.5)
+    min_interval_investments = models.IntegerField(default=30000)
+    max_interval_investments = models.IntegerField(default=42000)
+
+
+class BandargahInvestment(models.Model):
+    participant = models.ForeignKey(Participant, related_name='investments', on_delete=models.CASCADE)
+    amount = models.IntegerField(default=0)
+    datetime = models.DateTimeField(auto_now_add=True)
+    is_applied = models.BooleanField(default=False)
+
+    class InvalidAmount(Exception):
+        pass
+
+    class LocationIsNotBandargah(Exception):
+        pass
+
+    class CantInvestTwiceToday(Exception):
+        pass
+
+
+class Bully(models.Model):
+    owner = models.ForeignKey(Participant, related_name='bullies', on_delete=models.CASCADE)
+    island = models.ForeignKey(Island, related_name='bullies', on_delete=models.CASCADE)
+    creation_datetime = models.DateTimeField(auto_now_add=True)
+    is_expired = models.BooleanField(default=False)
+    expired_datetime = models.DateTimeField(null=True, blank=True)
+
+    class CantBeOnBandargah(Exception):
         pass

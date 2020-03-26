@@ -10,7 +10,7 @@ from django.utils import timezone
 from accounts.models import Participant
 
 from kabaramadalapeste.models import Island, ParticipantIslandStatus, TradeOffer, TradeOfferRequestedItem, \
-    TradeOfferSuggestedItem, AbilityUsage
+    TradeOfferSuggestedItem, AbilityUsage, BandargahInvestment, BandargahConfiguration, Bully
 from kabaramadalapeste.conf import settings
 
 import datetime
@@ -64,15 +64,15 @@ class IslandInfoView(View):
             pis = ParticipantIslandStatus.objects.get(
                 participant=request.user.participant, island=island)
             treasure_keys = 'unknown'
-            if pis.is_treasure_visible:
+            if pis.is_treasure_visible and pis.treasure:
                 treasure_keys = {
                     key.key_type: key.amount for key in pis.treasure.keys.all()
                 }
             submit_status = pis.submit.submit_status if pis.submit else 'No'
             return JsonResponse({
                 'name': island.name,
-                'challenge_name': island.challenge.name,
-                'challenge_is_judgeable': island.challenge.is_judgeable,
+                'challenge_name': island.challenge.name if island.challenge else '',
+                'challenge_is_judgeable': island.challenge.is_judgeable if island.challenge else '',
                 'treasure_keys': treasure_keys,
                 'did_open_treasure': pis.did_open_treasure,
                 'participants_inside': ParticipantIslandStatus.objects.filter(
@@ -212,6 +212,45 @@ class OpenTreasureView(View):
                 'status': settings.ERROR_STATUS,
                 'message': 'دارایی‌هات برای باز کردن گنج کافی نیست.'
             }, status=400)
+        except Participant.CantOpenTreasureAgain:
+            return JsonResponse({
+                'status': settings.ERROR_STATUS,
+                'message': 'قبلا این گنج رو باز کردی. نمیشه دوباره باز کنی.'
+            }, status=400)
+        except Exception as e:
+            logger.error(e, exc_info=True)
+            return default_error_response
+
+
+@method_decorator(login_activated_participant_required, name='dispatch')
+class SpadeView(View):
+    def post(self, request):
+        try:
+            found = request.user.participant.spade_on_current_island()
+            return JsonResponse({
+                'status': settings.OK_STATUS,
+                'found': found
+            })
+        except Participant.ParticipantIsNotOnIsland:
+            return JsonResponse({
+                'status': settings.ERROR_STATUS,
+                'message': 'کشتیت روی جزیره‌ای نیست. نمی‌تونی بیل بزنی. اول انتخاب کن می‌خوای از کجا شروع کنی.'
+            }, status=400)
+        except Participant.DidNotAnchored:
+            return JsonResponse({
+                'status': settings.ERROR_STATUS,
+                'message': 'توی جزیره لنگر ننداختی. نمی‌تونی بیل بزنی. اول باید لنگر بندازی.'
+            }, status=400)
+        except Participant.PropertiesAreNotEnough:
+            return JsonResponse({
+                'status': settings.ERROR_STATUS,
+                'message': 'دارایی‌هات برای بیل زدن کافی نیست.'
+            }, status=400)
+        except Participant.CantSpadeAgain:
+            return JsonResponse({
+                'status': settings.ERROR_STATUS,
+                'message': 'قبلا اینجا رو بیل زدی. نمیشه دوباره بیل بزنی.'
+            }, status=400)
         except Exception as e:
             logger.error(e, exc_info=True)
             return default_error_response
@@ -239,6 +278,11 @@ class AcceptChallengeView(View):
             return JsonResponse({
                 'status': settings.ERROR_STATUS,
                 'message': 'تعداد چالش‌های روزت رو استفاده کردی. تا فردا نمی‌تونی چالش جدیدی بپذیری'
+            }, status=400)
+        except Participant.CantAcceptChallengeAgain:
+            return JsonResponse({
+                'status': settings.ERROR_STATUS,
+                'message': 'قبلا این چالش رو پذیرفتی. نمیشه دوباره بپذیریش.'
             }, status=400)
         except Exception as e:
             logger.error(e, exc_info=True)
@@ -395,6 +439,7 @@ def accept_offer(request, pk):
         trade_offer.accepted_participant = request.user.participant
         trade_offer.close_datetime = timezone.now()
         trade_offer.save()
+        trade_offer.creator_participant.send_msg_offer_accepted(trade_offer)
         return JsonResponse({
             'status': settings.OK_STATUS
         })
@@ -422,6 +467,15 @@ def use_ability(request):
             ability_type = request.POST.get('ability_type')
             if ability_type not in [ability_tuple[0] for ability_tuple in settings.GAME_ABILITY_TYPE_CHOICES]:
                 raise AbilityUsage.InvalidAbility
+            if ability_type == settings.GAME_BULLY:
+                if current_island.island_id == settings.GAME_BANDARGAH_ISLAND_ID:
+                    raise Bully.CantBeOnBandargah
+                pis = ParticipantIslandStatus.objects.get(
+                    participant=request.user.participant,
+                    island=current_island
+                )
+                if not pis.currently_anchored:
+                    raise Participant.DidNotAnchored
             request.user.participant.reduce_property(ability_type, 1)
             ability_usage = AbilityUsage.objects.create(
                 datetime=timezone.now(),
@@ -441,7 +495,23 @@ def use_ability(request):
                     )
                     pis.is_treasure_visible = True
                     pis.save()
-            #TODO need to fill this part for bully & prophecy
+
+            if ability_type == settings.GAME_BULLY:
+                active_bullies = Bully.objects.filter(
+                    island=current_island,
+                    is_expired=False
+                )
+                for active_bully in active_bullies:
+                    active_bully.expired_datetime = timezone.now()
+                    active_bully.is_expired = True
+                    active_bully.owner.send_msg_bully_expired(active_bully)
+                bully = Bully.objects.create(
+                    owner=request.user.participant,
+                    is_expired=False,
+                    island=current_island,
+                    creation_datetime=timezone.now()
+                )
+                bully.save()
             ability_usage.save()
             return JsonResponse({
                 'status': settings.OK_STATUS
@@ -461,7 +531,79 @@ def use_ability(request):
                 'status': settings.ERROR_STATUS,
                 'message': 'از این توانایی چیزی برای مصرف نداری.'
             })
+        except Bully.CantBeOnBandargah:
+            return JsonResponse({
+                'status': settings.ERROR_STATUS,
+                'message': 'این توانایی رو نمی‌تونی توی بندرگاه استفاده کنی.'
+            })
+        except Participant.DidNotAnchored:
+            return JsonResponse({
+                'status': settings.ERROR_STATUS,
+                'message': 'برای استفاده از این توانایی باید لنگر انداخته باشی.'
+            })
         except Exception as e:
+            logger.error(e, exc_info=True)
+            return default_error_response
+
+
+@transaction.atomic
+@login_activated_participant_required
+def invest(request):
+    if request.method == 'POST':
+        try:
+            current_island = request.user.participant.get_current_island()
+            if current_island.island_id != settings.GAME_BANDARGAH_ISLAND_ID:
+                raise BandargahInvestment.LocationIsNotBandargah
+            amount = int(request.POST.get('amount'))
+            if amount > BandargahConfiguration.get_solo().max_possible_invest:
+                raise BandargahInvestment.InvalidAmount
+            if amount < BandargahConfiguration.get_solo().min_possible_invest:
+                raise BandargahInvestment.InvalidAmount
+            today_begin = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
+            today_end = today_begin + datetime.timedelta(days=1)
+            if BandargahInvestment.objects.filter(
+                participant=request.user.participant,
+                datetime__gte=today_begin,
+                datetime__lt=today_end,
+            ).count() > 0:
+                raise BandargahInvestment.CantInvestTwiceToday
+            request.user.participant.reduce_property(settings.GAME_SEKKE, amount)
+            investment = BandargahInvestment.objects.create(
+                participant=request.user.participant,
+                amount=amount,
+                datetime=timezone.now(),
+                is_applied=False
+            )
+            investment.save()
+            return JsonResponse({
+                'status': settings.OK_STATUS
+            })
+        except Participant.ParticipantIsNotOnIsland:
+            return JsonResponse({
+                'status': settings.ERROR_STATUS,
+                'message': 'کشتیت روی جزیره‌ای نیست. باید اول انتخاب کنی می‌خوای از کجا شروع کنی.'
+            })
+        except BandargahInvestment.LocationIsNotBandargah:
+            return JsonResponse({
+                'status': settings.ERROR_STATUS,
+                'message': 'الان روی بندرگاه نیستی. باید اول به بندرگاه بری.'
+            })
+        except BandargahInvestment.InvalidAmount:
+            return JsonResponse({
+                'status': settings.ERROR_STATUS,
+                'message': 'مقدار سرمایه‌گذاری درست نیست. مقدار سرمایه‌گذاری باید در بازه‌ی معتبر باشه!'
+            })
+        except BandargahInvestment.CantInvestTwiceToday:
+            return JsonResponse({
+                'status': settings.ERROR_STATUS,
+                'message': 'امروز قبلا سرمایه‌گذاری کردی! روزی فقط یه بار می‌تونی سرمایه‌گذاری کنی.'
+            })
+        except Participant.PropertiesAreNotEnough:
+            return JsonResponse({
+                'status': settings.ERROR_STATUS,
+                'message': 'این مقدار سکه برای سرمایه‌گذاری نداری.'
+            })
+        except Exception:
             logger.error(e, exc_info=True)
             return default_error_response
 

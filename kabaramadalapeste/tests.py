@@ -4,8 +4,8 @@ from django.db.utils import IntegrityError
 # Create your tests here.
 from accounts.models import Participant
 from kabaramadalapeste.models import (
-    ParticipantIslandStatus, Island, Way,
-    ShortAnswerSubmit, ShortAnswerQuestion, TradeOffer, BaseSubmit
+    ParticipantIslandStatus, Island, Way, Peste,
+    ShortAnswerSubmit, ShortAnswerQuestion, TradeOffer, BaseSubmit, BandargahInvestment
 )
 from kabaramadalapeste.factory import (
     ChallengeFactory, IslandFactory, ShortAnswerQuestionFactory, TreasureFactory
@@ -15,6 +15,7 @@ from accounts.factory import ParticipantFactory
 from unittest import mock
 
 from django.utils import timezone
+from homepage.models import SiteConfiguration
 from datetime import datetime, timedelta
 
 
@@ -245,6 +246,20 @@ class ViewsTest(TestCase):
             {key.key_type: key.amount for key in pis.treasure.keys.all()}
         )
 
+    def test_island_info_bandargah(self):
+        self.participant.set_start_island(self.all_islands[settings.GAME_BANDARGAH_ISLAND_ID - 1])
+        self.participant.put_anchor_on_current_island()
+        self.client.force_login(self.participant.member)
+        response = self.client.get(reverse('kabaramadalapeste:island_info', kwargs={
+            'island_id': settings.GAME_BANDARGAH_ISLAND_ID
+        }))
+        self.assertIsNotNone(response.json()['name'])
+        self.assertEqual(response.json()['participants_inside'], 1)
+        self.assertEqual(
+            response.json()['treasure_keys'],
+            'unknown'
+        )
+
     def test_participant_info_not_login(self):
         response = self.client.get(reverse('kabaramadalapeste:participant_info'))
         self.assertEqual(response.status_code, 302)
@@ -389,6 +404,26 @@ class ViewsTest(TestCase):
         response = self.client.post(reverse('kabaramadalapeste:open_treasure'))
         self.assertEqual(response.json()['status'], settings.OK_STATUS)
 
+    def test_open_treasure_twice(self):
+        self.participant.set_start_island(self.island)
+        self.participant.put_anchor_on_current_island()
+
+        pis = ParticipantIslandStatus.objects.get(
+            participant=self.participant,
+            island=self.island
+        )
+        for key in pis.treasure.keys.all():
+            if self.participant.get_property(key.key_type).amount < key.amount:
+                self.participant.add_property(
+                    key.key_type,
+                    key.amount - self.participant.get_property(key.key_type).amount
+                )
+
+        self.client.force_login(self.participant.member)
+        self.client.post(reverse('kabaramadalapeste:open_treasure'))
+        response = self.client.post(reverse('kabaramadalapeste:open_treasure'))
+        self.assertEqual(response.json()['status'], settings.ERROR_STATUS)
+
     def test_open_treasure_not_set_start_island(self):
         self.client.force_login(self.participant.member)
         response = self.client.post(reverse('kabaramadalapeste:open_treasure'))
@@ -468,6 +503,15 @@ class ViewsTest(TestCase):
         self.client.force_login(self.participant.member)
         response = self.client.post(reverse('kabaramadalapeste:accept_challenge'))
         self.assertEqual(response.json()['status'], settings.OK_STATUS)
+
+    def test_accept_challenge_twice(self):
+        self.participant.set_start_island(self.island)
+        self.participant.put_anchor_on_current_island()
+
+        self.client.force_login(self.participant.member)
+        self.client.post(reverse('kabaramadalapeste:accept_challenge'))
+        response = self.client.post(reverse('kabaramadalapeste:accept_challenge'))
+        self.assertEqual(response.json()['status'], settings.ERROR_STATUS)
 
     @mock.patch('accounts.views.Participant.accept_challenge_on_current_island')
     def test_accept_challenge_maximum(self, accept_mock):
@@ -631,3 +675,137 @@ class ViewsTest(TestCase):
 
         with self.assertRaises(Participant.MaximumChallengePerDayExceeded):
             self.participant.accept_challenge_on_current_island()
+
+    def test_bully_not_anchored(self):
+        self.participant.add_property(settings.GAME_BULLY, 1)
+        self.participant.set_start_island(self.island)
+        self.participant.put_anchor_on_current_island()
+        self.client.force_login(self.participant.member)
+        data = {
+            'ability_type': settings.GAME_BULLY
+        }
+        response = self.client.post(reverse('kabaramadalapeste:use_ability'), data=data)
+        self.assertEqual(response.json()['status'], settings.OK_STATUS)
+        participant1 = self.all_participants[1]
+        participant1.set_start_island(self.island)
+        participant1.add_property(settings.GAME_SEKKE, settings.GAME_BULLY_DAMAGE)
+        old_sekke = self.participant.sekke.amount
+        old_sekke1 = participant1.sekke.amount
+        participant1.add_property(settings.GAME_SEKKE, settings.GAME_PUT_ANCHOR_PRICE)
+        participant1.put_anchor_on_current_island()
+        sekke = self.participant.sekke.amount
+        sekke1 = participant1.sekke.amount
+        self.assertEqual(old_sekke + settings.GAME_BULLY_DAMAGE, sekke)
+        self.assertEqual(old_sekke1, sekke1 + settings.GAME_BULLY_DAMAGE)
+
+    def test_bully_ok(self):
+        self.participant.add_property(settings.GAME_BULLY, 1)
+        self.participant.set_start_island(self.island)
+        self.client.force_login(self.participant.member)
+        data = {
+            'ability_type': settings.GAME_BULLY
+        }
+        response = self.client.post(reverse('kabaramadalapeste:use_ability'), data=data)
+        self.assertEqual(response.json()['status'], settings.ERROR_STATUS)
+
+    def test_spade_not_login(self):
+        self.participant.set_start_island(self.island)
+        self.participant.put_anchor_on_current_island()
+        self.participant.add_property(
+            settings.GAME_SEKKE,
+            (SiteConfiguration.get_solo().island_spade_cost - self.participant.sekke.amount)
+        )
+        response = self.client.post(reverse('kabaramadalapeste:spade'))
+        self.assertEqual(response.status_code, 302)
+
+    def test_spade_ok_not_found(self):
+        self.participant.set_start_island(self.island)
+        self.participant.put_anchor_on_current_island()
+        self.client.force_login(self.participant.member)
+        self.participant.add_property(
+            settings.GAME_SEKKE,
+            (SiteConfiguration.get_solo().island_spade_cost - self.participant.sekke.amount)
+        )
+        response = self.client.post(reverse('kabaramadalapeste:spade'))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()['status'], settings.OK_STATUS)
+        self.assertFalse(response.json()['found'])
+
+    def test_spade_ok_found(self):
+        Peste.objects.create(
+            island=self.island,
+        )
+        self.participant.set_start_island(self.island)
+        self.participant.put_anchor_on_current_island()
+        self.client.force_login(self.participant.member)
+        self.participant.add_property(
+            settings.GAME_SEKKE,
+            (SiteConfiguration.get_solo().island_spade_cost - self.participant.sekke.amount)
+        )
+        response = self.client.post(reverse('kabaramadalapeste:spade'))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()['status'], settings.OK_STATUS)
+        self.assertTrue(response.json()['found'])
+
+    def test_spade_not_enough(self):
+        self.participant.set_start_island(self.island)
+        self.participant.put_anchor_on_current_island()
+        self.client.force_login(self.participant.member)
+        self.participant.add_property(
+            settings.GAME_SEKKE,
+            (SiteConfiguration.get_solo().island_spade_cost - self.participant.sekke.amount) - 1
+        )
+        response = self.client.post(reverse('kabaramadalapeste:spade'))
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json()['status'], settings.ERROR_STATUS)
+
+    def test_spade_twice(self):
+        self.participant.set_start_island(self.island)
+        self.participant.put_anchor_on_current_island()
+        self.client.force_login(self.participant.member)
+        self.participant.add_property(
+            settings.GAME_SEKKE,
+            (SiteConfiguration.get_solo().island_spade_cost - self.participant.sekke.amount)
+        )
+        self.client.post(reverse('kabaramadalapeste:spade'))
+        response = self.client.post(reverse('kabaramadalapeste:spade'))
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json()['status'], settings.ERROR_STATUS)
+
+    def test_spade_not_on_island(self):
+        self.client.force_login(self.participant.member)
+        self.participant.add_property(
+            settings.GAME_SEKKE,
+            (SiteConfiguration.get_solo().island_spade_cost - self.participant.sekke.amount)
+        )
+        self.client.post(reverse('kabaramadalapeste:spade'))
+        response = self.client.post(reverse('kabaramadalapeste:spade'))
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json()['status'], settings.ERROR_STATUS)
+
+    def test_spade_not_anchored(self):
+        self.participant.set_start_island(self.island)
+        self.client.force_login(self.participant.member)
+        self.participant.add_property(
+            settings.GAME_SEKKE,
+            (SiteConfiguration.get_solo().island_spade_cost - self.participant.sekke.amount)
+        )
+        self.client.post(reverse('kabaramadalapeste:spade'))
+        response = self.client.post(reverse('kabaramadalapeste:spade'))
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json()['status'], settings.ERROR_STATUS)
+
+    def test_bandargah_ok(self):
+        bandar = Island.objects.get(island_id=settings.GAME_BANDARGAH_ISLAND_ID)
+        self.participant.add_property(settings.GAME_SEKKE, 3000)
+        old_sekke = self.participant.sekke.amount
+        self.participant.set_start_island(bandar)
+        self.client.force_login(self.participant.member)
+        data = {
+            'amount': '3000'
+        }
+        response = self.client.post(reverse('kabaramadalapeste:invest_bandargah'), data=data)
+        self.assertEqual(response.json()['status'], settings.OK_STATUS)
+        self.assertEqual(1, BandargahInvestment.objects.all().count())
+        self.assertEqual(old_sekke, self.participant.sekke.amount + 3000)
+        BandargahInvestment.objects.all().delete()
