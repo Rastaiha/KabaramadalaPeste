@@ -29,6 +29,24 @@ let data = {
     }
 };
 
+function my_alert(message, title = "") {
+    $("#alert_modal .modal-message").text(message);
+    $("#alert_modal .modal-title").text(title);
+    $("#alert_modal").modal("show");
+}
+
+get_player_info()
+    .done(function(response) {
+        data.island_id = response.current_island_id;
+        get_island_info(data.island_id)
+            .done(function(response) {
+                data.treasure_keys = response.treasure_keys;
+                my_alert(response.treasure_keys, data.island_id);
+            })
+            .fail(default_fail);
+    })
+    .fail(default_fail);
+
 function loadImages(sources) {
     return new Promise(resolve => {
         data.images = {};

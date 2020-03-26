@@ -1,3 +1,11 @@
+function default_fail(jqXHR, textStatus) {
+    let err_message = textStatus;
+    if (typeof jqXHR.responseJSON !== "undefined") {
+        err_message = jqXHR.responseJSON.message || textStatus;
+    }
+    my_alert(err_message, "خطا");
+}
+
 function toggle_right_info(elem) {
     if (
         $(elem)
@@ -46,13 +54,7 @@ $(".right-info-btn").click(function() {
                 }
                 toggle_right_info(elem);
             })
-            .fail(function(jqXHR, textStatus) {
-                let err_message = textStatus;
-                if (typeof jqXHR.responseJSON !== "undefined") {
-                    err_message = jqXHR.responseJSON.message || textStatus;
-                }
-                my_alert(err_message, "خطا");
-            });
+            .fail(default_fail);
     } else {
         toggle_right_info(elem);
     }

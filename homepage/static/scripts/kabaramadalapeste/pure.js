@@ -93,7 +93,22 @@ function show_island_info(island) {
             island_info.find(".island-info-check-time span").text(check_time);
 
             if (island.id === data.ship.island_id) {
-                island_info.find(".island-info-action a").text("لنگر انداختن");
+                get_player_info()
+                    .done(function(response) {
+                        if (response.currently_anchored) {
+                            island_info
+                                .find(".island-info-action a")
+                                .text("بازگشت به جزیره");
+                        } else {
+                            island_info
+                                .find(".island-info-action a")
+                                .text("لنگر انداختن");
+                        }
+                    })
+                    .fail(default_fail);
+                island_info
+                    .find(".island-info-action a")
+                    .data("kind", "langar");
                 $("#travel_modal .modal-title").text("لنگر انداختن");
                 $("#travel_modal .modal-question").text(
                     "هزینه لنگر انداختن ۲۰ سکه است. آیا مایل به آن هستید؟"
@@ -109,10 +124,27 @@ function show_island_info(island) {
                 )
             ) {
                 island_info.find(".island-info-action a").text("سفر");
-                $("#travel_modal .modal-title").text("سفر");
-                $("#travel_modal .modal-question").text(
-                    "هزینه سفر ۲۰ سکه است. آیا مایل به آن هستید؟"
-                );
+                island_info
+                    .find(".island-info-action a")
+                    .data("kind", "travel");
+                get_player_info()
+                    .done(function(response) {
+                        if (response.currently_anchored) {
+                            $("#travel_modal .modal-title").text(
+                                "سفر و برداشتن لنگر"
+                            );
+                            $("#travel_modal .modal-question").text(
+                                "هزینه سفر ۲۰ سکه است. آیا مایل به آن هستید؟(دقت کنید برای سفر لنگر شما برداشته خواهد شد)"
+                            );
+                        } else {
+                            $("#travel_modal .modal-title").text("سفر");
+                            $("#travel_modal .modal-question").text(
+                                "هزینه سفر ۲۰ سکه است. آیا مایل به آن هستید؟"
+                            );
+                        }
+                    })
+                    .fail(default_fail);
+
                 island_info
                     .find(".island-info-action a")
                     .css("display", "inline-block");
@@ -136,13 +168,7 @@ function show_island_info(island) {
                 island_info.addClass("show");
             }, 100);
         })
-        .fail(function(jqXHR, textStatus) {
-            let err_message = textStatus;
-            if (typeof jqXHR.responseJSON !== "undefined") {
-                err_message = jqXHR.responseJSON.message || textStatus;
-            }
-            my_alert(err_message, "خطا");
-        });
+        .fail(default_fail);
 }
 
 function show_player_info() {
@@ -163,18 +189,40 @@ $("#travel_modal_btn").click(function() {
             .done(function() {
                 travel(island_id);
             })
-            .fail(function(jqXHR, textStatus) {
-                let err_message = textStatus;
-                if (typeof jqXHR.responseJSON !== "undefined") {
-                    err_message = jqXHR.responseJSON.message || textStatus;
-                }
-                my_alert(err_message, "خطا");
-            });
+            .fail(default_fail);
     } else if ($(this).data("kind") === "langar") {
-        window.location.href = "/game/island/";
+        get_player_info()
+            .done(function(response) {
+                if (response.currently_anchored) {
+                    window.location.href = "/game/island/";
+                } else {
+                    put_anchor()
+                        .done(function() {
+                            window.location.href = "/game/island/";
+                        })
+                        .fail(default_fail);
+                }
+            })
+            .fail(default_fail);
     }
     $("#travel_modal").modal("hide");
     island_info.addClass("hide");
     island_info.removeClass("show");
     change_target(null);
+});
+
+$(".island-info-action a").click(function() {
+    if ($(this).data("kind") === "langar") {
+        get_player_info()
+            .done(function(response) {
+                if (response.currently_anchored) {
+                    window.location.href = "/game/island/";
+                } else {
+                    $("#travel_modal").modal("show");
+                }
+            })
+            .fail(default_fail);
+    } else {
+        $("#travel_modal").modal("show");
+    }
 });

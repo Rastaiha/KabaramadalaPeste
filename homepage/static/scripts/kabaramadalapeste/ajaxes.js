@@ -31,3 +31,31 @@ function move_to(dest_island_id) {
         url: "/game/move_to/" + dest_island_id + "/"
     });
 }
+
+function put_anchor() {
+    return $.ajax({
+        method: "POST",
+        url: "/game/put_anchor/"
+    });
+}
+
+function open_treasure() {
+    return $.ajax({
+        method: "POST",
+        url: "/game/open_treasure/"
+    });
+}
+
+function accept_challenge() {
+    return $.ajax({
+        method: "POST",
+        url: "/game/accept_challenge/"
+    });
+}
+
+function create_offer() {
+    return $.ajax({
+        method: "POST",
+        url: "/game/create_offer/"
+    });
+}
