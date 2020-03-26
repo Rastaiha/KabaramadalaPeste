@@ -39,8 +39,8 @@ function init_layer() {
     });
 
     data.layer.on("dragstart click touchend", function() {
-        jazire_info.addClass("hide");
-        jazire_info.removeClass("show");
+        island_info.addClass("hide");
+        island_info.removeClass("show");
         change_target(null);
         data.layer2.x(data.layer.x());
         data.layer2.y(data.layer.y());
@@ -112,16 +112,16 @@ function init_backgronud() {
     data.layer.add(data.back.elem);
 }
 
-let jazire_info = $(".jazire-info");
+let island_info = $(".island-info");
 
 function change_target(target = null) {
     if (target !== "reset_shadow") {
         data.target = target;
     }
 
-    data.jazireha.forEach(jazire => {
-        if (data.target === jazire) {
-            jazire.elem.setAttrs({
+    data.islands.forEach(island => {
+        if (data.target === island) {
+            island.elem.setAttrs({
                 scale: { x: 1.02, y: 1.02 },
                 shadowColor: "yellow",
                 shadowEnabled: true,
@@ -132,9 +132,9 @@ function change_target(target = null) {
         } else if (
             data.target &&
             typeof data.target.neighborhoods !== "undefined" &&
-            data.target.neighborhoods.includes(jazire.id)
+            data.target.neighborhoods.includes(island.id)
         ) {
-            jazire.elem.setAttrs({
+            island.elem.setAttrs({
                 scale: { x: 1, y: 1 },
                 shadowColor: "#cccccc",
                 shadowEnabled: true,
@@ -143,7 +143,7 @@ function change_target(target = null) {
                 shadowOffset: { x: 1, y: 1 }
             });
         } else {
-            jazire.elem.setAttrs({
+            island.elem.setAttrs({
                 scale: { x: 1, y: 1 },
                 shadowEnabled: false
             });
@@ -152,9 +152,9 @@ function change_target(target = null) {
     });
 }
 
-function hover_jazire(jazire) {
-    if (data.target !== jazire) {
-        jazire.elem.setAttrs({
+function hover_island(island) {
+    if (data.target !== island) {
+        island.elem.setAttrs({
             scale: { x: 1.01, y: 1.01 },
             shadowColor: "yellow",
             shadowEnabled: true,
@@ -165,25 +165,25 @@ function hover_jazire(jazire) {
     }
 }
 
-function init_jazireha() {
-    data.jazireha
+function init_islands() {
+    data.islands
         .sort((a, b) => (a.zIndex > b.zIndex ? 1 : -1))
-        .forEach(jazire => {
-            jazire.elem = new Konva.Image({
-                x: Math.floor(jazire.x * data.back.width),
-                y: Math.floor(jazire.y * data.back.height),
-                image: data.images[jazire.src],
-                width: Math.floor(jazire.width * data.back.width),
-                height: Math.floor(jazire.height * data.back.height),
+        .forEach(island => {
+            island.elem = new Konva.Image({
+                x: Math.floor(island.x * data.back.width),
+                y: Math.floor(island.y * data.back.height),
+                image: data.images[island.src],
+                width: Math.floor(island.width * data.back.width),
+                height: Math.floor(island.height * data.back.height),
                 shadowEnabled: false,
                 perfectDrawEnabled: false
             });
 
-            jazire.elem.on("click tap", function(e) {
+            island.elem.on("click tap", function(e) {
                 document.body.style.cursor = "pointer";
-                if (data.target !== jazire) {
-                    change_target(jazire);
-                    show_jazire_info(jazire);
+                if (data.target !== island) {
+                    change_target(island);
+                    show_island_info(island);
                 }
                 if (typeof e !== "undefined") {
                     e.evt.preventDefault();
@@ -191,9 +191,9 @@ function init_jazireha() {
                 }
             });
 
-            jazire.elem.on("dragstart dragmove mouseover", function(e) {
+            island.elem.on("dragstart dragmove mouseover", function(e) {
                 document.body.style.cursor = "pointer";
-                hover_jazire(jazire);
+                hover_island(island);
                 data.layer.batchDraw();
                 if (typeof e !== "undefined") {
                     e.evt.preventDefault();
@@ -201,12 +201,12 @@ function init_jazireha() {
                 }
             });
 
-            jazire.elem.on("mouseout", function(e) {
+            island.elem.on("mouseout", function(e) {
                 change_target("reset_shadow");
                 document.body.style.cursor = "grab";
             });
 
-            data.layer.add(jazire.elem);
+            data.layer.add(island.elem);
         });
 }
 
@@ -274,7 +274,7 @@ function init_game() {
 
     init_layer();
     init_backgronud();
-    init_jazireha();
+    init_islands();
     init_ways();
 
     init_ship();
@@ -290,8 +290,8 @@ let sources = [
     data.seagull.src,
     data.ship.src
 ];
-data.jazireha.forEach(jazire => {
-    sources.push(jazire.src);
+data.islands.forEach(island => {
+    sources.push(island.src);
 });
 
 loadImages(sources).then(init_game);

@@ -372,6 +372,7 @@ def game(request):
     })
 
 
+@login_activated_participant_required
 def game2(request):
     return render(request, 'kabaramadalapeste/game.html', {
         'without_nav': True,
@@ -380,8 +381,17 @@ def game2(request):
     })
 
 
+@login_activated_participant_required
 def exchange(request):
     return render(request, 'kabaramadalapeste/exchange.html', {
+        'without_nav': True,
+        'without_footer': True,
+    })
+
+
+@login_activated_participant_required
+def island(request):
+    return render(request, 'kabaramadalapeste/island.html', {
         'without_nav': True,
         'without_footer': True,
     })
