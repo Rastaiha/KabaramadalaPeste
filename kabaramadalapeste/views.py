@@ -44,6 +44,19 @@ default_error_response = JsonResponse({
 
 
 @method_decorator(login_activated_participant_required, name='dispatch')
+class SettingsView(View):
+    def get(self, request):
+        try:
+            return JsonResponse({
+                'move_price': settings.GAME_MOVE_PRICE,
+                'put_anchor_price': settings.GAME_PUT_ANCHOR_PRICE
+            })
+        except Exception as e:
+            logger.error(e, exc_info=True)
+            return default_error_response
+
+
+@method_decorator(login_activated_participant_required, name='dispatch')
 class IslandInfoView(View):
     def get(self, request, island_id):
         try:

@@ -5,11 +5,13 @@ from .views import (
     SetStartIslandView, PutAnchorView, OpenTreasureView,
     ParticipantInfoView, create_offer, get_all_offers,
     get_my_offers, delete_offer, accept_offer,
-    AcceptChallengeView, use_ability
+    AcceptChallengeView, use_ability, SettingsView
 )
 
 
 urlpatterns = [
+    path('settings',
+         SettingsView.as_view(), name="settings"),
     path('island_info/<int:island_id>/',
          IslandInfoView.as_view(), name="island_info"),
     path('participant_info/', ParticipantInfoView.as_view(),

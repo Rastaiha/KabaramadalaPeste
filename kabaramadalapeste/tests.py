@@ -172,6 +172,20 @@ class ViewsTest(TestCase):
             participant.init_properties()
         self.participant = self.all_participants[0]
 
+    def test_settings_not_login(self):
+        response = self.client.get(reverse('kabaramadalapeste:settings'))
+        self.assertEqual(response.status_code, 302)
+
+    def test_settings_ok(self):
+        self.client.force_login(self.participant.member)
+        move_price = 2000
+        put_anchor_price = 100
+        with self.settings(GAME_MOVE_PRICE=move_price, GAME_PUT_ANCHOR_PRICE=put_anchor_price):
+            response = self.client.get(reverse('kabaramadalapeste:settings'))
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.json()['move_price'], move_price)
+            self.assertEqual(response.json()['put_anchor_price'], put_anchor_price)
+
     def test_island_info_not_login(self):
         response = self.client.get(reverse('kabaramadalapeste:island_info', kwargs={
             'island_id': self.island.island_id
