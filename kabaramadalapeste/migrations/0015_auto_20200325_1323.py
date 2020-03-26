@@ -28,7 +28,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('submitted_at', models.DateTimeField(default=django.utils.timezone.now)),
-                ('submit_status', models.CharField(choices=[('Pending', 'Pending'), ('Correct', 'Correct'), ('Wrong', 'Wrong')], default=kabaramadalapeste.models.SubmitStatus['Pending'], max_length=10)),
+                ('submit_status', models.CharField(choices=[('Pending', 'Pending'), ('Correct', 'Correct'), ('Wrong', 'Wrong')], default=kabaramadalapeste.models.BaseSubmit.SubmitStatus['Pending'], max_length=10)),
                 ('judged_at', models.DateTimeField(null=True)),
                 ('submitted_answer', models.CharField(max_length=100)),
                 ('pis', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='shortanswersubmit', to='kabaramadalapeste.ParticipantIslandStatus')),
@@ -42,7 +42,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('submitted_at', models.DateTimeField(default=django.utils.timezone.now)),
-                ('submit_status', models.CharField(choices=[('Pending', 'Pending'), ('Correct', 'Correct'), ('Wrong', 'Wrong')], default=kabaramadalapeste.models.SubmitStatus['Pending'], max_length=10)),
+                ('submit_status', models.CharField(choices=[('Pending', 'Pending'), ('Correct', 'Correct'), ('Wrong', 'Wrong')], default=kabaramadalapeste.models.BaseSubmit.SubmitStatus['Pending'], max_length=10)),
                 ('judged_at', models.DateTimeField(null=True)),
                 ('submitted_answer', models.FileField(null=True, upload_to='answers/')),
                 ('judge_note', models.CharField(blank=True, max_length=200, null=True)),

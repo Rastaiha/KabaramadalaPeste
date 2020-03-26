@@ -1,4 +1,4 @@
-from django.db import models
+from django.db import models, transaction
 from kabaramadalapeste.conf import settings
 from accounts.models import Participant
 
@@ -238,20 +238,18 @@ class ParticipantIslandStatus(models.Model):
         return self.shortanswersubmit
 
 
-class SubmitStatus(Enum):
-    Pending = 'Pending'
-    Correct = 'Correct'
-    Wrong = 'Wrong'
-
-
 class BaseSubmit(models.Model):
+    class SubmitStatus(models.TextChoices):
+        Pending = 'Pending'
+        Correct = 'Correct'
+        Wrong = 'Wrong'
 
     pis = models.OneToOneField(ParticipantIslandStatus,
                                related_name='%(class)s',
                                on_delete=models.CASCADE)
     submitted_at = models.DateTimeField(default=timezone.now)
     submit_status = models.CharField(max_length=20, default=SubmitStatus.Pending,
-                                     choices=[(tag.value, tag.name) for tag in SubmitStatus])
+                                     choices=SubmitStatus.choices)
     judged_at = models.DateTimeField(null=True)
 
     class Meta:
@@ -262,15 +260,20 @@ class BaseSubmit(models.Model):
             self.pis.participant.member.username, self.pis.question.title, self.submit_status
         )
 
+    def __init__(self, *args, **kwargs):
+        super(BaseSubmit, self).__init__(*args, **kwargs)
+        self.initial_submit_status = self.submit_status
+
+    def is_bad_change(self, *args, **kwargs):
+        if (self.initial_submit_status != SubmitStatus.Pending and
+                self.initial_submit_status != self.submit_status):
+            return True
+        return False
 
 
 class ShortAnswerSubmit(BaseSubmit):
 
     submitted_answer = models.CharField(max_length=100)
-
-    def save(self, *args, **kwargs):
-        self.check_answer()
-        super().save(*args, **kwargs)
 
     def check_answer(self):
         question = self.pis.question
@@ -287,10 +290,11 @@ class ShortAnswerSubmit(BaseSubmit):
             logger.warn('Type mismatch for %s' % self)
         self.submit_status = SubmitStatus.Correct if is_correct else SubmitStatus.Wrong
         self.judged_at = timezone.now()
+        self.save()
 
 
 class JudgeableSubmit(BaseSubmit):
-    submitted_answer = models.FileField(upload_to='answers/', null=True)
+    submitted_answer = models.FileField(upload_to='answers/', null=True, blank=True)
     judge_note = models.CharField(max_length=200, null=True, blank=True)
 
 

@@ -1,11 +1,11 @@
 from django.test import TestCase
 from django.urls import reverse
-
+from django.db.utils import IntegrityError
 # Create your tests here.
 from accounts.models import Participant
 from kabaramadalapeste.models import (
     ParticipantIslandStatus, Island, Way,
-    ShortAnswerSubmit, SubmitStatus, ShortAnswerQuestion, TradeOffer
+    ShortAnswerSubmit, ShortAnswerQuestion, TradeOffer, BaseSubmit
 )
 from kabaramadalapeste.factory import (
     ChallengeFactory, IslandFactory, ShortAnswerQuestionFactory, TreasureFactory
@@ -55,8 +55,8 @@ class ModelsTest(TestCase):
             self.assertNotEqual(pis_old.question_object_id, pis.question_object_id)
 
     def test_create_answer_without_pis(self):
-        with self.assertRaises(ShortAnswerSubmit.pis.RelatedObjectDoesNotExist):
-            submit = ShortAnswerSubmit.objects.create()
+        with self.assertRaises(IntegrityError):
+            ShortAnswerSubmit.objects.create()
 
     def test_check_short_answer_submit(self):
         pis = ParticipantIslandStatus(
@@ -67,7 +67,8 @@ class ModelsTest(TestCase):
         submit = ShortAnswerSubmit.objects.create(
             pis=pis,
         )
-        self.assertEqual(submit.submit_status, SubmitStatus.Wrong)
+        submit.check_answer()
+        self.assertEqual(submit.submit_status, BaseSubmit.SubmitStatus.Wrong)
         self.assertIsNotNone(submit.submitted_at)
 
     def test_check_short_answer_submit_wrong(self):
@@ -80,7 +81,8 @@ class ModelsTest(TestCase):
             pis=pis,
             submitted_answer=ShortAnswerQuestionFactory.correct_answer
         )
-        self.assertEqual(submit.submit_status, SubmitStatus.Correct)
+        submit.check_answer()
+        self.assertEqual(submit.submit_status, BaseSubmit.SubmitStatus.Correct)
         self.assertIsNotNone(submit.submitted_at)
         self.assertIsNotNone(pis.submit)
 
@@ -96,7 +98,8 @@ class ModelsTest(TestCase):
             pis=pis,
             submitted_answer='ghool'
         )
-        self.assertEqual(submit.submit_status, SubmitStatus.Wrong)
+        submit.check_answer()
+        self.assertEqual(submit.submit_status, BaseSubmit.SubmitStatus.Wrong)
         self.assertIsNotNone(submit.submitted_at)
 
     def test_check_short_answer_submit_correct_int(self):
@@ -111,7 +114,8 @@ class ModelsTest(TestCase):
             pis=pis,
             submitted_answer='2'
         )
-        self.assertEqual(submit.submit_status, SubmitStatus.Correct)
+        submit.check_answer()
+        self.assertEqual(submit.submit_status, BaseSubmit.SubmitStatus.Correct)
         self.assertIsNotNone(submit.submitted_at)
 
     def test_check_short_answer_submit_wrong_float(self):
@@ -126,7 +130,8 @@ class ModelsTest(TestCase):
             pis=pis,
             submitted_answer=2.3
         )
-        self.assertEqual(submit.submit_status, SubmitStatus.Wrong)
+        submit.check_answer()
+        self.assertEqual(submit.submit_status, BaseSubmit.SubmitStatus.Wrong)
         self.assertIsNotNone(submit.submitted_at)
 
     def test_check_short_answer_submit_correct_float(self):
@@ -141,7 +146,8 @@ class ModelsTest(TestCase):
             pis=pis,
             submitted_answer=2.204
         )
-        self.assertEqual(submit.submit_status, SubmitStatus.Correct)
+        submit.check_answer()
+        self.assertEqual(submit.submit_status, BaseSubmit.SubmitStatus.Correct)
         self.assertIsNotNone(submit.submitted_at)
 
 
