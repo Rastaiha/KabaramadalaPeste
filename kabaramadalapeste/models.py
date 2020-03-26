@@ -2,7 +2,7 @@ from django.db import models, transaction
 from kabaramadalapeste.conf import settings
 from accounts.models import Participant
 
-from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from django.contrib.contenttypes.models import ContentType
 from django.utils import timezone
 
@@ -126,9 +126,23 @@ class ShortAnswerQuestion(BaseQuestion):
         default=STRING,
     )
 
+    pis_set = GenericRelation(
+        'ParticipantIslandStatus',
+        related_query_name='short_answer_question',
+        content_type_field='question_content_type',
+        object_id_field='question_object_id',
+    )
+
 
 class JudgeableQuestion(BaseQuestion):
     upload_required = models.BooleanField(default=True)
+
+    pis_set = GenericRelation(
+        'ParticipantIslandStatus',
+        related_query_name='judgeable_question',
+        content_type_field='question_content_type',
+        object_id_field='question_object_id',
+    )
 
 
 class Treasure(models.Model):
@@ -265,7 +279,7 @@ class BaseSubmit(models.Model):
         self.initial_submit_status = self.submit_status
 
     def is_bad_change(self, *args, **kwargs):
-        if (self.initial_submit_status != SubmitStatus.Pending and
+        if (self.initial_submit_status != BaseSubmit.SubmitStatus.Pending and
                 self.initial_submit_status != self.submit_status):
             return True
         return False
@@ -288,7 +302,7 @@ class ShortAnswerSubmit(BaseSubmit):
                 is_correct = self.submitted_answer == question.correct_answer
         except ValueError:
             logger.warn('Type mismatch for %s' % self)
-        self.submit_status = SubmitStatus.Correct if is_correct else SubmitStatus.Wrong
+        self.submit_status = BaseSubmit.SubmitStatus.Correct if is_correct else BaseSubmit.SubmitStatus.Wrong
         self.judged_at = timezone.now()
         self.save()
 
@@ -355,3 +369,17 @@ class TradeOfferRequestedItem(models.Model):
 
     class Meta:
         unique_together = (("offer", "property_type"),)
+
+
+class AbilityUsage(models.Model):
+    datetime = models.DateTimeField(auto_now_add=True)
+    participant = models.ForeignKey(Participant, related_name='used_abilities', on_delete=models.CASCADE)
+    ability_type = models.CharField(
+        max_length=3,
+        choices=settings.GAME_ABILITY_TYPE_CHOICES,
+        default=settings.GAME_VISION,
+    )
+    is_active = models.BooleanField(default=False)
+
+    class InvalidAbility(Exception):
+        pass

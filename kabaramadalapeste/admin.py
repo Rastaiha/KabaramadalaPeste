@@ -83,9 +83,26 @@ class TreasureAdmin(admin.ModelAdmin):
 
 @admin.register(JudgeableSubmit)
 class JudgeableSubmitAdmin(admin.ModelAdmin):
+    class Media:
+        js = (
+            'scripts/admin-confirm.js',
+        )
     list_display = ('get_username', 'submitted_at', 'get_challenge_name', 'get_question_title',)
+    search_fields = ('submit_status', )
     exclude = ('judged_at', 'pis', )
     readonly_fields = ('submitted_answer', 'submitted_at', 'get_challenge_name', 'get_question_title')
+
+    def get_search_results(self, request, queryset, search_term):
+        queryset, use_distinct = super(JudgeableSubmitAdmin, self).get_search_results(
+            request, queryset, search_term
+        )
+        try:
+            queryset |= self.model.objects.filter(pis__judgeable_question__challenge__name__contains=search_term)
+            queryset |= self.model.objects.filter(pis__judgeable_question__title__contains=search_term)
+            queryset |= self.model.objects.filter(pis__participant__member__username__contains=search_term)
+        except Exception:
+            pass
+        return queryset, use_distinct
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
