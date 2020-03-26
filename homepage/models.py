@@ -1,5 +1,4 @@
 from solo.models import SingletonModel
-from django.db import models
 from enum import Enum
 
 import datetime
@@ -15,6 +14,9 @@ class SiteConfiguration(SingletonModel):
     countdown_date = models.DateTimeField(default=datetime.datetime(2020, 3, 23, 8))
     is_signup_enabled = models.BooleanField(default=True)
 
+    island_spade_cost = models.IntegerField(default=15000)
+    peste_reward = models.IntegerField(default=30000)
+
 
 class TeamMember(models.Model):
     full_name = models.CharField(max_length=50)
@@ -27,4 +29,3 @@ class TeamMember(models.Model):
 
     def __str__(self):
         return self.full_name
-

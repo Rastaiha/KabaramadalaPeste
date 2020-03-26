@@ -15,6 +15,9 @@ from kabaramadalapeste.conf import settings
 
 import datetime
 import sys
+import logging
+
+logger = logging.getLogger(__file__)
 
 
 def check_user_is_activated_participant(user):
@@ -41,6 +44,19 @@ default_error_response = JsonResponse({
 
 
 @method_decorator(login_activated_participant_required, name='dispatch')
+class SettingsView(View):
+    def get(self, request):
+        try:
+            return JsonResponse({
+                'move_price': settings.GAME_MOVE_PRICE,
+                'put_anchor_price': settings.GAME_PUT_ANCHOR_PRICE
+            })
+        except Exception as e:
+            logger.error(e, exc_info=True)
+            return default_error_response
+
+
+@method_decorator(login_activated_participant_required, name='dispatch')
 class IslandInfoView(View):
     def get(self, request, island_id):
         try:
@@ -48,23 +64,25 @@ class IslandInfoView(View):
             pis = ParticipantIslandStatus.objects.get(
                 participant=request.user.participant, island=island)
             treasure_keys = 'unknown'
-            if pis.is_treasure_visible:
+            if pis.is_treasure_visible and pis.treasure:
                 treasure_keys = {
                     key.key_type: key.amount for key in pis.treasure.keys.all()
                 }
+            submit_status = pis.submit.submit_status if pis.submit else 'No'
             return JsonResponse({
                 'name': island.name,
-                'challenge_name': island.challenge.name,
-                'challenge_is_judgeable': island.challenge.is_judgeable,
+                'challenge_name': island.challenge.name if island.challenge else '',
+                'challenge_is_judgeable': island.challenge.is_judgeable if island.challenge else '',
                 'treasure_keys': treasure_keys,
                 'did_open_treasure': pis.did_open_treasure,
                 'participants_inside': ParticipantIslandStatus.objects.filter(
                     island=island, currently_anchored=True
                 ).count(),
                 'judge_estimated_minutes': 0,  # TODO: fill here
-                'answer_status': '',  # TODO: fill here
+                'submit_status': submit_status,
             })
-        except Exception:
+        except Exception as e:
+            logger.error(e, exc_info=True)
             return default_error_response
 
 
@@ -76,14 +94,22 @@ class ParticipantInfoView(View):
                 prop.property_type: prop.amount for prop in request.user.participant.properties.all()
             }
             current_island_id = None
+            currently_anchored = False
             if request.user.participant.currently_at_island:
                 current_island_id = request.user.participant.currently_at_island.island_id
+                pis = ParticipantIslandStatus.objects.get(
+                    participant=request.user.participant,
+                    island=request.user.participant.currently_at_island
+                )
+                currently_anchored = pis.currently_anchored
             return JsonResponse({
                 'username': request.user.username,
                 'current_island_id': current_island_id,
+                'currently_anchored': currently_anchored,
                 'properties': properties_dict
             })
-        except Exception:
+        except Exception as e:
+            logger.error(e, exc_info=True)
             return default_error_response
 
 
@@ -101,7 +127,8 @@ class SetStartIslandView(View):
                 'status': settings.ERROR_STATUS,
                 'message': 'قبلا انتخاب کردی که از کدوم جزیره شروع کنی. نمی‌تونی دوباره انتخاب کنی.'
             }, status=400)
-        except Exception:
+        except Exception as e:
+            logger.error(e, exc_info=True)
             return default_error_response
 
 
@@ -129,7 +156,8 @@ class MoveToIslandView(View):
                 'status': settings.ERROR_STATUS,
                 'message': 'سکه‌هات برای حرکت کافی نیست.'
             }, status=400)
-        except Exception:
+        except Exception as e:
+            logger.error(e, exc_info=True)
             return default_error_response
 
 
@@ -151,7 +179,13 @@ class PutAnchorView(View):
                 'status': settings.ERROR_STATUS,
                 'message': 'سکه‌هات برای لنگر انداختن کافی نیست.'
             }, status=400)
-        except Exception:
+        except Participant.CantPutAnchorAgain:
+            return JsonResponse({
+                'status': settings.ERROR_STATUS,
+                'message': 'روی این جزیره لنگر انداختی. نمی‌تونی دوباره لنگر بندازی.'
+            }, status=400)
+        except Exception as e:
+            logger.error(e, exc_info=True)
             return default_error_response
 
 
@@ -178,7 +212,47 @@ class OpenTreasureView(View):
                 'status': settings.ERROR_STATUS,
                 'message': 'دارایی‌هات برای باز کردن گنج کافی نیست.'
             }, status=400)
-        except Exception:
+        except Participant.CantOpenTreasureAgain:
+            return JsonResponse({
+                'status': settings.ERROR_STATUS,
+                'message': 'قبلا این گنج رو باز کردی. نمیشه دوباره باز کنی.'
+            }, status=400)
+        except Exception as e:
+            logger.error(e, exc_info=True)
+            return default_error_response
+
+
+@method_decorator(login_activated_participant_required, name='dispatch')
+class SpadeView(View):
+    def post(self, request):
+        try:
+            found = request.user.participant.spade_on_current_island()
+            return JsonResponse({
+                'status': settings.OK_STATUS,
+                'found': found
+            })
+        except Participant.ParticipantIsNotOnIsland:
+            return JsonResponse({
+                'status': settings.ERROR_STATUS,
+                'message': 'کشتیت روی جزیره‌ای نیست. نمی‌تونی بیل بزنی. اول انتخاب کن می‌خوای از کجا شروع کنی.'
+            }, status=400)
+        except Participant.DidNotAnchored:
+            return JsonResponse({
+                'status': settings.ERROR_STATUS,
+                'message': 'توی جزیره لنگر ننداختی. نمی‌تونی بیل بزنی. اول باید لنگر بندازی.'
+            }, status=400)
+        except Participant.PropertiesAreNotEnough:
+            return JsonResponse({
+                'status': settings.ERROR_STATUS,
+                'message': 'دارایی‌هات برای بیل زدن کافی نیست.'
+            }, status=400)
+        except Participant.CantSpadeAgain:
+            return JsonResponse({
+                'status': settings.ERROR_STATUS,
+                'message': 'قبلا اینجا رو بیل زدی. نمیشه دوباره بیل بزنی.'
+            }, status=400)
+        except Exception as e:
+            logger.error(e, exc_info=True)
             return default_error_response
 
 
@@ -205,7 +279,13 @@ class AcceptChallengeView(View):
                 'status': settings.ERROR_STATUS,
                 'message': 'تعداد چالش‌های روزت رو استفاده کردی. تا فردا نمی‌تونی چالش جدیدی بپذیری'
             }, status=400)
-        except Exception:
+        except Participant.CantAcceptChallengeAgain:
+            return JsonResponse({
+                'status': settings.ERROR_STATUS,
+                'message': 'قبلا این چالش رو پذیرفتی. نمیشه دوباره بپذیریش.'
+            }, status=400)
+        except Exception as e:
+            logger.error(e, exc_info=True)
             return default_error_response
 
 
@@ -270,7 +350,8 @@ def create_offer(request):
                 'status': settings.ERROR_STATUS,
                 'message': 'منابع کافی برای دادن این پیشنهاد رو نداری.'
             }, status=400)
-        except Exception:
+        except Exception as e:
+            logger.error(e, exc_info=True)
             return default_error_response
 
 
@@ -281,7 +362,8 @@ def get_all_offers(request):
         for trade_offer in TradeOffer.objects.filter(status__exact=settings.GAME_OFFER_ACTIVE).order_by('?').all():
             data['offers'].append(trade_offer.to_dict())
         return JsonResponse(data)
-    except Exception:
+    except Exception as e:
+        logger.error(e, exc_info=True)
         return default_error_response
 
 
@@ -295,7 +377,8 @@ def get_my_offers(request):
         ).order_by('?').all():
             data['offers'].append(trade_offer.to_dict())
         return JsonResponse(data)
-    except Exception:
+    except Exception as e:
+        logger.error(e, exc_info=True)
         return default_error_response
 
 
@@ -323,7 +406,8 @@ def delete_offer(request, pk):
             'status': settings.ERROR_STATUS,
             'message': 'این پیشنهاد رو نمی‌تونی حذف کنی!'
         }, status=400)
-    except Exception:
+    except Exception as e:
+        logger.error(e, exc_info=True)
         return default_error_response
 
 
@@ -368,7 +452,8 @@ def accept_offer(request, pk):
             'status': settings.ERROR_STATUS,
             'message': 'منابع کافی برای قبول کردن این پیشنهاد رو نداری.'
         }, status=400)
-    except Exception:
+    except Exception as e:
+        logger.error(e, exc_info=True)
         return default_error_response
 
 
@@ -420,7 +505,8 @@ def use_ability(request):
                 'status': settings.ERROR_STATUS,
                 'message': 'از این توانایی چیزی برای مصرف نداری.'
             })
-        except Exception:
+        except Exception as e:
+            logger.error(e, exc_info=True)
             return default_error_response
 
 

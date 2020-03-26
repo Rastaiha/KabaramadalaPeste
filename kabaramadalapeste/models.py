@@ -24,6 +24,8 @@ class Island(models.Model):
                                   blank=True,
                                   null=True)
 
+    peste_guidance = models.TextField(null=True, blank=True)
+
     class IslandsNotConnected(Exception):
         pass
 
@@ -41,6 +43,16 @@ class Island(models.Model):
             Way.objects.filter(first_end=self, second_end=other_island).count() != 0 or
             Way.objects.filter(first_end=other_island, second_end=self).count() != 0
         )
+
+
+class Peste(models.Model):
+    island = models.OneToOneField(Island,
+                                  on_delete=models.CASCADE)
+    is_found = models.BooleanField(default=False)
+    found_by = models.ForeignKey('accounts.Participant',
+                                 on_delete=models.SET_NULL,
+                                 null=True,
+                                 blank=True)
 
 
 class Way(models.Model):
@@ -224,6 +236,9 @@ class ParticipantIslandStatus(models.Model):
     did_accept_challenge = models.BooleanField(default=False)
     challenge_accepted_at = models.DateTimeField(null=True)
 
+    did_spade = models.BooleanField(default=False)
+    spaded_at = models.DateTimeField(null=True)
+
     question_content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, null=True)
     question_object_id = models.PositiveIntegerField(null=True)
     question = GenericForeignKey('question_content_type', 'question_object_id')
@@ -249,9 +264,13 @@ class ParticipantIslandStatus(models.Model):
 
     @property
     def submit(self):
-        if self.question.challenge.is_judgeable:
-            return self.judgeablesubmit
-        return self.shortanswersubmit
+        try:
+            if self.question.challenge.is_judgeable:
+                return self.judgeablesubmit
+            return self.shortanswersubmit
+        except (ParticipantIslandStatus.judgeablesubmit.RelatedObjectDoesNotExist,
+                ParticipantIslandStatus.shortanswersubmit.RelatedObjectDoesNotExist, AttributeError):
+            return None
 
 
 class BaseSubmit(models.Model):

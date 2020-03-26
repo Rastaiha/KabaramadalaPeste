@@ -5,11 +5,13 @@ from .views import (
     SetStartIslandView, PutAnchorView, OpenTreasureView,
     ParticipantInfoView, create_offer, get_all_offers,
     get_my_offers, delete_offer, accept_offer,
-    AcceptChallengeView, use_ability, invest
+    AcceptChallengeView, use_ability, SettingsView, SpadeView, invest
 )
 
 
 urlpatterns = [
+    path('settings',
+         SettingsView.as_view(), name="settings"),
     path('island_info/<int:island_id>/',
          IslandInfoView.as_view(), name="island_info"),
     path('participant_info/', ParticipantInfoView.as_view(),
@@ -21,6 +23,7 @@ urlpatterns = [
          MoveToIslandView.as_view(), name="move_to"),
     path('put_anchor/', PutAnchorView.as_view(), name="put_anchor"),
     path('open_treasure/', OpenTreasureView.as_view(), name="open_treasure"),
+    path('spade/', SpadeView.as_view(), name="spade"),
     path('accept_challenge/', AcceptChallengeView.as_view(),
          name="accept_challenge"),
     path('create_offer/', create_offer, name="create_offer"),
