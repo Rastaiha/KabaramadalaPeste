@@ -2,7 +2,7 @@ from django.db import models, transaction
 from kabaramadalapeste.conf import settings
 from accounts.models import Participant
 
-from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from django.contrib.contenttypes.models import ContentType
 from django.utils import timezone
 
@@ -126,9 +126,23 @@ class ShortAnswerQuestion(BaseQuestion):
         default=STRING,
     )
 
+    pis_set = GenericRelation(
+        'ParticipantIslandStatus',
+        related_query_name='short_answer_question',
+        content_type_field='question_content_type',
+        object_id_field='question_object_id',
+    )
+
 
 class JudgeableQuestion(BaseQuestion):
     upload_required = models.BooleanField(default=True)
+
+    pis_set = GenericRelation(
+        'ParticipantIslandStatus',
+        related_query_name='judgeable_question',
+        content_type_field='question_content_type',
+        object_id_field='question_object_id',
+    )
 
 
 class Treasure(models.Model):
