@@ -197,8 +197,17 @@ class ParticipantTest(TestCase):
         safe_sekke = self.participant.get_safe_sekke()
         safe_sekke.amount = settings.GAME_PUT_ANCHOR_PRICE - 1
         safe_sekke.save()
+
+        pis = ParticipantIslandStatus.objects.get(
+            participant=self.participant,
+            island=self.island
+        )
         with self.assertRaises(Participant.PropertiesAreNotEnough):
             self.participant.put_anchor_on_current_island()
+        pis.refresh_from_db()
+        self.assertFalse(pis.currently_anchored)
+        self.assertFalse(pis.is_treasure_visible)
+        self.assertIsNone(pis.last_anchored_at)
 
     def test_init_properties(self):
         PARTICIPANT_INITIAL_PROPERTIES = {

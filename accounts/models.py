@@ -281,12 +281,12 @@ class Participant(models.Model):
             raise Participant.CantPutAnchorAgain
 
         with transaction.atomic():
+            self.reduce_property(game_settings.GAME_SEKKE, game_settings.GAME_PUT_ANCHOR_PRICE)
+
             current_pis.currently_anchored = True
             current_pis.is_treasure_visible = True
             current_pis.last_anchored_at = timezone.now()
             current_pis.save()
-
-            self.reduce_property(game_settings.GAME_SEKKE, game_settings.GAME_PUT_ANCHOR_PRICE)
 
     def open_treasure_on_current_island(self):
         current_pis = game_models.ParticipantIslandStatus.objects.get(
