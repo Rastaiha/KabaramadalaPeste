@@ -1,10 +1,14 @@
 from django.db import models, transaction
 from django.contrib.auth.models import AbstractUser
 from django.utils import timezone
+from datetime import timedelta
 from kabaramadalapeste import models as game_models
 from kabaramadalapeste.conf import settings as game_settings
 
 from enum import Enum
+
+from collections import defaultdict
+
 import logging
 import random
 logger = logging.getLogger(__file__)
@@ -40,7 +44,19 @@ class Participant(models.Model):
     class ParticipantIsNotOnIsland(Exception):
         pass
 
-    class ProprtiesAreNotEnough(Exception):
+    class DidNotAnchored(Exception):
+        pass
+
+    class PropertiesAreNotEnough(Exception):
+        pass
+
+    class MaximumActiveOffersExceeded(Exception):
+        pass
+
+    class MaximumChallengePerDayExceeded(Exception):
+        pass
+
+    class BadInput(Exception):
         pass
 
     member = models.OneToOneField(Member, related_name='participant', on_delete=models.CASCADE)
@@ -62,15 +78,79 @@ class Participant(models.Model):
     def __str__(self):
         return str(self.member)
 
+    def get_property(self, property_type):
+        if self.properties.filter(property_type__exact=property_type).count() == 0:
+            property_item = game_models.ParticipantPropertyItem.objects.create(
+                participant=self,
+                property_type=property_type,
+                amount=0
+            )
+            property_item.save()
+        return self.properties.get(property_type__exact=property_type)
+
+    def get_safe_property(self, property_type):
+        if self.properties.filter(property_type__exact=property_type).count() == 0:
+            property_item = game_models.ParticipantPropertyItem.objects.create(
+                participant=self,
+                property_type=property_type,
+                amount=0
+            )
+            property_item.save()
+        return self.properties.select_for_update().get(property_type__exact=property_type)
+
+    def reduce_property(self, property_type, amount):
+        if amount < 0:
+            raise Participant.BadInput
+        property_item = self.get_safe_property(property_type)
+        if property_item.amount < amount:
+            raise Participant.PropertiesAreNotEnough
+        property_item.amount = property_item.amount - amount
+        property_item.save()
+
+    def reduce_multiple_property(self, property_types, amounts):
+        if len(property_types) != len(amounts):
+            raise Participant.BadInput
+        dic = defaultdict(int)
+        for i, property_type in enumerate(property_types):
+            if amounts[i] < 0:
+                raise Participant.BadInput
+            dic[property_type] += amounts[i]
+        for property_type in dic:
+            if self.get_property(property_type).amount < dic[property_type]:
+                raise Participant.PropertiesAreNotEnough
+        for property_type in dic:
+            self.reduce_property(property_type, dic[property_type])
+
+    def add_property(self, property_type, amount):
+        if amount < 0:
+            raise Participant.BadInput
+        property_item = self.get_safe_property(property_type)
+        property_item.amount = property_item.amount + amount
+        property_item.save()
+
     @property
     def sekke(self):
         """
         Warning changes on this property wont be applied if you want to make changes use get_safe_sekke
         """
-        return self.properties.get(property_type=game_settings.GAME_SEKKE)
+        return self.get_property(game_settings.GAME_SEKKE)
 
     def get_safe_sekke(self):
-        return self.properties.select_for_update().get(property_type=game_settings.GAME_SEKKE)
+        return self.get_safe_property(game_settings.GAME_SEKKE)
+
+    def today_challenges_opened_count(self):
+        today_begin = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
+        today_end = today_begin + timedelta(days=1)
+        return game_models.ParticipantIslandStatus.objects.filter(
+            participant=self,
+            did_accept_challenge=True,
+            challenge_accepted_at__gte=today_begin,
+            challenge_accepted_at__lt=today_end,
+        ).count()
+
+    def can_open_new_challenge(self):
+        # TODO: handle challenge plus ability here
+        return self.today_challenges_opened_count() < game_settings.GAME_BASE_CHALLENGE_PER_DAY
 
     def init_pis(self):
         if game_models.ParticipantIslandStatus.objects.filter(participant=self).count():
@@ -125,14 +205,9 @@ class Participant(models.Model):
         if not self.currently_at_island.is_neighbor_with(dest_island):
             raise game_models.Island.IslandsNotConnected
 
-        if not is_free and self.sekke.amount < game_settings.GAME_MOVE_PRICE:
-            raise Participant.ProprtiesAreNotEnough
-
         with transaction.atomic():
             if not is_free:
-                safe_sekke = self.get_safe_sekke()
-                safe_sekke.amount -= game_settings.GAME_MOVE_PRICE
-                safe_sekke.save()
+                self.reduce_property(game_settings.GAME_SEKKE, game_settings.GAME_MOVE_PRICE)
 
             src_pis = game_models.ParticipantIslandStatus.objects.get(
                 participant=self,
@@ -158,8 +233,6 @@ class Participant(models.Model):
     def put_anchor_on_current_island(self):
         if not self.currently_at_island:
             raise Participant.ParticipantIsNotOnIsland
-        if self.sekke.amount < game_settings.GAME_PUT_ANCHOR_PRICE:
-            raise Participant.ProprtiesAreNotEnough
 
         current_pis = game_models.ParticipantIslandStatus.objects.get(
             participant=self,
@@ -167,12 +240,51 @@ class Participant(models.Model):
         )
         with transaction.atomic():
             current_pis.currently_anchored = True
+            current_pis.is_treasure_visible = True
             current_pis.last_anchored_at = timezone.now()
             current_pis.save()
 
-            safe_sekke = self.get_safe_sekke()
-            safe_sekke.amount -= game_settings.GAME_PUT_ANCHOR_PRICE
-            safe_sekke.save()
+            self.reduce_property(game_settings.GAME_SEKKE, game_settings.GAME_PUT_ANCHOR_PRICE)
+
+    def open_treasure_on_current_island(self):
+        if not self.currently_at_island:
+            raise Participant.ParticipantIsNotOnIsland
+        current_pis = game_models.ParticipantIslandStatus.objects.get(
+            participant=self,
+            island=self.currently_at_island
+        )
+        if not current_pis.currently_anchored:
+            raise Participant.DidNotAnchored
+        treasure = current_pis.treasure
+        with transaction.atomic():
+            for key in treasure.keys.all():
+                self.reduce_property(key.key_type, key.amount)
+            for reward in treasure.rewards.all():
+                self.add_property(reward.reward_type, reward.amount)
+            current_pis.did_open_treasure = True
+            current_pis.treasure_opened_at = timezone.now()
+            current_pis.save()
+
+    def accept_challenge_on_current_island(self):
+        if not self.currently_at_island:
+            raise Participant.ParticipantIsNotOnIsland
+        current_pis = game_models.ParticipantIslandStatus.objects.get(
+            participant=self,
+            island=self.currently_at_island
+        )
+        if not current_pis.currently_anchored:
+            raise Participant.DidNotAnchored
+        if not self.can_open_new_challenge():
+            raise Participant.MaximumChallengePerDayExceeded
+
+        current_pis = game_models.ParticipantIslandStatus.objects.get(
+            participant=self,
+            island=self.currently_at_island
+        )
+        with transaction.atomic():
+            current_pis.did_accept_challenge = True
+            current_pis.challenge_accepted_at = timezone.now()
+            current_pis.save()
 
 
 class Judge(models.Model):

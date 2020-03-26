@@ -11,6 +11,10 @@ from kabaramadalapeste.models import (
     ParticipantPropertyItem, ShortAnswerQuestion, Treasure
 )
 from kabaramadalapeste.conf import settings
+from collections import defaultdict
+from django.utils import timezone
+from datetime import datetime, timedelta
+from unittest import mock
 
 
 # Create your tests here.
@@ -107,7 +111,7 @@ class ParticipantTest(TestCase):
         safe_sekke.amount = settings.GAME_MOVE_PRICE - 1
         safe_sekke.save()
 
-        with self.assertRaises(Participant.ProprtiesAreNotEnough):
+        with self.assertRaises(Participant.PropertiesAreNotEnough):
             self.participant.move(self.island)
 
     def test_move_less_sekke_free(self):
@@ -167,6 +171,7 @@ class ParticipantTest(TestCase):
         )
 
         self.assertTrue(pis_current.currently_anchored)
+        self.assertTrue(pis_current.is_treasure_visible)
         self.assertIsNotNone(pis_current.last_anchored_at)
         self.assertEqual(prev_sekke - after_sekke, settings.GAME_PUT_ANCHOR_PRICE)
 
@@ -183,7 +188,7 @@ class ParticipantTest(TestCase):
         safe_sekke = self.participant.get_safe_sekke()
         safe_sekke.amount = settings.GAME_PUT_ANCHOR_PRICE - 1
         safe_sekke.save()
-        with self.assertRaises(Participant.ProprtiesAreNotEnough):
+        with self.assertRaises(Participant.PropertiesAreNotEnough):
             self.participant.put_anchor_on_current_island()
 
     def test_init_properties(self):
@@ -203,3 +208,181 @@ class ParticipantTest(TestCase):
         with self.settings(GAME_PARTICIPANT_INITIAL_PROPERTIES=PARTICIPANT_INITIAL_PROPERTIES):
             self.participant.init_properties()
             self.assertEqual(ParticipantPropertyItem.objects.count(), 1)
+
+    def test_open_treasure_ok(self):
+        self.participant.init_pis()
+        self.participant.init_properties()
+        self.participant.set_start_island(self.island)
+        self.participant.put_anchor_on_current_island()
+
+        pis = ParticipantIslandStatus.objects.get(
+            participant=self.participant,
+            island=self.island
+        )
+        for key in pis.treasure.keys.all():
+            if self.participant.get_property(key.key_type).amount < key.amount:
+                self.participant.add_property(
+                    key.key_type,
+                    key.amount - self.participant.get_property(key.key_type).amount
+                )
+        before_props = {
+            prop.property_type: prop.amount for prop in self.participant.properties.all()
+        }
+        self.participant.open_treasure_on_current_island()
+        after_props = {
+            prop.property_type: prop.amount for prop in self.participant.properties.all()
+        }
+        expected_change = defaultdict(int)
+        for key in pis.treasure.keys.all():
+            expected_change[key.key_type] -= key.amount
+        for reward in pis.treasure.rewards.all():
+            expected_change[reward.reward_type] += reward.amount
+        for key, change in expected_change.items():
+            self.assertEqual(after_props[key] - before_props.get(key, 0), expected_change[key])
+        pis.refresh_from_db()
+        self.assertTrue(pis.did_open_treasure)
+        self.assertIsNotNone(pis.treasure_opened_at)
+
+    def test_open_treasure_not_enough(self):
+        self.participant.init_pis()
+        self.participant.init_properties()
+        self.participant.set_start_island(self.island)
+        self.participant.put_anchor_on_current_island()
+
+        pis = ParticipantIslandStatus.objects.get(
+            participant=self.participant,
+            island=self.island
+        )
+        for key in pis.treasure.keys.all():
+            if self.participant.get_property(key.key_type).amount < key.amount:
+                self.participant.add_property(
+                    key.key_type,
+                    key.amount - self.participant.get_property(key.key_type).amount
+                )
+        key = pis.treasure.keys.first()
+        self.participant.reduce_property(
+            key.key_type,
+            (self.participant.get_property(key.key_type).amount - key.amount) + 1
+        )
+        before_props = {
+            prop.property_type: prop.amount for prop in self.participant.properties.all()
+        }
+        with self.assertRaises(Participant.PropertiesAreNotEnough):
+            self.participant.open_treasure_on_current_island()
+        after_props = {
+            prop.property_type: prop.amount for prop in self.participant.properties.all()
+        }
+        for key in pis.treasure.keys.all():
+            self.assertEqual(after_props[key.key_type] - before_props.get(key.key_type, 0), 0)
+        for reward in pis.treasure.rewards.all():
+            self.assertEqual(
+                after_props.get(reward.reward_type, 0) - before_props.get(reward.reward_type, 0), 0
+            )
+        pis.refresh_from_db()
+        self.assertFalse(pis.did_open_treasure)
+        self.assertIsNone(pis.treasure_opened_at)
+
+    def test_open_treasure_not_at_island(self):
+        self.participant.init_pis()
+        self.participant.init_properties()
+
+        with self.assertRaises(Participant.ParticipantIsNotOnIsland):
+            self.participant.open_treasure_on_current_island()
+
+    def test_open_treasure_did_not_anchor(self):
+        self.participant.init_pis()
+        self.participant.init_properties()
+        self.participant.set_start_island(self.island)
+
+        with self.assertRaises(Participant.DidNotAnchored):
+            self.participant.open_treasure_on_current_island()
+
+    def test_accept_challenge_ok(self):
+        self.participant.init_pis()
+        self.participant.init_properties()
+        self.participant.set_start_island(self.island)
+        self.participant.put_anchor_on_current_island()
+
+        pis = ParticipantIslandStatus.objects.get(
+            participant=self.participant,
+            island=self.island
+        )
+        self.participant.accept_challenge_on_current_island()
+        pis.refresh_from_db()
+        self.assertTrue(pis.did_accept_challenge)
+        self.assertIsNotNone(pis.challenge_accepted_at)
+
+    def test_accept_challenge_not_at_island(self):
+        self.participant.init_pis()
+        self.participant.init_properties()
+
+        with self.assertRaises(Participant.ParticipantIsNotOnIsland):
+            self.participant.accept_challenge_on_current_island()
+
+    def test_accept_challenge_did_not_anchor(self):
+        self.participant.init_pis()
+        self.participant.init_properties()
+        self.participant.set_start_island(self.island)
+
+        with self.assertRaises(Participant.DidNotAnchored):
+            self.participant.accept_challenge_on_current_island()
+
+    @mock.patch('accounts.models.timezone.now')
+    def test_accept_challenge_limit(self, now_mock):
+        base_now = datetime.now().replace(tzinfo=timezone.get_current_timezone())
+        now_mock.return_value = base_now
+
+        self.participant.init_pis()
+        self.participant.init_properties()
+        self.participant.set_start_island(self.island)
+        self.participant.put_anchor_on_current_island()
+
+        for i, island in enumerate(self.all_islands[5:5 + settings.GAME_BASE_CHALLENGE_PER_DAY]):
+            pis = ParticipantIslandStatus.objects.get(
+                participant=self.participant,
+                island=island
+            )
+            pis.did_accept_challenge = True
+            if i == 0:
+                pis.challenge_accepted_at = base_now.replace(
+                    hour=0,
+                    minute=0,
+                    second=1
+                )
+            else:
+                pis.challenge_accepted_at = base_now
+            pis.save()
+
+        with self.assertRaises(Participant.MaximumChallengePerDayExceeded):
+            self.participant.accept_challenge_on_current_island()
+
+    @mock.patch('accounts.models.timezone.now')
+    def test_accept_challenge_ok_one_less(self, now_mock):
+        base_now = datetime.now().replace(tzinfo=timezone.get_current_timezone())
+        now_mock.return_value = base_now
+
+        self.participant.init_pis()
+        self.participant.init_properties()
+        self.participant.set_start_island(self.island)
+        self.participant.put_anchor_on_current_island()
+
+        for i, island in enumerate(self.all_islands[5:5 + settings.GAME_BASE_CHALLENGE_PER_DAY]):
+            pis = ParticipantIslandStatus.objects.get(
+                participant=self.participant,
+                island=island
+            )
+            pis.did_accept_challenge = True
+            if i == 0:
+                pis.challenge_accepted_at = (base_now + timedelta(days=1)).replace(
+                    hour=0,
+                    minute=0,
+                    second=1
+                )
+            else:
+                pis.challenge_accepted_at = base_now
+            pis.save()
+
+        self.participant.accept_challenge_on_current_island()
+        pis.refresh_from_db()
+        self.assertTrue(pis.did_accept_challenge)
+        self.assertIsNotNone(pis.challenge_accepted_at)
