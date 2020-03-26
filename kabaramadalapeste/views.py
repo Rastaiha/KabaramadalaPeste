@@ -15,6 +15,9 @@ from kabaramadalapeste.conf import settings
 
 import datetime
 import sys
+import logging
+
+logger = logging.getLogger(__file__)
 
 
 def check_user_is_activated_participant(user):
@@ -64,7 +67,8 @@ class IslandInfoView(View):
                 'judge_estimated_minutes': 0,  # TODO: fill here
                 'answer_status': '',  # TODO: fill here
             })
-        except Exception:
+        except Exception as e:
+            logger.error(e, exc_info=True)
             return default_error_response
 
 
@@ -83,7 +87,8 @@ class ParticipantInfoView(View):
                 'current_island_id': current_island_id,
                 'properties': properties_dict
             })
-        except Exception:
+        except Exception as e:
+            logger.error(e, exc_info=True)
             return default_error_response
 
 
@@ -101,7 +106,8 @@ class SetStartIslandView(View):
                 'status': settings.ERROR_STATUS,
                 'message': 'قبلا انتخاب کردی که از کدوم جزیره شروع کنی. نمی‌تونی دوباره انتخاب کنی.'
             }, status=400)
-        except Exception:
+        except Exception as e:
+            logger.error(e, exc_info=True)
             return default_error_response
 
 
@@ -129,7 +135,8 @@ class MoveToIslandView(View):
                 'status': settings.ERROR_STATUS,
                 'message': 'سکه‌هات برای حرکت کافی نیست.'
             }, status=400)
-        except Exception:
+        except Exception as e:
+            logger.error(e, exc_info=True)
             return default_error_response
 
 
@@ -151,7 +158,8 @@ class PutAnchorView(View):
                 'status': settings.ERROR_STATUS,
                 'message': 'سکه‌هات برای لنگر انداختن کافی نیست.'
             }, status=400)
-        except Exception:
+        except Exception as e:
+            logger.error(e, exc_info=True)
             return default_error_response
 
 
@@ -178,7 +186,8 @@ class OpenTreasureView(View):
                 'status': settings.ERROR_STATUS,
                 'message': 'دارایی‌هات برای باز کردن گنج کافی نیست.'
             }, status=400)
-        except Exception:
+        except Exception as e:
+            logger.error(e, exc_info=True)
             return default_error_response
 
 
@@ -205,7 +214,8 @@ class AcceptChallengeView(View):
                 'status': settings.ERROR_STATUS,
                 'message': 'تعداد چالش‌های روزت رو استفاده کردی. تا فردا نمی‌تونی چالش جدیدی بپذیری'
             }, status=400)
-        except Exception:
+        except Exception as e:
+            logger.error(e, exc_info=True)
             return default_error_response
 
 
@@ -270,7 +280,8 @@ def create_offer(request):
                 'status': settings.ERROR_STATUS,
                 'message': 'منابع کافی برای دادن این پیشنهاد رو نداری.'
             }, status=400)
-        except Exception:
+        except Exception as e:
+            logger.error(e, exc_info=True)
             return default_error_response
 
 
@@ -281,7 +292,8 @@ def get_all_offers(request):
         for trade_offer in TradeOffer.objects.filter(status__exact=settings.GAME_OFFER_ACTIVE).order_by('?').all():
             data['offers'].append(trade_offer.to_dict())
         return JsonResponse(data)
-    except Exception:
+    except Exception as e:
+        logger.error(e, exc_info=True)
         return default_error_response
 
 
@@ -295,7 +307,8 @@ def get_my_offers(request):
         ).order_by('?').all():
             data['offers'].append(trade_offer.to_dict())
         return JsonResponse(data)
-    except Exception:
+    except Exception as e:
+        logger.error(e, exc_info=True)
         return default_error_response
 
 
@@ -323,7 +336,8 @@ def delete_offer(request, pk):
             'status': settings.ERROR_STATUS,
             'message': 'این پیشنهاد رو نمی‌تونی حذف کنی!'
         }, status=400)
-    except Exception:
+    except Exception as e:
+        logger.error(e, exc_info=True)
         return default_error_response
 
 
@@ -368,7 +382,8 @@ def accept_offer(request, pk):
             'status': settings.ERROR_STATUS,
             'message': 'منابع کافی برای قبول کردن این پیشنهاد رو نداری.'
         }, status=400)
-    except Exception:
+    except Exception as e:
+        logger.error(e, exc_info=True)
         return default_error_response
 
 
@@ -420,7 +435,8 @@ def use_ability(request):
                 'status': settings.ERROR_STATUS,
                 'message': 'از این توانایی چیزی برای مصرف نداری.'
             })
-        except Exception:
+        except Exception as e:
+            logger.error(e, exc_info=True)
             return default_error_response
 
 
