@@ -383,6 +383,9 @@ class Participant(models.Model):
     def send_msg_sb_fall_in_your_bully(self, bully, victim_participant, amount):
         pass  # TODO must be filled with sending appropriate message
 
+    def send_msg_bandargah_computed(self, investment, was_successful):
+        pass  # TODO must be filled with sending appropriate message
+
 
 class JudgeManager(models.Manager):
     @transaction.atomic
