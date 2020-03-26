@@ -252,7 +252,7 @@ class ParticipantIslandStatus(models.Model):
                 return self.judgeablesubmit
             return self.shortanswersubmit
         except (ParticipantIslandStatus.judgeablesubmit.RelatedObjectDoesNotExist,
-                ParticipantIslandStatus.shortanswersubmit.RelatedObjectDoesNotExist):
+                ParticipantIslandStatus.shortanswersubmit.RelatedObjectDoesNotExist, AttributeError):
             return None
 
 

@@ -245,6 +245,20 @@ class ViewsTest(TestCase):
             {key.key_type: key.amount for key in pis.treasure.keys.all()}
         )
 
+    def test_island_info_bandargah(self):
+        self.participant.set_start_island(self.all_islands[settings.GAME_BANDARGAH_ISLAND_ID - 1])
+        self.participant.put_anchor_on_current_island()
+        self.client.force_login(self.participant.member)
+        response = self.client.get(reverse('kabaramadalapeste:island_info', kwargs={
+            'island_id': settings.GAME_BANDARGAH_ISLAND_ID
+        }))
+        self.assertIsNotNone(response.json()['name'])
+        self.assertEqual(response.json()['participants_inside'], 1)
+        self.assertEqual(
+            response.json()['treasure_keys'],
+            'unknown'
+        )
+
     def test_participant_info_not_login(self):
         response = self.client.get(reverse('kabaramadalapeste:participant_info'))
         self.assertEqual(response.status_code, 302)

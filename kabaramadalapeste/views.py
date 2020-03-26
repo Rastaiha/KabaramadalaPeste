@@ -64,15 +64,15 @@ class IslandInfoView(View):
             pis = ParticipantIslandStatus.objects.get(
                 participant=request.user.participant, island=island)
             treasure_keys = 'unknown'
-            if pis.is_treasure_visible:
+            if pis.is_treasure_visible and pis.treasure:
                 treasure_keys = {
                     key.key_type: key.amount for key in pis.treasure.keys.all()
                 }
             submit_status = pis.submit.submit_status if pis.submit else 'No'
             return JsonResponse({
                 'name': island.name,
-                'challenge_name': island.challenge.name,
-                'challenge_is_judgeable': island.challenge.is_judgeable,
+                'challenge_name': island.challenge.name if island.challenge else '',
+                'challenge_is_judgeable': island.challenge.is_judgeable if island.challenge else '',
                 'treasure_keys': treasure_keys,
                 'did_open_treasure': pis.did_open_treasure,
                 'participants_inside': ParticipantIslandStatus.objects.filter(
