@@ -15,6 +15,8 @@ from kabaramadalapeste.models import (
 )
 from kabaramadalapeste.conf import settings
 
+from homepage.models import SiteConfiguration
+
 import datetime
 import sys
 import logging
@@ -39,12 +41,23 @@ def login_activated_participant_required(view_func):
     return login_required(activated_participant_required(view_func))
 
 
+def check_game_is_running(user):
+    return SiteConfiguration.get_solo().is_game_running
+
+
+game_running_required = user_passes_test(
+    check_game_is_running,
+    login_url='/'
+)
+
+
 default_error_response = JsonResponse({
     'status': settings.ERROR_STATUS,
     'message': 'خطایی رخ داد. موضوع رو بهمون بگو.'
 }, status=400)
 
 
+@method_decorator(game_running_required, name='dispatch')
 @method_decorator(login_activated_participant_required, name='dispatch')
 class SettingsView(View):
     def get(self, request):
@@ -59,6 +72,7 @@ class SettingsView(View):
             return default_error_response
 
 
+@method_decorator(game_running_required, name='dispatch')
 @method_decorator(login_activated_participant_required, name='dispatch')
 class IslandInfoView(View):
     def get(self, request, island_id):
@@ -89,6 +103,7 @@ class IslandInfoView(View):
             return default_error_response
 
 
+@method_decorator(game_running_required, name='dispatch')
 @method_decorator(login_activated_participant_required, name='dispatch')
 class ParticipantInfoView(View):
     def get(self, request):
@@ -116,6 +131,7 @@ class ParticipantInfoView(View):
             return default_error_response
 
 
+@method_decorator(game_running_required, name='dispatch')
 @method_decorator(login_activated_participant_required, name='dispatch')
 class SetStartIslandView(View):
     def post(self, request, dest_island_id):
@@ -135,6 +151,7 @@ class SetStartIslandView(View):
             return default_error_response
 
 
+@method_decorator(game_running_required, name='dispatch')
 @method_decorator(login_activated_participant_required, name='dispatch')
 class MoveToIslandView(View):
     def post(self, request, dest_island_id):
@@ -164,6 +181,7 @@ class MoveToIslandView(View):
             return default_error_response
 
 
+@method_decorator(game_running_required, name='dispatch')
 @method_decorator(login_activated_participant_required, name='dispatch')
 class PutAnchorView(View):
     def post(self, request):
@@ -192,6 +210,7 @@ class PutAnchorView(View):
             return default_error_response
 
 
+@method_decorator(game_running_required, name='dispatch')
 @method_decorator(login_activated_participant_required, name='dispatch')
 class OpenTreasureView(View):
     def post(self, request):
@@ -233,6 +252,7 @@ class OpenTreasureView(View):
             return default_error_response
 
 
+@method_decorator(game_running_required, name='dispatch')
 @method_decorator(login_activated_participant_required, name='dispatch')
 class SpadeView(View):
     def post(self, request):
@@ -267,6 +287,7 @@ class SpadeView(View):
             return default_error_response
 
 
+@method_decorator(game_running_required, name='dispatch')
 @method_decorator(login_activated_participant_required, name='dispatch')
 class AcceptChallengeView(View):
     def post(self, request):
@@ -301,6 +322,7 @@ class AcceptChallengeView(View):
 
 
 @transaction.atomic
+@game_running_required
 @login_activated_participant_required
 def create_offer(request):
     if request.method == 'POST':
@@ -366,6 +388,7 @@ def create_offer(request):
             return default_error_response
 
 
+@game_running_required
 @login_activated_participant_required
 def get_all_offers(request):
     try:
@@ -378,6 +401,7 @@ def get_all_offers(request):
         return default_error_response
 
 
+@game_running_required
 @login_activated_participant_required
 def get_my_offers(request):
     try:
@@ -394,6 +418,7 @@ def get_my_offers(request):
 
 
 @transaction.atomic
+@game_running_required
 @login_activated_participant_required
 def delete_offer(request, pk):
     try:
@@ -423,6 +448,7 @@ def delete_offer(request, pk):
 
 
 @transaction.atomic
+@game_running_required
 @login_activated_participant_required
 def accept_offer(request, pk):
     try:
@@ -470,6 +496,7 @@ def accept_offer(request, pk):
 
 
 @transaction.atomic
+@game_running_required
 @login_activated_participant_required
 def use_ability(request):
     if request.method == 'POST':
@@ -558,6 +585,7 @@ def use_ability(request):
 
 
 @transaction.atomic
+@game_running_required
 @login_activated_participant_required
 def invest(request):
     if request.method == 'POST':
@@ -619,6 +647,7 @@ def invest(request):
             return default_error_response
 
 
+@game_running_required
 @login_activated_participant_required
 def game(request):
     return render(request, 'kabaramadalapeste/game.html', {
@@ -627,6 +656,7 @@ def game(request):
     })
 
 
+@game_running_required
 @login_activated_participant_required
 def game2(request):
     return render(request, 'kabaramadalapeste/game.html', {
@@ -636,6 +666,7 @@ def game2(request):
     })
 
 
+@game_running_required
 @login_activated_participant_required
 def exchange(request):
     return render(request, 'kabaramadalapeste/exchange.html', {
@@ -644,6 +675,7 @@ def exchange(request):
     })
 
 
+@game_running_required
 @login_activated_participant_required
 def island(request):
     return render(request, 'kabaramadalapeste/island.html', {
