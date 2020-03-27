@@ -133,14 +133,14 @@ class BaseQuestion(models.Model):
     def get_answer_type(self):
         raise NotImplementedError
 
-    def save(self):
+    def save(self, *args, **kwargs):
         dt = timezone.now()
         r = ''.join(random.choices(string.ascii_letters + string.digits, k=12))
         self.question = '%s-%s-%s-%s' % (
             dt.isoformat(),
             slugify(self.title), r, self.question
         )
-        super(BaseQuestion, self).save()
+        super(BaseQuestion, self).save(*args, **kwargs)
 
 
 class ShortAnswerQuestion(BaseQuestion):
@@ -397,14 +397,14 @@ class JudgeableSubmit(BaseSubmit):
                                   null=True,
                                   blank=True)
 
-    def save(self):
+    def save(self, *args, **kwargs):
         dt = timezone.now()
         r = ''.join(random.choices(string.ascii_letters + string.digits, k=12))
         self.submitted_answer = '%s-%s-%s-%s' % (
             dt.isoformat(),
             slugify(self.title), r, self.submitted_answer
         )
-        super(JudgeableSubmit, self).save()
+        super(JudgeableSubmit, self).save(*args, **kwargs)
 
 
 class TradeOffer(models.Model):
