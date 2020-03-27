@@ -501,18 +501,20 @@ class Participant(models.Model):
             level='info', public=False, text=self.currently_at_island.peste_guidance
         )
 
+    @transaction.atomic
     def send_msg_spade_result(self, was_successful):
         if was_successful:
             text = 'تبریک می‌گم! کنلگ‌زنی موفق بود و یه پسته پیدا کردی!'
         else:
             text = 'متاسفم. کلنگ‌زنی ناموفق بود و پسته‌ای توی این جزیره پیدا نشد.'
-        notify.send(
+        notif = notify.send(
             sender=Member.objects.filter(is_superuser=True).all()[0],
             recipient=self.member,
             verb='sapde_result',
             description='نتیجه‌ی کلنگ‌زنی',
-            level='info', public=True, text=text
-        )
+            level='info', public=False, text=text
+        )[0][1][0]
+        Notification.objects.filter(pk=notif.pk).mark_all_as_read()
 
 
 class JudgeManager(models.Manager):
