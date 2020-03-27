@@ -525,7 +525,8 @@ def use_ability(request):
                 ability_usage.is_active = True
 
             if ability_type == settings.GAME_VISION:
-                islands = [current_island] + [island for island in current_island.neighbors]
+                islands = [current_island] + \
+                    [island for island in current_island.neighbors]
                 for island in islands:
                     pis = ParticipantIslandStatus.objects.get(
                         participant=request.user.participant,
@@ -606,7 +607,8 @@ def invest(request):
                 datetime__lt=today_end,
             ).count() > 0:
                 raise BandargahInvestment.CantInvestTwiceToday
-            request.user.participant.reduce_property(settings.GAME_SEKKE, amount)
+            request.user.participant.reduce_property(
+                settings.GAME_SEKKE, amount)
             investment = BandargahInvestment.objects.create(
                 participant=request.user.participant,
                 amount=amount,
@@ -694,3 +696,12 @@ def island(request):
     except Exception as e:
         logger.error(e, exc_info=True)
         return redirect('kabaramadalapeste:game')
+
+
+@game_running_required
+@login_activated_participant_required
+def challenge(request):
+    return render(request, 'kabaramadalapeste/challenge.html', {
+        'without_nav': True,
+        'without_footer': True,
+    })

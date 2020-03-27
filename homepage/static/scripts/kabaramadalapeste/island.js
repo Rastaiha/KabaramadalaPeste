@@ -83,7 +83,7 @@ function set_click_listener(key, elem) {
                 switch (data.submit_status) {
                     case "No":
                         my_prompt("آماده‌ای برای چالش؟", "چالش", {
-                            kind: "challeng"
+                            kind: "challenge"
                         });
                         $("#prompt_modal").modal("show");
                         break;
@@ -119,10 +119,10 @@ $("#prompt_modal_btn").click(function() {
                 })
                 .catch(default_fail);
             break;
-        case "challeng":
+        case "challenge":
             accept_challenge()
                 .then(() => {
-                    window.location.href = "/game/challeng/";
+                    window.location.href = "/game/challenge/";
                 })
                 .catch(default_fail);
             break;

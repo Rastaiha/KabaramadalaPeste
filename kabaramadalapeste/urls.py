@@ -1,7 +1,7 @@
 from django.urls import path
 
 from .views import (
-    game, game2, exchange, island, IslandInfoView, MoveToIslandView,
+    game, game2, exchange, island, challenge, IslandInfoView, MoveToIslandView,
     SetStartIslandView, PutAnchorView, OpenTreasureView,
     ParticipantInfoView, create_offer, get_all_offers,
     get_my_offers, delete_offer, accept_offer,
@@ -41,4 +41,5 @@ urlpatterns = [
     path('low/', game2, name="game2"),
     path('exchange/', exchange, name="exchange"),
     path('island/', island, name="island"),
+    path('challenge/', challenge, name="challenge"),
 ]
