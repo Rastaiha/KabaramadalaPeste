@@ -86,16 +86,19 @@ class IslandInfoView(View):
             pis = ParticipantIslandStatus.objects.get(
                 participant=request.user.participant, island=island)
             treasure_keys = 'unknown'
+            treasure_keys_persian = 'مشخص نیست'
             if pis.is_treasure_visible and pis.treasure:
                 treasure_keys = {
                     key.key_type: key.amount for key in pis.treasure.keys.all()
                 }
+                treasure_keys_persian = pis.treasure.get_keys_persian_string()
             submit_status = pis.submit.submit_status if pis.submit else 'No'
             return JsonResponse({
                 'name': island.name,
                 'challenge_name': island.challenge.name if island.challenge else '',
                 'challenge_is_judgeable': island.challenge.is_judgeable if island.challenge else '',
                 'treasure_keys': treasure_keys,
+                'treasure_keys_persian': treasure_keys_persian,
                 'did_open_treasure': pis.did_open_treasure,
                 'did_accept_challenge': pis.did_accept_challenge,
                 'currently_anchored': pis.currently_anchored,
@@ -233,7 +236,8 @@ class OpenTreasureView(View):
             }
             return JsonResponse({
                 'status': settings.OK_STATUS,
-                'treasure_rewards': treasure_rewards
+                'treasure_rewards': treasure_rewards,
+                'treasure_rewards_persian': pis.treasure.get_rewards_persian_string()
             })
         except Participant.ParticipantIsNotOnIsland:
             return JsonResponse({

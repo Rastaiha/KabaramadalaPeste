@@ -184,10 +184,35 @@ class JudgeableQuestion(BaseQuestion):
         return 'FILE' if self.upload_required else 'NO'
 
 
-
 class Treasure(models.Model):
     def __str__(self):
         return 'Treasure %s' % self.id
+
+    def get_keys_persian_string(self):
+        n = self.keys.exclude(amount__exact=0).all().count()
+        s = ''
+        i = 0
+        for treasure_key_item in self.keys.exclude(amount__exact=0).all():
+            s += '%d عدد %s' % (treasure_key_item.amount, settings.GAME_TRANSLATION_DICT[treasure_key_item.key_type])
+            if i < n-2:
+                s += '، '
+            elif i == n-2:
+                s += ' و '
+            i += 1
+        return s
+
+    def get_rewards_persian_string(self):
+        n = self.rewards.exclude(amount__exact=0).all().count()
+        s = ''
+        i = 0
+        for treasure_reward_item in self.rewards.exclude(amount__exact=0).all():
+            s += '%d عدد %s' % (treasure_reward_item.amount, settings.GAME_TRANSLATION_DICT[treasure_reward_item.reward_type])
+            if i < n-2:
+                s += '، '
+            elif i == n-2:
+                s += ' و '
+            i += 1
+        return s
 
 
 class TreasureKeyItem(models.Model):
@@ -460,8 +485,8 @@ class BandargahConfiguration(SingletonModel):
     max_possible_invest = models.IntegerField(default=4000)
     profit_coefficient = models.FloatField(default=1.5)
     loss_coefficient = models.FloatField(default=0.5)
-    min_interval_investments = models.IntegerField(default=30000)
-    max_interval_investments = models.IntegerField(default=42000)
+    min_interval_investments = models.IntegerField(default=300000)
+    max_interval_investments = models.IntegerField(default=1000000)
 
 
 class BandargahInvestment(models.Model):

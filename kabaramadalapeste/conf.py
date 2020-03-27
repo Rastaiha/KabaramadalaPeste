@@ -38,6 +38,18 @@ class GameConf(AppConf):
 
     PARTICIPANT_PROPERTY_TYPE_CHOICES = TREASURE_REWARD_TYPE_CHOICES
 
+    TRANSLATION_DICT = {
+        SEKKE: 'سکه',
+        KEY1: 'کلید طلایی',
+        KEY2: 'کلید آبی',
+        KEY3: 'کلید قرمز',
+        VISION: 'توانایی بینش غیبی',
+        TRAVEL_EXPRESS: 'توانایی سفر اکسپرس',
+        CHALLENGE_PLUS: 'توانایی چالش پلاس',
+        PROPHECY: '',
+        BULLY: 'توانایی زورگیری'
+    }
+
     PARTICIPANT_INITIAL_PROPERTIES = {
         SEKKE: 1500
     }
@@ -61,7 +73,7 @@ class GameConf(AppConf):
     ]
 
     MAXIMUM_ACTIVE_OFFERS = 4
-    BASE_CHALLENGE_PER_DAY = 5
+    BASE_CHALLENGE_PER_DAY = 4
 
     class Meta:
         prefix = 'game'
