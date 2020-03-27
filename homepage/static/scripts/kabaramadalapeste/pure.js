@@ -35,8 +35,20 @@ function update_island_info(response) {
     island_info.find(".island-name span").text(response.name);
     island_info.find(".island_kind span").text(response.challenge_name);
     island_info.find(".island_persons span").text(response.participants_inside);
-    island_info.find(".island-info-question span").text("حل نشده");
-    /** TODO: fix challeng state */
+    switch (response.submit_status) {
+        case "No":
+            island_info.find(".island-info-question span").text("حل نشده");
+            break;
+        case "Pending":
+            island_info.find(".island-info-question span").text("درحال تصحیح");
+            break;
+        case "Correct":
+            island_info.find(".island-info-question span").text("پاسخ صحیح");
+            break;
+        case "Wrong":
+            island_info.find(".island-info-question span").text("پاسخ نادرست");
+            break;
+    }
     if (response.did_open_treasure) {
         island_info.find(".island-info-ganj span").text("باز شده");
         island_info
