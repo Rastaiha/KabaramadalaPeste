@@ -32,6 +32,10 @@
                     <a class="nav-link hover-shadow"
                         href="{% if request.path == '/' %}#about-page{% else %}/about_us{% endif %}">درباره ما</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link hover-shadow"
+                        href="/rules">قوانین</a>
+                </li>
                 {% if user.is_authenticated %}
                     <li class="nav-item">
                         <a class="nav-link hover-shadow {% if request.path == '/accounts/logout/' %} activate {% endif %}"
