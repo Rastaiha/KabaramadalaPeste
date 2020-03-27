@@ -101,6 +101,7 @@
 {% endblock game_base_content %}
 {% block game_base_scripts %}
 <script>
+    let input = document.getElementById("answer");
     $('#answer').change(function () {
         if ($(this).hasClass('file-input')) {
             if (this.files[0].size > 5000000) {
@@ -115,22 +116,24 @@
         document.getElementById("form").checkValidity()
     })
     $('.submit-form').click(function (e) {
-        let input = document.getElementById("answer");
-        if (input.checkValidity()) {
-            my_prompt(
-                "آیا می‌خوای جوابتو ارسال کنی؟ توجه کن که یکبار بیشتر نمی‌تونی ارسال داشته باشی.",
-                "ارسال پاسخ", {
-                    kind: "challenge"
-                });
-            $("#prompt_modal").modal("show");
-        } else {
-            input.setCustomValidity(input.validationMessage);
-            input.reportValidity();
-            setTimeout(function () {
-                input.setCustomValidity('');
-            }, 1000)
+        if (input) {
+            if (input.checkValidity()) {
+                my_prompt(
+                    "آیا می‌خوای جوابتو ارسال کنی؟ توجه کن که یکبار بیشتر نمی‌تونی ارسال داشته باشی.",
+                    "ارسال پاسخ", {
+                        kind: "challenge"
+                    });
+                $("#prompt_modal").modal("show");
+            } else {
+                input.setCustomValidity(input.validationMessage);
+                input.reportValidity();
+                setTimeout(function () {
+                    input.setCustomValidity('');
+                }, 1000)
+            }
+            e.preventDefault()
         }
-        e.preventDefault()
+        $("#send").click()
     })
     $("#prompt_modal_btn").click(function () {
         $("#send").click()
