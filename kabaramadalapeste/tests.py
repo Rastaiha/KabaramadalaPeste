@@ -1,5 +1,6 @@
 from django.test import TestCase
 from django.urls import reverse
+from django.http import HttpResponse
 from django.db.utils import IntegrityError
 # Create your tests here.
 from accounts.models import Participant
@@ -808,3 +809,26 @@ class ViewsTest(TestCase):
         self.assertEqual(1, BandargahInvestment.objects.all().count())
         self.assertEqual(old_sekke, self.participant.sekke.amount + 3000)
         BandargahInvestment.objects.all().delete()
+
+    @mock.patch('kabaramadalapeste.views.render')
+    def test_island_page_ok(self, render_mock):
+        render_mock.return_value = HttpResponse('OK')
+        self.participant.set_start_island(self.island)
+        self.participant.put_anchor_on_current_island()
+
+        self.client.force_login(self.participant.member)
+        response = self.client.get(reverse('kabaramadalapeste:island'))
+        render_mock.assert_called_once()
+        self.assertEqual(response.status_code, 200)
+
+    def test_island_page_not_anchored(self):
+        self.participant.set_start_island(self.island)
+
+        self.client.force_login(self.participant.member)
+        response = self.client.get(reverse('kabaramadalapeste:island'))
+        self.assertEqual(response.status_code, 302)
+
+    def test_island_page_not_on_island(self):
+        self.client.force_login(self.participant.member)
+        response = self.client.get(reverse('kabaramadalapeste:island'))
+        self.assertEqual(response.status_code, 302)
