@@ -29,29 +29,34 @@ let data = {
     }
 };
 
+function get_keys_string(treasure_keys) {
+    let keys = "";
+    let is_first = true;
+    for (const key in data.treasure_keys) {
+        if (data.treasure_keys.hasOwnProperty(key)) {
+            if (data.treasure_keys[key]) {
+                if (!is_first) {
+                    keys += "، ";
+                }
+                keys +=
+                    data.treasure_keys[key] +
+                    " عدد کلید نوع " +
+                    key.replace("K", "");
+                is_first = false;
+            }
+        }
+    }
+    keys = keys.replace(/،([^،]*)$/, " و" + "$1");
+    return keys;
+}
+
 function set_click_listener(key, elem) {
     switch (key) {
         case "ganj":
             elem.on("click tap", function() {
                 if (!data.did_open_treasure) {
                     let title = "باز کردن گنج";
-                    let keys = "";
-                    let is_first = true;
-                    for (const key in data.treasure_keys) {
-                        if (data.treasure_keys.hasOwnProperty(key)) {
-                            if (data.treasure_keys[key]) {
-                                if (!is_first) {
-                                    keys += "، ";
-                                }
-                                keys +=
-                                    data.treasure_keys[key] +
-                                    " عدد کلید نوع " +
-                                    key.replace("K", "");
-                                is_first = false;
-                            }
-                        }
-                    }
-                    keys = keys.replace(/،([^،]*)$/, " و" + "$1");
+                    let keys = get_keys_string(data.treasure_keys);
                     let question =
                         "برای باز کردن این گنج باید " +
                         keys +
@@ -68,23 +73,33 @@ function set_click_listener(key, elem) {
             break;
         case "bill":
             elem.on("click tap", function() {
-                my_prompt(
-                    "برای بیل‌زدن باید فلان سکه بدی. می‌خوای این کارو بکنی؟",
-                    "بیل‌زدن",
-                    {
-                        kind: "bill"
-                    }
-                );
-                $("#prompt_modal").modal("show");
+                if (!data.did_spade) {
+                    my_prompt(
+                        "برای بیل‌زدن باید فلان سکه بدی. می‌خوای این کارو بکنی؟",
+                        "بیل‌زدن",
+                        {
+                            kind: "bill"
+                        }
+                    );
+                    $("#prompt_modal").modal("show");
+                } else {
+                    my_alert("قبلاً اینجا رو بیل زدی!", "بیل‌زدن");
+                }
             });
             break;
         case "eskelet":
             elem.on("click tap", function() {
                 switch (data.submit_status) {
                     case "No":
-                        my_prompt("آماده‌ای برای چالش؟", "چالش", {
-                            kind: "challenge"
-                        });
+                        if (!data.did_accept_challenge) {
+                            my_prompt("آماده‌ای برای چالش؟", "چالش", {
+                                kind: "challenge"
+                            });
+                        } else {
+                            my_prompt("بازگشت به چالش.", "چالش", {
+                                kind: "back_to_challenge"
+                            });
+                        }
                         $("#prompt_modal").modal("show");
                         break;
                     case "Pending":
@@ -105,8 +120,19 @@ function set_click_listener(key, elem) {
 $("#prompt_modal_btn").click(function() {
     switch ($(this).data("kind")) {
         case "ganj":
-            open_treasure().catch(default_fail);
-            $("#prompt_modal").modal("hide");
+            open_treasure()
+                .then(response => {
+                    data.did_open_treasure = true;
+                    change_image(data.e.ganj.elem, "go1.png");
+                    setTimeout(function() {
+                        let keys = get_keys_string(response.treasure_rewards);
+                        my_alert(
+                            "شما " + keys + " دیافت کردید.",
+                            "باز کردن گنج"
+                        );
+                    }, 1000);
+                })
+                .catch(default_fail);
             break;
         case "bill":
             spade()
@@ -116,6 +142,7 @@ $("#prompt_modal_btn").click(function() {
                     } else {
                         my_alert("متاسفانه اینجا خالیه.", "پسته");
                     }
+                    data.did_spade = true;
                 })
                 .catch(default_fail);
             break;
@@ -126,10 +153,14 @@ $("#prompt_modal_btn").click(function() {
                 })
                 .catch(default_fail);
             break;
+        case "back_to_challenge":
+            window.location.href = "/game/challenge/";
+            break;
 
         default:
             break;
     }
+    $("#prompt_modal").modal("hide");
 });
 
 function loadImages(sources) {
@@ -224,6 +255,11 @@ function init_game() {
     data.layer.batchDraw();
 }
 
+function change_image(elem, src) {
+    elem.image(data.images[src]);
+    data.layer.batchDraw();
+}
+
 get_player_info()
     .then(response => {
         if (!response.currently_anchored) {
@@ -238,6 +274,8 @@ get_player_info()
         if (data.did_open_treasure) {
             data.e.ganj.src = "go2.png";
         }
+        data.did_accept_challenge = response.did_accept_challenge;
+        data.did_spade = response.did_spade;
         data.submit_status = response.submit_status;
     })
     .then(() => {
@@ -251,7 +289,7 @@ get_player_info()
         data.back.x = (data.width - data.back.width) / 3.5;
         data.back.y = data.height - data.back.height;
 
-        let sources = [data.back.src];
+        let sources = [data.back.src, "go1.png", "go2.png", "gc.png"];
         for (const key in data.e) {
             if (data.e.hasOwnProperty(key)) {
                 const element = data.e[key];
