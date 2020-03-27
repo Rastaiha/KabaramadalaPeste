@@ -73,12 +73,13 @@
 
     <div class="answer">
         <h3 class="text-center mb-4">ارسال پاسخ</h3>
-        <form id="form" class="row" method="post">
+        <form id="form" class="row" method="post" enctype="multipart/form-data">
             <div class="ml-auto col-5 col-sm-3 col-md-2">
                 {% if not answer_type == "NO" %}
                 <a class="submit-form my-btn w-100">ارسال</a>
                 {% endif %}
             </div>
+            <button id="sned" type="submit" style="display:none"></button>
             <div class="mr-auto col-7 col-sm-5 col-md-5">
                 {% csrf_token %}
                 {% if answer_type == "INT" %}
@@ -133,7 +134,7 @@
         e.preventDefault()
     })
     $("#prompt_modal_btn").click(function () {
-        $("#form").submit()
+        $("#send").click()
     })
 </script>
 {% endblock game_base_scripts %}
