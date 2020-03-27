@@ -1,9 +1,10 @@
 from django.shortcuts import render
-from django.http import JsonResponse
+from django.http import JsonResponse, FileResponse, Http404
 from django.contrib import messages
 from django.conf import settings
 
 from homepage.models import *
+import os
 
 
 def homepage(request):
@@ -59,3 +60,14 @@ def get_countdown_api(request):
         'day': SiteConfiguration.get_solo().countdown_date.day,
         'hour': SiteConfiguration.get_solo().countdown_date.hour
     })
+
+
+def rules_pdf(request):
+    try:
+        rules_file_path = os.path.join(
+            settings.BASE_DIR,
+            'homepage/static/misc/منشورِ قوانین کابارآمادالاپسته.pdf'
+        )
+        return FileResponse(open(rules_file_path, 'rb'), content_type='application/pdf')
+    except FileNotFoundError:
+        raise Http404()

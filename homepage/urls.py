@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.urls import path
 
-from .views import homepage, our_team, about_us, get_all_members_api, get_countdown_api
+from .views import homepage, our_team, about_us, get_all_members_api, get_countdown_api, rules_pdf
 
 urlpatterns = [
     path('', homepage, name="homepage"),
@@ -12,4 +12,5 @@ urlpatterns = [
     path('about_us/', about_us),
     path('get_all_members_api/', get_all_members_api, name="get_all_members_api"),
     path('get_countdown_api/', get_countdown_api, name="get_countdown_api"),
+    path('rules', rules_pdf, name="rules_pdf"),
 ]
