@@ -755,6 +755,7 @@ class ChallengeView(View):
         answer_type = pis.question.get_answer_type()
         form = answer_type_forms[answer_type](request.POST, request.FILES)
         if not form.is_valid():
+            logger.error(form.errors)
             return redirect('kabaramadalapeste:challenge')
 
         submit_type_classes = {
