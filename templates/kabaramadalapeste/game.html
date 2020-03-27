@@ -9,8 +9,8 @@
 
 <div class="island-info">
     <div class="island-info-header">
-        <h3 class="island-name">جزیره <span></span></h3>
-        <div class="my-row text-center" style="direction: rtl; line-height: 14px;">
+        <h3 class="island-name"><span></span></h3>
+        <div class="island-info-header-details my-row text-center" style="direction: rtl; line-height: 14px;">
             <div class="island_kind m-auto">
                 <div class="fas fa-question-circle"></div>
                 <div class="m-auto"><span></span></div>
@@ -25,24 +25,28 @@
         </div>
     </div>
     <div class="island-info-body">
-        <div class="my-row">
-            <div class="m-auto island-info-question">
-                <img src="{% static 'images/game/test.png' %}" style="height: 60px" />
-                <div><span>حل نشده</span></div>
+        <div class="island-info-details">
+            <div class="my-row">
+                <div class="m-auto island-info-question">
+                    <img src="{% static 'images/game/test.png' %}" style="height: 60px" />
+                    <div><span>حل نشده</span></div>
+                </div>
+                <div class="m-auto island-info-ganj">
+                    <img src="{% static 'images/game/ganj.png' %}" style="height: 60px" />
+                    <div><span>باز نشده</span></div>
+                    <div class="my-btn need-keys">کلید‌ها</div>
+                </div>
             </div>
-            <div class="m-auto island-info-ganj">
-                <img src="{% static 'images/game/ganj.png' %}" style="height: 60px" />
-                <div><span>باز نشده</span></div>
-                <div class="my-btn need-keys">کلید‌ها</div>
-            </div>
-        </div>
-        <div class="m-auto">
-            <div class="m-auto island-info-check-time" style="font-weight: 200; font-size: 10px">
-                <small>تصحیح در</small>
-                <small><span></span></small>
+            <div class="m-auto">
+                <div class="m-auto island-info-check-time" style="font-weight: 200; font-size: 10px">
+                    <small>تصحیح در</small>
+                    <small><span></span></small>
+                </div>
             </div>
         </div>
         <div class="mt-1 island-info-action">
+            <input id="invest_input" class="mb-2 w-100" style="display: block; direction: rtl" type="number"
+                placeholder="مبلغ سرمایه‌گذاری" requierd min="3000" max="4000" />
             <a class="my-btn mx-2"></a>
         </div>
     </div>

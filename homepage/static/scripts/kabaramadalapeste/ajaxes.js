@@ -19,7 +19,10 @@ function get_player_info() {
 }
 
 function get_island_info(island_id) {
-    return $.ajax("/game/island_info/" + island_id + "/");
+    return $.ajax("/game/island_info/" + island_id + "/").then(response => {
+        response.island_id = island_id;
+        return response;
+    });
 }
 
 function set_start_island(dest_island_id) {
@@ -119,6 +122,16 @@ function use_ability(ability_type) {
         url: "/game/use_ability/",
         data: {
             ability_type: ability_type
+        }
+    });
+}
+
+function invest(amount) {
+    return $.ajax({
+        method: "POST",
+        url: "/game/invest/",
+        data: {
+            amount: amount
         }
     });
 }

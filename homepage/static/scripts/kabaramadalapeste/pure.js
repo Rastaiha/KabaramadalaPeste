@@ -32,7 +32,14 @@ function update_sttings(response) {
 }
 
 function update_island_info(response) {
-    island_info.find(".island-name span").text(response.name);
+    console.log(response);
+    if (response.island_id === 20) {
+        island_info.addClass("bandargah");
+        island_info.find(".island-name span").text("بندرگاه");
+    } else {
+        island_info.removeClass("bandargah");
+        island_info.find(".island-name span").text("جزیره " + response.name);
+    }
     island_info.find(".island_kind span").text(response.challenge_name);
     island_info.find(".island_persons span").text(response.participants_inside);
     switch (response.submit_status) {
@@ -96,6 +103,9 @@ function update_island_info_btn(island_id) {
             action = "langar";
             if (player_info.currently_anchored) {
                 btn_text = "بازگشت به جزیره";
+            } else if (island_id === 20) {
+                action = "invest";
+                btn_text = "سرمایه‌گذاری";
             } else {
                 btn_text = "لنگر انداختن";
             }
@@ -240,8 +250,16 @@ $("#prompt_modal_btn").click(function() {
         $("#prompt_modal").modal("hide");
         hide_island_info();
         change_target(null);
+    } else if ($(this).data("kind") === "invest") {
+        $("#prompt_modal").modal("hide");
+        invest(invest_input.value)
+            .then(() => {
+                my_alert("سرمایه‌گذاریت انجام شد.", "سرمایه‌گذاری");
+            })
+            .catch(default_fail);
     }
 });
+let invest_input = document.getElementById("invest_input");
 
 $(".island-info-action a").click(function() {
     if ($(this).data("kind") === "langar") {
@@ -254,6 +272,25 @@ $(".island-info-action a").click(function() {
                 }
             })
             .catch(default_fail);
+    } else if ($(this).data("kind") === "invest") {
+        if (invest_input.checkValidity()) {
+            my_prompt(
+                "آیا می‌خوای بر روی بندرگاه " +
+                    invest_input.value +
+                    " سکه سرمایه‌گذاری کنی؟",
+                "سرمایه‌گذاری",
+                {
+                    kind: "invest"
+                }
+            );
+            $("#prompt_modal").modal("show");
+        } else {
+            invest_input.setCustomValidity(invest_input.validationMessage);
+            invest_input.reportValidity();
+            setTimeout(function() {
+                invest_input.setCustomValidity("");
+            }, 1000);
+        }
     } else {
         $("#prompt_modal").modal("show");
     }
