@@ -443,16 +443,48 @@ class Participant(models.Model):
         )
 
     def send_msg_correct_judged_answer(self, judgeablesubmit):
-        pass  # TODO must be filled with sending appropriate message
+        text = 'پاسخی که قبلا به چالش‌ جزیره‌ی %s داده بودی توسط داوران ارزیابی شد و درست بود.' % \
+               (judgeablesubmit.pis.island.name, )
+        notify.send(
+            sender=Member.objects.filter(is_superuser=True).all()[0],
+            recipient=self.member,
+            verb='correct_judged_answer',
+            description='پاسخ صحیح',
+            level='info', public=False, text=text
+        )
 
     def send_msg_wrong_judged_answer(self, judgeablesubmit):
-        pass  # TODO must be filled with sending appropriate message
+        text = 'پاسخی که قبلا به چالش‌ جزیره‌ی %s داده بودی توسط داوران ارزیابی شد و اشتباه بود.' % \
+               (judgeablesubmit.pis.island.name, )
+        notify.send(
+            sender=Member.objects.filter(is_superuser=True).all()[0],
+            recipient=self.member,
+            verb='wrong_judged_answer',
+            description='پاسخ اشتباه',
+            level='info', public=False, text=text
+        )
 
     def send_msg_correct_short_answer(self, shortanswersubmit):
-        pass  # TODO must be filled with sending appropriate message
+        text = 'پاسخی که به چالش‌ جزیره‌ی %s دادی صحیح بود.' % \
+               (shortanswersubmit.pis.island.name, )
+        notify.send(
+            sender=Member.objects.filter(is_superuser=True).all()[0],
+            recipient=self.member,
+            verb='correct_short_answer',
+            description='پاسخ صحیح',
+            level='info', public=False, text=text
+        )
 
     def send_msg_wrong_short_answer(self, shortanswersubmit):
-        pass  # TODO must be filled with sending appropriate message
+        text = 'پاسخی که به چالش‌ جزیره‌ی %s دادی اشتباه بود.' % \
+               (shortanswersubmit.pis.island.name, )
+        notify.send(
+            sender=Member.objects.filter(is_superuser=True).all()[0],
+            recipient=self.member,
+            verb='wrong_short_answer',
+            description='پاسخ اشتباه',
+            level='info', public=False, text=text
+        )
 
 
 class JudgeManager(models.Manager):
