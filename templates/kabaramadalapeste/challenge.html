@@ -4,71 +4,135 @@
 <link rel="stylesheet" href="{% static 'styles/kabaramadalapeste/exchange.css' %}" />
 {% endblock styles %}
 {% block game_base_content %}
-<div class="full-page-center-item">
-    <div class="container">
-        <style>
-            iframe {
-                border: none;
-                border-radius: 10px;
-                width: 100%;
-                height: 600px;
-                max-height: 70vh;
-            }
+<div class="container">
+    <style>
+        h1 {
+            font-weight: 900
+        }
 
-            .answer {
-                background: #d1d1d1;
-                padding: 20px;
-                border-radius: 10px;
-                margin: 0 0 10px
-            }
+        h3 {
+            font-weight: 700
+        }
 
-            .question {
-                position: relative;
-                margin: 10px 0
-            }
+        iframe {
+            border: none;
+            border-radius: 10px;
+            width: 100%;
+            height: 600px;
+            max-height: 70vh;
+        }
 
-            .download_btn {
-                position: absolute;
-                left: 0;
-                top: 0;
-                background: #17ac3a;
-                border: 1px solid green;
-                border-radius: 3px;
-                padding: 10px;
-                border-radius;
-                text-align: center;
-                color: white;
-                font-weight: 900;
-                transition: 0.3s
-            }
+        .answer {
+            background: #d1d1d1;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 0 0 10px
+        }
 
-            .download_btn:hover,
-            .download_btn:focus {
-                cursor: pointer;
-                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15), 0 1px 3px rgba(0, 0, 0, 0.25);
-            }
-        </style>
-        <div class="question">
-            <div class="download_btn">
-                دانلود سوال
-                <i class="fas fa-file-download"></i>
+        .question {
+            position: relative;
+            margin: 10px 0
+        }
+
+        .download_btn {
+            position: absolute;
+            left: 0;
+            top: 0;
+            background: #17ac3a;
+            border: 1px solid green;
+            border-radius: 3px;
+            padding: 10px;
+            border-radius;
+            text-align: center;
+            color: white;
+            font-weight: 900;
+            transition: 0.3s
+        }
+
+        .download_btn:hover,
+        .download_btn:focus {
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15), 0 1px 3px rgba(0, 0, 0, 0.25);
+            text-decoration: none;
+        }
+
+        label.error {
+            margin-top: 2px;
+            color: red
+        }
+    </style>
+    <h1 class="text-center my-4" style="color: white">{{ question_title }}</h1>
+    <div class="question">
+        <a href="{{ question_pdf_file }}" class="download_btn">
+            دانلود سوال
+            <i class="fas fa-file-download"></i>
+        </a>
+        <iframe src="https://docs.google.com/viewer?url={{ question_pdf_file }}&embedded=true" width="100%"></iframe>
+    </div>
+
+    <div class="answer">
+        <h3 class="text-center mb-4">ارسال پاسخ</h3>
+        <form id="form" class="row" method="post">
+            <div class="ml-auto col-5 col-sm-3 col-md-2">
+                {% if not answer_type == "NO" %}
+                <a class="submit-form my-btn w-100">ارسال</a>
+                {% endif %}
             </div>
-            <iframe
-                src="https://docs.google.com/viewer?url=http://dl.riazisara.ir/download/test/olampyad/soal%2Bkelidolampyad1-riazi96.pdf&embedded=true"
-                width="100%"></iframe>
-        </div>
-
-        <div class="answer">
-            <h3 class="text-center mb-4">ارسال پاسخ</h3>
-            <form class="row" method="post">
-                <div class="ml-auto col-5 col-sm-3 col-md-2">
-                    <button class="my-btn w-100">ارسال</button>
-                </div>
-                <div class="mr-auto col-7 col-sm-5 col-md-5">
-                    <input class="w-100" placeholder="پاسخ" style="direction: rtl; text-align: right">
-                </div>
-            </form>
-        </div>
+            <div class="mr-auto col-7 col-sm-5 col-md-5">
+                {% csrf_token %}
+                {% if answer_type == "INT" %}
+                <input name="answer" type="number" step="1" class="w-100" placeholder="پاسخ"
+                    style="direction: rtl; text-align: right" required>
+                {% elif answer_type == "FLT" %}
+                <input name="answer" type="number" step="0.001" class="w-100" placeholder="پاسخ"
+                    style="direction: rtl; text-align: right" required>
+                {% elif answer_type == "STR" %}
+                <input name="answer" type="text" class="w-100" placeholder="پاسخ"
+                    style="direction: rtl; text-align: right" required>
+                {% elif answer_type == "FILE" %}
+                <input id="answer" name="answer" type="file" class="w-100 file-input" placeholder="پاسخ"
+                    style="direction: rtl; text-align: right" required>
+                {% endif %}
+            </div>
+        </form>
     </div>
 </div>
 {% endblock game_base_content %}
+{% block game_base_scripts %}
+<script>
+    $('#answer').change(function () {
+        if ($(this).hasClass('file-input')) {
+            if (this.files[0].size > 5000000) {
+                this.setCustomValidity('Maximum limit is 4 MB.')
+                this.reportValidity();
+                this.value = "";
+                setTimeout(function () {
+                    this.setCustomValidity('');
+                }, 1000)
+            };
+        }
+        document.getElementById("form").checkValidity()
+    })
+    $('.submit-form').click(function (e) {
+        let input = document.getElementById("answer");
+        if (input.checkValidity()) {
+            my_prompt(
+                "آیا می‌خوای جوابتو ارسال کنی؟ توجه کن که یکبار بیشتر نمی‌تونی ارسال داشته باشی.",
+                "ارسال پاسخ", {
+                    kind: "challenge"
+                });
+            $("#prompt_modal").modal("show");
+        } else {
+            input.setCustomValidity(input.validationMessage);
+            input.reportValidity();
+            setTimeout(function () {
+                input.setCustomValidity('');
+            }, 1000)
+        }
+        e.preventDefault()
+    })
+    $("#prompt_modal_btn").click(function () {
+        $("#form").submit()
+    })
+</script>
+{% endblock game_base_scripts %}
