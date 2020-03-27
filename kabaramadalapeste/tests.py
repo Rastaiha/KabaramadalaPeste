@@ -174,8 +174,8 @@ class ViewsTest(TestCase):
                 first_end=self.island,
                 second_end=self.all_islands[i]
             )
-        [ShortAnswerQuestionFactory() for i in range(30)]
-        [JudgeableQuestionFactory() for i in range(30)]
+        [ShortAnswerQuestionFactory() for i in range(40)]
+        [JudgeableQuestionFactory() for i in range(40)]
         self.all_participants = [ParticipantFactory() for i in range(10)]
         for participant in self.all_participants:
             participant.init_pis()
