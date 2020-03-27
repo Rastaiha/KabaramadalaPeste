@@ -260,6 +260,7 @@ class ParticipantIslandStatus(models.Model):
 
     class Meta:
         unique_together = (("participant", "island"),)
+        verbose_name_plural = 'Participant island statuses'
 
     def assign_question(self, force=False):
         if self.question and not force:
@@ -286,6 +287,9 @@ class ParticipantIslandStatus(models.Model):
         except (ParticipantIslandStatus.judgeablesubmit.RelatedObjectDoesNotExist,
                 ParticipantIslandStatus.shortanswersubmit.RelatedObjectDoesNotExist, AttributeError):
             return None
+
+    def __str__(self):
+        return 'ParticipantIslandStatus for %s and %s' % (self.participant, self.island.name)
 
 
 class BaseSubmit(models.Model):

@@ -7,7 +7,7 @@ from kabaramadalapeste.models import (
     Island, Challenge, ChallengeRewardItem, ShortAnswerQuestion, JudgeableQuestion,
     TreasureRewardItem, TreasureKeyItem, Treasure, Way, JudgeableSubmit,
     BaseSubmit, TradeOffer, TradeOfferRequestedItem, TradeOfferSuggestedItem,
-    AbilityUsage, BandargahConfiguration, BandargahInvestment, Bully
+    AbilityUsage, BandargahConfiguration, BandargahInvestment, Bully, ParticipantIslandStatus
 )
 from kabaramadalapeste.conf import settings
 from django.utils import timezone
@@ -202,4 +202,5 @@ admin.site.register(Way)
 admin.site.register(AbilityUsage)
 admin.site.register(BandargahInvestment)
 admin.site.register(Bully)
+admin.site.register(ParticipantIslandStatus)
 
