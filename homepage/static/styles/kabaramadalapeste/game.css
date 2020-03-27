@@ -18,11 +18,11 @@
     display: none
 }
 
-.invest_input {
+#invest_input {
     display: none;
 }
 
-.bandargah .invest_input {
+.bandargah #invest_input {
     display: block;
     direction: rtl
 }
