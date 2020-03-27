@@ -22,10 +22,11 @@
     display: none;
 }
 
-.bandargah #invest_input {
+.in_bandargah #invest_input {
     display: block;
     direction: rtl
 }
+
 
 .island-info-details {
     display: block

@@ -33,6 +33,11 @@ function update_sttings(response) {
 
 function update_island_info(response) {
     console.log(response);
+    if (response.island_id === 20 && data.ship.island_id === 20) {
+        island_info.addClass("in_bandargah");
+    } else {
+        island_info.removeClass("in_bandargah");
+    }
     if (response.island_id === 20) {
         island_info.addClass("bandargah");
         island_info.find(".island-name span").text("بندرگاه");
