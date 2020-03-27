@@ -6,6 +6,9 @@
 {% endblock styles %}
 {% block game_base_content %}
 <div id="island-container"></div>
+<div style="position: absolute; z-index: 10; top: 0; left: 0">
+    <a href="/game/" class="my-btn my-4 mx-4">بازگشت به نقشه</a>
+</div>
 <img class="kabaramadalapeste_logo" src="{% static 'images/game/logo.png' %}" />
 {% include 'kabaramadalapeste/player_info.html' %}
 
