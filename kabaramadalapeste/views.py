@@ -657,27 +657,27 @@ def invest(request):
             return JsonResponse({
                 'status': settings.ERROR_STATUS,
                 'message': 'کشتیت روی جزیره‌ای نیست. باید اول انتخاب کنی می‌خوای از کجا شروع کنی.'
-            })
+            }, status=400)
         except BandargahInvestment.LocationIsNotBandargah:
             return JsonResponse({
                 'status': settings.ERROR_STATUS,
                 'message': 'الان روی بندرگاه نیستی. باید اول به بندرگاه بری.'
-            })
+            }, status=400)
         except BandargahInvestment.InvalidAmount:
             return JsonResponse({
                 'status': settings.ERROR_STATUS,
                 'message': 'مقدار سرمایه‌گذاری درست نیست. مقدار سرمایه‌گذاری باید در بازه‌ی معتبر باشه!'
-            })
+            }, status=400)
         except BandargahInvestment.CantInvestTwiceToday:
             return JsonResponse({
                 'status': settings.ERROR_STATUS,
                 'message': 'امروز قبلا سرمایه‌گذاری کردی! روزی فقط یه بار می‌تونی سرمایه‌گذاری کنی.'
-            })
+            }, status=400)
         except Participant.PropertiesAreNotEnough:
             return JsonResponse({
                 'status': settings.ERROR_STATUS,
                 'message': 'این مقدار سکه برای سرمایه‌گذاری نداری.'
-            })
+            }, status=400)
         except Exception as e:
             logger.error(e, exc_info=True)
             return default_error_response
