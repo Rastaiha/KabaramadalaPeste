@@ -294,6 +294,8 @@ class Participant(models.Model):
             current_pis.last_anchored_at = timezone.now()
             current_pis.save()
 
+            self.send_msg_peste_guidance()
+
             active_bullies = self.get_current_island().bullies.all().filter(is_expired=False)
             if active_bullies.count() > 0:
                 bully = active_bullies[0]
@@ -484,6 +486,15 @@ class Participant(models.Model):
             verb='wrong_short_answer',
             description='پاسخ اشتباه',
             level='info', public=False, text=text
+        )
+
+    def send_msg_peste_guidance(self):
+        notify.send(
+            sender=Member.objects.filter(is_superuser=True).all()[0],
+            recipient=self.member,
+            verb='peste_guidance',
+            description='راهنمای گنج پسته',
+            level='info', public=False, text=self.currently_at_island.peste_guidance
         )
 
 
