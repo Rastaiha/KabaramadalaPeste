@@ -784,7 +784,7 @@ class ChallengeView(View):
                 request.user.participant.send_msg_correct_short_answer(submit)
             elif submit.submit_status == BaseSubmit.SubmitStatus.Wrong:
                 request.user.participant.send_msg_wrong_short_answer(submit)
-            submit.save()
+        submit.save()
         return redirect('kabaramadalapeste:island')
 
     def post(self, request):
