@@ -593,27 +593,27 @@ def use_ability(request):
             return JsonResponse({
                 'status': settings.ERROR_STATUS,
                 'message': 'باید یک توانایی مجاز انتخاب کنی.'
-            })
+            }, status=400)
         except Participant.ParticipantIsNotOnIsland:
             return JsonResponse({
                 'status': settings.ERROR_STATUS,
                 'message': 'کشتیت روی جزیره‌ای نیست. باید اول انتخاب کنی می‌خوای از کجا شروع کنی.'
-            })
+            }, status=400)
         except Participant.PropertiesAreNotEnough:
             return JsonResponse({
                 'status': settings.ERROR_STATUS,
                 'message': 'از این توانایی چیزی برای مصرف نداری.'
-            })
+            }, status=400)
         except Bully.CantBeOnBandargah:
             return JsonResponse({
                 'status': settings.ERROR_STATUS,
                 'message': 'این توانایی رو نمی‌تونی توی بندرگاه استفاده کنی.'
-            })
+            }, status=400)
         except Participant.DidNotAnchored:
             return JsonResponse({
                 'status': settings.ERROR_STATUS,
                 'message': 'برای استفاده از این توانایی باید لنگر انداخته باشی.'
-            })
+            }, status=400)
         except Exception as e:
             logger.error(e, exc_info=True)
             return default_error_response
