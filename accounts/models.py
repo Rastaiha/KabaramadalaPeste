@@ -53,6 +53,9 @@ class Participant(models.Model):
     class DidNotAnchored(Exception):
         pass
 
+    class DidNotAcceptChallenge(Exception):
+        pass
+
     class PropertiesAreNotEnough(Exception):
         pass
 
@@ -75,6 +78,9 @@ class Participant(models.Model):
         pass
 
     class CantOpenTreasureAgain(Exception):
+        pass
+
+    class CantSubmitChallengeAgain(Exception):
         pass
 
     member = models.OneToOneField(Member, related_name='participant', on_delete=models.CASCADE)

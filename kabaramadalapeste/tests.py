@@ -10,7 +10,7 @@ from kabaramadalapeste.models import (
     ShortAnswerSubmit, ShortAnswerQuestion, TradeOffer, BaseSubmit, BandargahInvestment
 )
 from kabaramadalapeste.factory import (
-    ChallengeFactory, IslandFactory, ShortAnswerQuestionFactory, TreasureFactory
+    ChallengeFactory, IslandFactory, ShortAnswerQuestionFactory, TreasureFactory, JudgeableQuestionFactory
 )
 from kabaramadalapeste.conf import settings
 from accounts.factory import ParticipantFactory
@@ -18,6 +18,13 @@ from unittest import mock
 
 from django.utils import timezone
 from datetime import datetime, timedelta
+
+
+def Any(cls):
+    class Any(cls):
+        def __eq__(self, other):
+            return True
+    return Any()
 
 
 class ModelsTest(TestCase):
@@ -158,7 +165,7 @@ class ModelsTest(TestCase):
 
 class ViewsTest(TestCase):
     def setUp(self):
-        [ChallengeFactory() for i in range(10)]
+        [ChallengeFactory(is_judgeable=(i > 5)) for i in range(10)]
         self.all_islands = [IslandFactory(__sequence=i) for i in range(settings.GAME_DEFAULT_ISLAND_COUNT)]
         [TreasureFactory(keys=2, rewards=3) for i in range(settings.GAME_DEFAULT_ISLAND_COUNT - 1)]
         self.island = self.all_islands[0]
@@ -167,7 +174,8 @@ class ViewsTest(TestCase):
                 first_end=self.island,
                 second_end=self.all_islands[i]
             )
-        [ShortAnswerQuestionFactory() for i in range(60)]
+        [ShortAnswerQuestionFactory() for i in range(30)]
+        [JudgeableQuestionFactory() for i in range(30)]
         self.all_participants = [ParticipantFactory() for i in range(10)]
         for participant in self.all_participants:
             participant.init_pis()
@@ -909,4 +917,114 @@ class ViewsTest(TestCase):
     def test_island_page_not_on_island(self):
         self.client.force_login(self.participant.member)
         response = self.client.get(reverse('kabaramadalapeste:island'))
+        self.assertEqual(response.status_code, 302)
+
+    @mock.patch('kabaramadalapeste.views.render')
+    def test_challenge_page_ok_short_answer(self, render_mock):
+        render_mock.return_value = HttpResponse('OK')
+        self.participant.set_start_island(self.island)
+        self.participant.put_anchor_on_current_island()
+        self.participant.accept_challenge_on_current_island()
+
+        self.client.force_login(self.participant.member)
+        response = self.client.get(reverse('kabaramadalapeste:challenge'))
+        pis = ParticipantIslandStatus.objects.get(
+            participant=self.participant,
+            island=self.island
+        )
+
+        render_mock.assert_called_once_with(Any(object), Any(str), {
+            'without_nav': True,
+            'without_footer': True,
+            'question_title': pis.question.title,
+            'question_pdf_file': pis.question.question,
+            'answer_type': pis.question.answer_type
+        })
+        self.assertEqual(response.status_code, 200)
+
+    @mock.patch('kabaramadalapeste.views.render')
+    def test_challenge_page_ok_judgeable(self, render_mock):
+        render_mock.return_value = HttpResponse('OK')
+        island = Island.objects.filter(challenge__is_judgeable=True).first()
+        self.participant.set_start_island(island)
+        self.participant.put_anchor_on_current_island()
+        self.participant.accept_challenge_on_current_island()
+        pis = ParticipantIslandStatus.objects.get(
+            participant=self.participant,
+            island=island
+        )
+        self.client.force_login(self.participant.member)
+        response = self.client.get(reverse('kabaramadalapeste:challenge'))
+
+        render_mock.assert_called_once_with(Any(object), Any(str), {
+            'without_nav': True,
+            'without_footer': True,
+            'question_title': pis.question.title,
+            'question_pdf_file': pis.question.question,
+            'answer_type': 'FILE'
+        })
+        self.assertEqual(response.status_code, 200)
+
+    @mock.patch('kabaramadalapeste.views.render')
+    def test_challenge_page_ok_judgeable_no_upload(self, render_mock):
+        render_mock.return_value = HttpResponse('OK')
+        island = Island.objects.filter(challenge__is_judgeable=True).first()
+        self.participant.set_start_island(island)
+        self.participant.put_anchor_on_current_island()
+        self.participant.accept_challenge_on_current_island()
+        pis = ParticipantIslandStatus.objects.get(
+            participant=self.participant,
+            island=island
+        )
+        pis.question.upload_required = False
+        pis.question.save()
+        self.client.force_login(self.participant.member)
+        response = self.client.get(reverse('kabaramadalapeste:challenge'))
+
+        render_mock.assert_called_once_with(Any(object), Any(str), {
+            'without_nav': True,
+            'without_footer': True,
+            'question_title': pis.question.title,
+            'question_pdf_file': pis.question.question,
+            'answer_type': 'NO'
+        })
+        self.assertEqual(response.status_code, 200)
+
+    def test_challenge_page_not_on_island(self):
+        self.client.force_login(self.participant.member)
+        response = self.client.get(reverse('kabaramadalapeste:challenge'))
+        self.assertEqual(response.status_code, 302)
+
+    def test_challenge_page_did_not_anchor(self):
+        self.participant.set_start_island(self.island)
+
+        self.client.force_login(self.participant.member)
+        response = self.client.get(reverse('kabaramadalapeste:challenge'))
+        self.assertEqual(response.status_code, 302)
+
+    def test_challenge_page_not_accepted_challenge(self):
+        self.participant.set_start_island(self.island)
+        self.participant.put_anchor_on_current_island()
+
+        self.client.force_login(self.participant.member)
+        response = self.client.get(reverse('kabaramadalapeste:challenge'))
+        self.assertEqual(response.status_code, 302)
+
+    @mock.patch('kabaramadalapeste.views.render')
+    def test_challenge_page_cant_view_again(self, render_mock):
+        render_mock.return_value = HttpResponse('OK')
+        island = Island.objects.filter(challenge__is_judgeable=False).first()
+        self.participant.set_start_island(island)
+        self.participant.put_anchor_on_current_island()
+        self.participant.accept_challenge_on_current_island()
+        pis = ParticipantIslandStatus.objects.get(
+            participant=self.participant,
+            island=island
+        )
+        ShortAnswerSubmit.objects.create(
+            pis=pis,
+        )
+        self.client.force_login(self.participant.member)
+        response = self.client.get(reverse('kabaramadalapeste:challenge'))
+
         self.assertEqual(response.status_code, 302)

@@ -128,6 +128,9 @@ class BaseQuestion(models.Model):
             self.title, self.challenge.name
         )
 
+    def get_answer_type(self):
+        raise NotImplementedError
+
 
 class ShortAnswerQuestion(BaseQuestion):
     INTEGER = 'INT'
@@ -152,6 +155,9 @@ class ShortAnswerQuestion(BaseQuestion):
         object_id_field='question_object_id',
     )
 
+    def get_answer_type(self):
+        return self.answer_type
+
 
 class JudgeableQuestion(BaseQuestion):
     upload_required = models.BooleanField(default=True)
@@ -162,6 +168,10 @@ class JudgeableQuestion(BaseQuestion):
         content_type_field='question_content_type',
         object_id_field='question_object_id',
     )
+
+    def get_answer_type(self):
+        return 'FILE' if self.upload_required else 'NO'
+
 
 
 class Treasure(models.Model):

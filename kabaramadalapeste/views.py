@@ -11,7 +11,8 @@ from accounts.models import Participant
 
 from kabaramadalapeste.models import (
     Island, ParticipantIslandStatus, TradeOffer, TradeOfferRequestedItem, PesteConfiguration,
-    TradeOfferSuggestedItem, AbilityUsage, BandargahInvestment, BandargahConfiguration, Bully
+    TradeOfferSuggestedItem, AbilityUsage, BandargahInvestment, BandargahConfiguration, Bully,
+    JudgeableQuestion, ShortAnswerQuestion
 )
 from kabaramadalapeste.conf import settings
 
@@ -701,10 +702,32 @@ def island(request):
         return redirect('kabaramadalapeste:game')
 
 
-@game_running_required
-@login_activated_participant_required
-def challenge(request):
-    return render(request, 'kabaramadalapeste/challenge.html', {
-        'without_nav': True,
-        'without_footer': True,
-    })
+@method_decorator(game_running_required, name='dispatch')
+@method_decorator(login_activated_participant_required, name='dispatch')
+class ChallengeView(View):
+    def get(self, request):
+        try:
+            pis = ParticipantIslandStatus.objects.get(
+                participant=request.user.participant,
+                island=request.user.participant.get_current_island()
+            )
+            if not pis.currently_anchored:
+                raise Participant.DidNotAnchored
+            if not pis.did_accept_challenge:
+                raise Participant.DidNotAcceptChallenge
+            if pis.submit:
+                raise Participant.CantSubmitChallengeAgain
+
+            return render(request, 'kabaramadalapeste/challenge.html', {
+                'without_nav': True,
+                'without_footer': True,
+                'question_title': pis.question.title,
+                'question_pdf_file': pis.question.question,
+                'answer_type': pis.question.get_answer_type()
+            })
+        except (Participant.ParticipantIsNotOnIsland, Participant.DidNotAnchored,
+                Participant.DidNotAcceptChallenge, Participant.CantSubmitChallengeAgain):
+            return redirect('kabaramadalapeste:game')
+        except Exception as e:
+            logger.error(e, exc_info=True)
+            return redirect('kabaramadalapeste:game')
