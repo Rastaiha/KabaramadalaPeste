@@ -89,19 +89,19 @@ function is_neighbor(island_id) {
 }
 
 function update_island_info_btn(island_id) {
-    return is_currently_anchored().then(currently_anchored => {
+    return get_player_info().then(player_info => {
         let action = "";
         let btn_text = "";
         if (is_current_island(island_id)) {
             action = "langar";
-            if (currently_anchored) {
+            if (player_info.currently_anchored) {
                 btn_text = "بازگشت به جزیره";
             } else {
                 btn_text = "لنگر انداختن";
             }
-        } else if (is_neighbor(island_id)) {
+        } else if (player_info.has_free_travel || is_neighbor(island_id)) {
             action = "travel";
-            if (currently_anchored) {
+            if (player_info.currently_anchored) {
                 btn_text = "سفر و برداشتن لنگر";
             } else {
                 btn_text = "سفر";
@@ -119,7 +119,7 @@ function update_island_info_btn(island_id) {
         }
         return {
             action: action,
-            currently_anchored: currently_anchored,
+            player_info: player_info,
             island_id: island_id
         };
     });
@@ -128,14 +128,17 @@ function update_island_info_btn(island_id) {
 function update_modal(response) {
     let title = "";
     let question = "";
-    if (response.action === "langar" && !response.currently_anchored) {
+    if (
+        response.action === "langar" &&
+        !response.player_info.currently_anchored
+    ) {
         title = "لنگر انداختن";
         question =
             "هزینه لنگر انداختن " +
             data.put_anchor_price +
             " سکه است. آیا مایل به آن هستید؟";
     } else if (response.action === "travel") {
-        if (response.currently_anchored) {
+        if (response.player_info.currently_anchored) {
             title = "سفر و برداشتن لنگر";
             question =
                 "هزینه سفر " +
@@ -144,12 +147,23 @@ function update_modal(response) {
                 "</br><small style='color:#222; font-weight: 300'>" +
                 "دقت کنید لنگر شما از جزیره‌ای که در آن هستید برداشته خواهد شد." +
                 "</small>";
+
+            if (response.player_info.has_free_travel) {
+                question =
+                    "هزینه سفر رایگان است. آیا مایل به آن هستید؟" +
+                    "</br><small style='color:#222; font-weight: 300'>" +
+                    "دقت کنید لنگر شما از جزیره‌ای که در آن هستید برداشته خواهد شد." +
+                    "</small>";
+            }
         } else {
             title = "سفر";
             question =
                 "هزینه سفر " +
                 data.move_price +
                 " سکه است. آیا مایل به آن هستید؟";
+            if (response.player_info.has_free_travel) {
+                question = "هزینه سفر رایگان است. آیا مایل به آن هستید؟";
+            }
         }
     }
     my_prompt(question, title, {
