@@ -367,7 +367,7 @@ class BaseSubmit(models.Model):
     @transaction.atomic
     def give_rewards_to_participant(self):
         for reward in self.pis.question.challenge.rewards.all():
-            self.pis.participant.add_property(reward.key, reward.amount)
+            self.pis.participant.add_property(reward.reward_type, reward.amount)
 
 
 class ShortAnswerSubmit(BaseSubmit):
