@@ -31,7 +31,7 @@ logger = logging.getLogger(__file__)
 
 def check_user_is_activated_participant(user):
     try:
-        return user.is_participant and user.participant.is_activated and user.participant.document_status == 'Verified',
+        return user.is_participant and user.participant.is_activated and user.participant.document_status == 'Verified'
     except Exception:
         return False
 
