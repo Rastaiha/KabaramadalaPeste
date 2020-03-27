@@ -11,7 +11,6 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
-import django_heroku
 
 
 def get_environment_var(var_name, default, prefixed=True):
@@ -131,7 +130,6 @@ EMAIL_USE_SSL = False
 DEFAULT_FROM_EMAIL = "Rastaiha <" + EMAIL_HOST_USER + ">"
 
 # Activate Django-Heroku.
-django_heroku.settings(locals(), test_runner=False)
 
 OK_STATUS = 'ok'
 ERROR_STATUS = 'err'

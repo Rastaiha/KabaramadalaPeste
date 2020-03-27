@@ -33,9 +33,9 @@ urlpatterns = [
     path('delete_offer/<int:pk>/', delete_offer, name="delete_offer"),
     path('accept_offer/<int:pk>/', accept_offer, name="accept_offer"),
 
-    path('use_ability', use_ability, name="use_ability"),
+    path('use_ability/', use_ability, name="use_ability"),
 
-    path('invest', invest, name="invest_bandargah"),
+    path('invest/', invest, name="invest_bandargah"),
 
     path('', game, name="game"),
     path('low/', game2, name="game2"),

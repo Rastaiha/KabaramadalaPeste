@@ -136,7 +136,9 @@
         $("#send").click()
     })
     $("#prompt_modal_btn").click(function () {
-        $("#send").click()
+        if ($(this).data('kind') === "challenge") {
+            $("#send").click()
+        }
     })
 </script>
 {% endblock game_base_scripts %}

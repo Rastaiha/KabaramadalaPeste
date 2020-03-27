@@ -185,6 +185,9 @@ class ViewsTest(TestCase):
         config = SiteConfiguration.get_solo()
         config.is_game_running = True
         config.save()
+        peste_config = PesteConfiguration.get_solo()
+        peste_config.is_peste_available = True
+        peste_config.save()
 
     def test_settings_not_login(self):
         response = self.client.get(reverse('kabaramadalapeste:settings'))

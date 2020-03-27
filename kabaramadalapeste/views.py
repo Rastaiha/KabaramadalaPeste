@@ -12,7 +12,7 @@ from accounts.models import Participant
 from kabaramadalapeste.models import (
     Island, ParticipantIslandStatus, TradeOffer, TradeOfferRequestedItem, PesteConfiguration,
     TradeOfferSuggestedItem, AbilityUsage, BandargahInvestment, BandargahConfiguration, Bully,
-    ShortAnswerQuestion, JudgeableSubmit, ShortAnswerSubmit, BaseSubmit
+    ShortAnswerQuestion, JudgeableSubmit, ShortAnswerSubmit, BaseSubmit, Peste
 )
 from kabaramadalapeste.conf import settings
 from kabaramadalapeste.forms import (
@@ -117,6 +117,7 @@ class IslandInfoView(View):
                 'participants_inside': ParticipantIslandStatus.objects.filter(
                     island=island, currently_anchored=True
                 ).count(),
+                'is_spade_available': PesteConfiguration.get_solo().is_peste_available,
                 'judge_estimated_minutes': estimated_judge_time,
                 'submit_status': submit_status,
             })
@@ -290,6 +291,11 @@ class SpadeView(View):
                 'status': settings.OK_STATUS,
                 'found': found
             })
+        except Peste.PesteNotAvailable:
+            return JsonResponse({
+                'status': settings.ERROR_STATUS,
+                'message': 'قابلیت کندوکاو در روز اول فعال نیست.'
+            }, status=400)
         except Participant.ParticipantIsNotOnIsland:
             return JsonResponse({
                 'status': settings.ERROR_STATUS,
@@ -587,27 +593,27 @@ def use_ability(request):
             return JsonResponse({
                 'status': settings.ERROR_STATUS,
                 'message': 'باید یک توانایی مجاز انتخاب کنی.'
-            })
+            }, status=400)
         except Participant.ParticipantIsNotOnIsland:
             return JsonResponse({
                 'status': settings.ERROR_STATUS,
                 'message': 'کشتیت روی جزیره‌ای نیست. باید اول انتخاب کنی می‌خوای از کجا شروع کنی.'
-            })
+            }, status=400)
         except Participant.PropertiesAreNotEnough:
             return JsonResponse({
                 'status': settings.ERROR_STATUS,
                 'message': 'از این توانایی چیزی برای مصرف نداری.'
-            })
+            }, status=400)
         except Bully.CantBeOnBandargah:
             return JsonResponse({
                 'status': settings.ERROR_STATUS,
                 'message': 'این توانایی رو نمی‌تونی توی بندرگاه استفاده کنی.'
-            })
+            }, status=400)
         except Participant.DidNotAnchored:
             return JsonResponse({
                 'status': settings.ERROR_STATUS,
                 'message': 'برای استفاده از این توانایی باید لنگر انداخته باشی.'
-            })
+            }, status=400)
         except Exception as e:
             logger.error(e, exc_info=True)
             return default_error_response
@@ -651,27 +657,27 @@ def invest(request):
             return JsonResponse({
                 'status': settings.ERROR_STATUS,
                 'message': 'کشتیت روی جزیره‌ای نیست. باید اول انتخاب کنی می‌خوای از کجا شروع کنی.'
-            })
+            }, status=400)
         except BandargahInvestment.LocationIsNotBandargah:
             return JsonResponse({
                 'status': settings.ERROR_STATUS,
                 'message': 'الان روی بندرگاه نیستی. باید اول به بندرگاه بری.'
-            })
+            }, status=400)
         except BandargahInvestment.InvalidAmount:
             return JsonResponse({
                 'status': settings.ERROR_STATUS,
                 'message': 'مقدار سرمایه‌گذاری درست نیست. مقدار سرمایه‌گذاری باید در بازه‌ی معتبر باشه!'
-            })
+            }, status=400)
         except BandargahInvestment.CantInvestTwiceToday:
             return JsonResponse({
                 'status': settings.ERROR_STATUS,
                 'message': 'امروز قبلا سرمایه‌گذاری کردی! روزی فقط یه بار می‌تونی سرمایه‌گذاری کنی.'
-            })
+            }, status=400)
         except Participant.PropertiesAreNotEnough:
             return JsonResponse({
                 'status': settings.ERROR_STATUS,
                 'message': 'این مقدار سکه برای سرمایه‌گذاری نداری.'
-            })
+            }, status=400)
         except Exception as e:
             logger.error(e, exc_info=True)
             return default_error_response

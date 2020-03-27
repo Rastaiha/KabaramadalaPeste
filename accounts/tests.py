@@ -33,6 +33,9 @@ class ParticipantTest(TestCase):
                 first_end=self.island,
                 second_end=self.all_islands[i]
             )
+        peste_config = PesteConfiguration.get_solo()
+        peste_config.is_peste_available = True
+        peste_config.save()
 
     def test_init_pis(self):
         self.participant.init_pis()

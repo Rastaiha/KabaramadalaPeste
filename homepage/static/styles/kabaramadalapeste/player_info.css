@@ -20,6 +20,11 @@
     z-index: 4;
 }
 
+.use-ability-info {
+    top: 340px;
+    z-index: 5;
+}
+
 .right-info.show-details {
     right: 70px;
 }
@@ -115,7 +120,7 @@
 
 .kabaramadalapeste_logo {
     position: absolute;
-    right: 50px;
+    right: 80px;
     top: 5px;
     width: 100px;
     filter: drop-shadow(0.1rem 0.1rem 0.1rem black);
@@ -238,4 +243,26 @@
         transform: translate3d(0, 0, 0);
         opacity: 1;
     }
+}
+
+.abilities-btns {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.abilities-btns a {
+    margin: auto;
+    background-color: var(--blue-3);
+    padding: 5px;
+    border-radius: 5px;
+}
+
+.abilities-btns a:hover,
+.abilities-btns a:focus {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15), 0 1px 3px rgba(0, 0, 0, 0.25);
+}
+
+.abilities-btns a img {
+    width: 25px;
 }
