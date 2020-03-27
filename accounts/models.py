@@ -369,14 +369,17 @@ class Participant(models.Model):
             current_pis.save()
             try:
                 if self.currently_at_island.peste.is_found:
+                    self.send_msg_spade_result(False)
                     return False
                 self.add_property(settings.GAME_SEKKE, game_models.PesteConfiguration.get_solo().peste_reward)
                 self.currently_at_island.peste.is_found = True
                 self.currently_at_island.peste.found_by = self
                 self.currently_at_island.peste.found_at = timezone.now()
                 self.save()
+                self.send_msg_spade_result(True)
                 return True
             except game_models.Island.peste.RelatedObjectDoesNotExist:
+                self.send_msg_spade_result(False)
                 return False
 
     def send_msg_bully_expired(self, bully):
@@ -495,6 +498,19 @@ class Participant(models.Model):
             verb='peste_guidance',
             description='راهنمای گنج پسته',
             level='info', public=False, text=self.currently_at_island.peste_guidance
+        )
+
+    def send_msg_spade_result(self, was_successful):
+        if was_successful:
+            text = 'تبریک می‌گم! کنلگ‌زنی موفق بود و یه پسته پیدا کردی!'
+        else:
+            text = 'متاسفم. کلنگ‌زنی ناموفق بود و پسته‌ای توی این جزیره پیدا نشد.'
+        notify.send(
+            sender=Member.objects.filter(is_superuser=True).all()[0],
+            recipient=self.member,
+            verb='sapde_result',
+            description='نتیجه‌ی کلنگ‌زنی',
+            level='info', public=True, text=text
         )
 
 
