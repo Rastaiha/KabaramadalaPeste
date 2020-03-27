@@ -65,7 +65,7 @@ class Command(BaseCommand):
                                 lambda row: Challenge.objects.create(
                                     challenge_id=row[0],
                                     name=row[1],
-                                    is_judgeable=bool(row[2])
+                                    is_judgeable=int(row[2])
                                 ))
             self.import_objects(self.islands_file, Island,
                                 import_island_row)
