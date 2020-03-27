@@ -38,6 +38,17 @@ class GameConf(AppConf):
 
     PARTICIPANT_PROPERTY_TYPE_CHOICES = TREASURE_REWARD_TYPE_CHOICES
 
+    TRANSLATION_DICT = {
+        SEKKE: 'سکه',
+        KEY1: 'کلید نوع ۱',
+        KEY2: 'کلید نوع ۲',
+        KEY3: 'کلید نوع ۳',
+        VISION: 'توانایی ویژن',
+        TRAVEL_EXPRESS: 'توانایی سفر اکسپرس',
+        CHALLENGE_PLUS: 'توانایی چالش اضافه',
+        BULLY: 'توانایی زورگیری'
+    }
+
     PARTICIPANT_INITIAL_PROPERTIES = {
         SEKKE: 1500
     }

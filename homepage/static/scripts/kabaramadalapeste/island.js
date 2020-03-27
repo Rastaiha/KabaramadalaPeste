@@ -56,7 +56,8 @@ function set_click_listener(key, elem) {
             elem.on("click tap", function() {
                 if (!data.did_open_treasure) {
                     let title = "باز کردن گنج";
-                    let keys = get_keys_string(data.treasure_keys);
+                    // let keys = get_keys_string(data.treasure_keys);
+                    let keys = data.treasure_keys_persian;
                     let question =
                         "برای باز کردن این گنج باید " +
                         keys +
@@ -131,7 +132,8 @@ $("#prompt_modal_btn").click(function() {
                     data.did_open_treasure = true;
                     change_image(data.e.ganj.elem, "go1.png");
                     setTimeout(function() {
-                        let keys = get_keys_string(response.treasure_rewards);
+                        // let keys = get_keys_string(response.treasure_rewards);
+                        let keys = response.treasure_rewards_persian;
                         my_alert(
                             "شما " + keys + " دیافت کردید.",
                             "باز کردن گنج"
@@ -276,6 +278,7 @@ get_player_info()
     .then(() => get_island_info(data.island_id))
     .then(response => {
         data.treasure_keys = response.treasure_keys;
+        data.treasure_keys_persian = response.treasure_keys_persian;
         data.did_open_treasure = response.did_open_treasure;
         if (data.did_open_treasure) {
             data.e.ganj.src = "go2.png";
