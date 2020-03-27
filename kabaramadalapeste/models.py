@@ -49,7 +49,7 @@ class Island(models.Model):
 
 class PesteConfiguration(SingletonModel):
     island_spade_cost = models.IntegerField(default=12000)
-    peste_reward = models.IntegerField(default=30000)
+    peste_reward = models.IntegerField(default=24000)
 
 
 class Peste(models.Model):
