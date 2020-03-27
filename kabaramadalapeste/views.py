@@ -101,7 +101,7 @@ class IslandInfoView(View):
                 s = 0
                 t = 0
                 for submit in submits:
-                    s += (submit.judged_at - submit.submitted_at).minutes
+                    s += (submit.judged_at - submit.submitted_at).seconds//60
                     t += 1
                 estimated_judge_time = 5 + s//t
             return JsonResponse({
