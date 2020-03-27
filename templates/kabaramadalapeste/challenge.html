@@ -82,13 +82,13 @@
             <div class="mr-auto col-7 col-sm-5 col-md-5">
                 {% csrf_token %}
                 {% if answer_type == "INT" %}
-                <input name="answer" type="number" step="1" class="w-100" placeholder="پاسخ"
+                <input id="answer" name="answer" type="number" step="1" class="w-100" placeholder="پاسخ"
                     style="direction: rtl; text-align: right" required>
                 {% elif answer_type == "FLT" %}
-                <input name="answer" type="number" step="0.001" class="w-100" placeholder="پاسخ"
+                <input id="answer" name="answer" type="number" step="0.001" class="w-100" placeholder="پاسخ"
                     style="direction: rtl; text-align: right" required>
                 {% elif answer_type == "STR" %}
-                <input name="answer" type="text" class="w-100" placeholder="پاسخ"
+                <input id="answer" name="answer" type="text" class="w-100" placeholder="پاسخ"
                     style="direction: rtl; text-align: right" required>
                 {% elif answer_type == "FILE" %}
                 <input id="answer" name="answer" type="file" class="w-100 file-input" placeholder="پاسخ"
