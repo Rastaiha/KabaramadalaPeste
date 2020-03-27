@@ -392,10 +392,16 @@ class Participant(models.Model):
     def send_msg_bandargah_computed(self, investment, was_successful):
         pass  # TODO must be filled with sending appropriate message
 
-    def send_msg_correct_answer(self, submit):
+    def send_msg_correct_judged_answer(self, judgeablesubmit):
         pass  # TODO must be filled with sending appropriate message
 
-    def send_msg_wrong_answer(self, submit):
+    def send_msg_wrong_judged_answer(self, judgeablesubmit):
+        pass  # TODO must be filled with sending appropriate message
+
+    def send_msg_correct_short_answer(self, shortanswersubmit):
+        pass  # TODO must be filled with sending appropriate message
+
+    def send_msg_wrong_short_answer(self, shortanswersubmit):
         pass  # TODO must be filled with sending appropriate message
 
 

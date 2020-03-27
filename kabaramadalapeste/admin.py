@@ -135,8 +135,13 @@ class JudgeableSubmitAdmin(admin.ModelAdmin):
             if (obj.initial_submit_status == BaseSubmit.SubmitStatus.Pending and
                     obj.submit_status == BaseSubmit.SubmitStatus.Correct):
                 obj.give_rewards_to_participant()
-            obj.judged_at = timezone.now()
-            obj.judged_by = request.user
+                obj.pis.participant.send_msg_correct_judged_answer(obj)
+            elif (obj.initial_submit_status == BaseSubmit.SubmitStatus.Pending and
+                    obj.submit_status == BaseSubmit.SubmitStatus.Wrong):
+                obj.pis.participant.send_msg_wrong_judged_answer(obj)
+            if obj.submit_status != BaseSubmit.SubmitStatus.Pending:
+                obj.judged_at = timezone.now()
+                obj.judged_by = request.user
             obj.save()
 
     get_username.short_description = 'Username'

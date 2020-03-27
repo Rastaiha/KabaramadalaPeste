@@ -775,9 +775,9 @@ class ChallengeView(View):
             submit.check_answer()
             if submit.submit_status == BaseSubmit.SubmitStatus.Correct:
                 submit.give_rewards_to_participant()
-                request.user.participant.send_msg_correct_answer(submit)
+                request.user.participant.send_msg_correct_short_answer(submit)
             elif submit.submit_status == BaseSubmit.SubmitStatus.Wrong:
-                request.user.participant.send_msg_wrong_answer(submit)
+                request.user.participant.send_msg_wrong_short_answer(submit)
             submit.save()
         return redirect('kabaramadalapeste:challenge')
 
