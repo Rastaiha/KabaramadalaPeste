@@ -208,7 +208,52 @@ class ViewsTest(TestCase):
         self.assertIsNotNone(response.json()['name'])
         self.assertIsNotNone(response.json()['challenge_name'])
         self.assertEqual(response.json()['participants_inside'], 4)
+        self.assertFalse(response.json()['did_open_treasure'])
+        self.assertFalse(response.json()['did_accept_challenge'])
+        self.assertFalse(response.json()['did_spade'])
         self.assertEqual(response.json()['treasure_keys'], 'unknown')
+        self.assertEqual(response.json()['submit_status'], 'No')
+
+    def test_island_info_challenge_accepted(self):
+        self.participant.set_start_island(self.island)
+        self.participant.put_anchor_on_current_island()
+        self.participant.accept_challenge_on_current_island()
+
+        self.client.force_login(self.participant.member)
+        response = self.client.get(reverse('kabaramadalapeste:island_info', kwargs={
+            'island_id': self.island.island_id
+        }))
+        self.assertIsNotNone(response.json()['name'])
+        self.assertIsNotNone(response.json()['challenge_name'])
+        self.assertEqual(response.json()['participants_inside'], 1)
+        self.assertFalse(response.json()['did_open_treasure'])
+        self.assertTrue(response.json()['did_accept_challenge'])
+        self.assertTrue(response.json()['currently_anchored'])
+        self.assertFalse(response.json()['did_spade'])
+        self.assertEqual(response.json()['submit_status'], 'No')
+
+    def test_island_info_spade(self):
+        self.participant.set_start_island(self.island)
+        self.participant.put_anchor_on_current_island()
+
+        self.participant.add_property(
+            settings.GAME_SEKKE,
+            (PesteConfiguration.get_solo().island_spade_cost - self.participant.sekke.amount)
+        )
+
+        self.participant.spade_on_current_island()
+
+        self.client.force_login(self.participant.member)
+        response = self.client.get(reverse('kabaramadalapeste:island_info', kwargs={
+            'island_id': self.island.island_id
+        }))
+        self.assertIsNotNone(response.json()['name'])
+        self.assertIsNotNone(response.json()['challenge_name'])
+        self.assertEqual(response.json()['participants_inside'], 1)
+        self.assertFalse(response.json()['did_open_treasure'])
+        self.assertFalse(response.json()['did_accept_challenge'])
+        self.assertTrue(response.json()['currently_anchored'])
+        self.assertTrue(response.json()['did_spade'])
         self.assertEqual(response.json()['submit_status'], 'No')
 
     def test_island_info_with_submit(self):
@@ -263,6 +308,35 @@ class ViewsTest(TestCase):
             response.json()['treasure_keys'],
             'unknown'
         )
+
+    def test_island_info_treasure_opened(self):
+        self.participant.set_start_island(self.island)
+        self.participant.put_anchor_on_current_island()
+
+        pis = ParticipantIslandStatus.objects.get(
+            participant=self.participant,
+            island=self.island
+        )
+        for key in pis.treasure.keys.all():
+            if self.participant.get_property(key.key_type).amount < key.amount:
+                self.participant.add_property(
+                    key.key_type,
+                    key.amount - self.participant.get_property(key.key_type).amount
+                )
+        self.participant.open_treasure_on_current_island()
+
+        self.client.force_login(self.participant.member)
+        response = self.client.get(reverse('kabaramadalapeste:island_info', kwargs={
+            'island_id': self.island.island_id
+        }))
+        self.assertIsNotNone(response.json()['name'])
+        self.assertIsNotNone(response.json()['challenge_name'])
+        self.assertEqual(response.json()['participants_inside'], 1)
+        self.assertTrue(response.json()['did_open_treasure'])
+        self.assertFalse(response.json()['did_accept_challenge'])
+        self.assertTrue(response.json()['currently_anchored'])
+        self.assertFalse(response.json()['did_spade'])
+        self.assertEqual(response.json()['submit_status'], 'No')
 
     def test_participant_info_not_login(self):
         response = self.client.get(reverse('kabaramadalapeste:participant_info'))

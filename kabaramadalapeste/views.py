@@ -92,6 +92,9 @@ class IslandInfoView(View):
                 'challenge_is_judgeable': island.challenge.is_judgeable if island.challenge else '',
                 'treasure_keys': treasure_keys,
                 'did_open_treasure': pis.did_open_treasure,
+                'did_accept_challenge': pis.did_accept_challenge,
+                'currently_anchored': pis.currently_anchored,
+                'did_spade': pis.did_spade,
                 'participants_inside': ParticipantIslandStatus.objects.filter(
                     island=island, currently_anchored=True
                 ).count(),
