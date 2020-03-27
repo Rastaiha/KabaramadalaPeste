@@ -14,6 +14,7 @@ from solo.models import SingletonModel
 from django.template.defaultfilters import slugify
 from enum import Enum
 import string
+import os
 
 logger = logging.getLogger(__file__)
 
@@ -138,12 +139,29 @@ class BaseQuestion(models.Model):
         raise NotImplementedError
 
     def save(self, *args, **kwargs):
+        # LONG TODO: fix here so not change every time
+        # Call standard save
+        super(BaseQuestion, self).save(*args, **kwargs)
+
+        initial_path = self.question.path
+
+        # New path in the form eg '/images/uploadmodel/1/image.jpg'
         dt = timezone.now()
         r = ''.join(random.choices(string.ascii_letters + string.digits, k=12))
-        self.question = '%s-%s-%s-%s' % (
-            dt.isoformat(),
-            slugify(self.title), r, self.question
-        )
+        new_n = '-'.join([r, dt.strftime('%H-%M-%S-%f'), os.path.basename(initial_path)])
+        new_name = 'soals/' + new_n
+        new_path = os.path.join(settings.MEDIA_ROOT, 'soals', new_n)
+
+        # Create dir if necessary and move file
+        if not os.path.exists(os.path.dirname(new_path)):
+            os.makedirs(os.path.dirname(new_path))
+
+        os.rename(initial_path, new_path)
+
+        # Update the image_file field
+        self.question.name = new_name
+
+        # Save changes
         super(BaseQuestion, self).save(*args, **kwargs)
 
 
@@ -402,11 +420,29 @@ class JudgeableSubmit(BaseSubmit):
                                   blank=True)
 
     def save(self, *args, **kwargs):
+        # LONG TODO: fix here so not change every time
+        # Call standard save
+        super(JudgeableSubmit, self).save(*args, **kwargs)
+
+        initial_path = self.submitted_answer.path
+
+        # New path in the form eg '/images/uploadmodel/1/image.jpg'
         dt = timezone.now()
         r = ''.join(random.choices(string.ascii_letters + string.digits, k=12))
-        self.submitted_answer = '%s-%s-%s' % (
-            dt.isoformat(), r, self.submitted_answer
-        )
+        new_n = '-'.join([r, dt.strftime('%H-%M-%S-%f'), os.path.basename(initial_path)])
+        new_name = 'answers/' + new_n
+        new_path = os.path.join(settings.MEDIA_ROOT, 'answers', new_n)
+
+        # Create dir if necessary and move file
+        if not os.path.exists(os.path.dirname(new_path)):
+            os.makedirs(os.path.dirname(new_path))
+
+        os.rename(initial_path, new_path)
+
+        # Update the image_file field
+        self.submitted_answer.name = new_name
+
+        # Save changes
         super(JudgeableSubmit, self).save(*args, **kwargs)
 
 
