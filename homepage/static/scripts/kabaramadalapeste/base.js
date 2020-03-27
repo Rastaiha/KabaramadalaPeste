@@ -36,17 +36,22 @@ function my_prompt(question, title, dataset = {}, modal_id = "#prompt_modal") {
     $(modal_id + " .modal-question").html(question);
 }
 
+let recevied_slugs = [];
+
 function check_notification() {
     notifications_unread_list()
         .then(response => {
             response.unread_list.forEach(notif => {
-                my_alert(
-                    notif.data.text || notif.data.message,
-                    notif.description || "پیام ادمین",
-                    {
-                        slug: notif.slug
-                    }
-                );
+                if (!recevied_slugs.includes(notif.slug)) {
+                    my_alert(
+                        notif.data.text || notif.data.message,
+                        notif.description || "پیام ادمین",
+                        {
+                            slug: notif.slug
+                        }
+                    );
+                    recevied_slugs.push(notif.slug);
+                }
             });
         })
         .catch(default_fail);
