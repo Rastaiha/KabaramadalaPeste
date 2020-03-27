@@ -1,16 +1,5 @@
 let data = {};
 
-let prop_to_img = {
-    SK: "/static/images/game/coins.png",
-    K1: "/static/images/game/key1.png",
-    K2: "/static/images/game/key2.png",
-    K3: "/static/images/game/key3.png",
-    VIS: "/static/images/game/look.png",
-    TXP: "/static/images/game/attraction.png",
-    CHP: "/static/images/game/problem.png",
-    BLY: "/static/images/game/trap.png"
-};
-
 get_player_info()
     .then(response => {
         if (response.currently_anchored) {
@@ -51,7 +40,7 @@ get_player_info()
                             .text(offer[key]);
                         offer_item_template
                             .find("img")
-                            .attr("src", prop_to_img[property]);
+                            .attr("src", prop_details[property].src);
                         offer_template
                             .find(".offer-" + property_type + "-list")
                             .append(offer_item_template.html());
@@ -92,30 +81,35 @@ get_player_info()
     .catch(default_fail);
 
 $("#prompt_modal_btn").click(function() {
-    switch ($(this).data("kind")) {
-        case "accept":
-            accept_offer($(this).data("pk"))
-                .then(() => {
-                    my_alert("مبادله با موفقیت انجام شد.", "مبادله");
-                    setTimeout(function() {
-                        window.location.href = "/game/exchange/";
-                    }, 1000);
-                })
-                .catch(default_fail);
-            break;
-        case "delete":
-            delete_offer($(this).data("pk"))
-                .then(() => {
-                    my_alert("حذف پیشنهاد با موفقیت انجام شد.", "حذف پیشنهاد");
-                    setTimeout(function() {
-                        window.location.href = "/game/exchange/";
-                    }, 1000);
-                })
-                .catch(default_fail);
-            break;
+    if ($(this).data("kind")) {
+        switch ($(this).data("kind")) {
+            case "accept":
+                accept_offer($(this).data("pk"))
+                    .then(() => {
+                        my_alert("مبادله با موفقیت انجام شد.", "مبادله");
+                        setTimeout(function() {
+                            window.location.href = "/game/exchange/";
+                        }, 1000);
+                    })
+                    .catch(default_fail);
+                break;
+            case "delete":
+                delete_offer($(this).data("pk"))
+                    .then(() => {
+                        my_alert(
+                            "حذف پیشنهاد با موفقیت انجام شد.",
+                            "حذف پیشنهاد"
+                        );
+                        setTimeout(function() {
+                            window.location.href = "/game/exchange/";
+                        }, 1000);
+                    })
+                    .catch(default_fail);
+                break;
 
-        default:
-            break;
+            default:
+                break;
+        }
     }
 });
 

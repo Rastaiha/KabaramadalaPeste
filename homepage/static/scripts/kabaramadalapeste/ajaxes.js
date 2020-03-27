@@ -112,3 +112,13 @@ function accept_offer(pk) {
         url: "/game/accept_offer/" + pk + "/"
     });
 }
+
+function use_ability(ability_type) {
+    return $.ajax({
+        method: "POST",
+        url: "/game/use_ability/",
+        data: {
+            ability_type: ability_type
+        }
+    });
+}

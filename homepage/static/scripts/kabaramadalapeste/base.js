@@ -31,6 +31,7 @@ function my_alert(
 }
 
 function my_prompt(question, title, dataset = {}, modal_id = "#prompt_modal") {
+    $(modal_id + "_btn").removeData();
     $(modal_id + "_btn").data(dataset);
     $(modal_id + " .modal-title").text(title);
     $(modal_id + " .modal-question").html(question);
@@ -98,15 +99,39 @@ function toggle_right_info(elem) {
             .addClass("show-details");
     }
 }
-player_property_img = {
-    SK: "coins.png",
-    K1: "key1.png",
-    K2: "key2.png",
-    K3: "key3.png",
-    VIS: "look.png",
-    TXP: "attraction.png",
-    CHP: "problem.png",
-    BLY: "trap.png"
+prop_details = {
+    SK: {
+        src: "/static/images/game/coins.png",
+        persian: "سکه"
+    },
+    K1: {
+        src: "/static/images/game/key1.png",
+        persian: "طلایی"
+    },
+    K2: {
+        src: "/static/images/game/key2.png",
+        persian: "آبی"
+    },
+    K3: {
+        src: "/static/images/game/key3.png",
+        persian: "قرمز"
+    },
+    VIS: {
+        src: "/static/images/game/look.png",
+        persian: "بینش غیبی"
+    },
+    TXP: {
+        src: "/static/images/game/attraction.png",
+        persian: "سفر اکسپرس"
+    },
+    CHP: {
+        src: "/static/images/game/problem.png",
+        persian: "چالش پلاس"
+    },
+    BLY: {
+        src: "/static/images/game/trap.png",
+        persian: "زورگیری"
+    }
 };
 
 $(".right-info-btn").click(function() {
@@ -127,8 +152,8 @@ $(".right-info-btn").click(function() {
                         $(".player-propties").append(
                             '<div class="player-proprty"><span><b class="proprty-count">' +
                                 response.properties[key] +
-                                ' </b>×</span><img src="/static/images/game/' +
-                                player_property_img[key] +
+                                ' </b>×</span><img src="' +
+                                prop_details[key].src +
                                 '" /></div>'
                         );
                     }
@@ -164,5 +189,33 @@ $(".right-info-btn").click(function() {
             .catch(default_fail);
     } else {
         toggle_right_info(elem);
+    }
+});
+
+$(".abilities-btns a").click(function() {
+    let ability_type = $(this).data("type");
+    my_prompt(
+        "آیا می‌خواهید از ویژگی " +
+            prop_details[ability_type].persian +
+            " استفاده کنید؟",
+        "استفاده از ویژگی",
+        { ability_type: ability_type }
+    );
+    $("#prompt_modal").modal("show");
+});
+
+$("#prompt_modal_btn").click(function() {
+    let ability_type = $(this).data("ability_type");
+    if (ability_type) {
+        use_ability(ability_type)
+            .then(() => {
+                my_alert(
+                    "ویژگی " +
+                        prop_details[ability_type].persian +
+                        "برای شما فعال شد.",
+                    "فعال شدن ویژگی"
+                );
+            })
+            .catch(default_fail);
     }
 });
