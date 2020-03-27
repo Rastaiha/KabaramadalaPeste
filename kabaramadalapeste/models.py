@@ -11,7 +11,9 @@ import logging
 import math
 
 from solo.models import SingletonModel
+from django.template.defaultfilters import slugify
 from enum import Enum
+import string
 
 logger = logging.getLogger(__file__)
 
@@ -81,7 +83,7 @@ class Challenge(models.Model):
     is_judgeable = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.name
+        return '%s | %s' % (self.name, self.challenge_id)
 
     @property
     def questions(self):
@@ -130,6 +132,15 @@ class BaseQuestion(models.Model):
 
     def get_answer_type(self):
         raise NotImplementedError
+
+    def save(self):
+        dt = timezone.now()
+        r = ''.join(random.choices(string.ascii_letters + string.digits, k=12))
+        self.question = '%s-%s-%s-%s' % (
+            dt.isoformat(),
+            slugify(self.title), r, self.question
+        )
+        super(BaseQuestion, self).save()
 
 
 class ShortAnswerQuestion(BaseQuestion):
@@ -360,6 +371,15 @@ class JudgeableSubmit(BaseSubmit):
                                   on_delete=models.SET_NULL,
                                   null=True,
                                   blank=True)
+
+    def save(self):
+        dt = timezone.now()
+        r = ''.join(random.choices(string.ascii_letters + string.digits, k=12))
+        self.submitted_answer = '%s-%s-%s-%s' % (
+            dt.isoformat(),
+            slugify(self.title), r, self.submitted_answer
+        )
+        super(JudgeableSubmit, self).save()
 
 
 class TradeOffer(models.Model):
