@@ -43,9 +43,9 @@ class GameConf(AppConf):
         KEY1: 'کلید نوع ۱',
         KEY2: 'کلید نوع ۲',
         KEY3: 'کلید نوع ۳',
-        VISION: 'توانایی ویژن',
+        VISION: 'توانایی بینش غیبی',
         TRAVEL_EXPRESS: 'توانایی سفر اکسپرس',
-        CHALLENGE_PLUS: 'توانایی چالش اضافه',
+        CHALLENGE_PLUS: 'توانایی چالش پلاس',
         BULLY: 'توانایی زورگیری'
     }
 
