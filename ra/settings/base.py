@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'accounts',
     'solo',
     'nested_inline',
+    'notifications'
 ]
 
 MIDDLEWARE = [
@@ -135,3 +136,8 @@ django_heroku.settings(locals(), test_runner=False)
 OK_STATUS = 'ok'
 ERROR_STATUS = 'err'
 HELP_STATUS = 'help'
+
+DJANGO_NOTIFICATIONS_CONFIG = {
+    'USE_JSONFIELD': True,
+    'SOFT_DELETE': True
+}

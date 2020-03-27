@@ -231,6 +231,43 @@ class PaymentAttemptAdmin(admin.ModelAdmin):
     get_real_name.short_description = 'REAL NAME'
 
 
+@admin.register(NotificationData)
+class NotificationDataAdmin(admin.ModelAdmin):
+    list_display = (
+        'id', 'level', 'text', 'send_to_all_participants', 'get_recipients_count', 'status', 'sent_at', 'send_action'
+    )
+    exclude = ('status', 'sent_at', 'sent_by')
+
+    def get_recipients_count(self, obj):
+        return obj.recipients.count()
+
+    get_recipients_count.short_description = 'recipients count if specific'
+
+    def get_urls(self):
+        urls = super().get_urls()
+        custom_urls = [
+            path(
+                'send/<int:pk>/',
+                self.send_notifications,
+                name='send_notifications',
+            ),
+        ]
+        return custom_urls + urls
+
+    def send_action(self, obj):
+        try:
+            if obj.status == NotificationData.NotificationStatus.Draft:
+                return mark_safe('<a class="button" href="' + reverse('admin:send_notifications',
+                                                                      args=[obj.pk]) + '">ارسال</a>')
+        except Exception:
+            return ''
+
+    def send_notifications(self, request, pk):
+        notification_data = NotificationData.objects.get(pk=pk)
+        notification_data.send_notifications(request.user)
+        return redirect('/admin/accounts/notificationdata/')
+
+
 admin.site.register(Member, MemberAdmin)
 # admin.site.register(Participant)
 admin.site.register(Judge)

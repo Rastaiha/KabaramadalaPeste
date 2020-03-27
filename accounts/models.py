@@ -9,8 +9,9 @@ from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags, strip_spaces_between_tags
 from homepage.models import SiteConfiguration
-
+from notifications.models import Notification
 from enum import Enum
+from notifications.signals import notify
 
 from collections import defaultdict
 
@@ -399,6 +400,7 @@ class JudgeManager(models.Manager):
             g.save()
         member = Member.objects.create_user(username=email, email=email, password=password)
         member.is_staff = True
+        member.is_participant = False
         member.groups.add(g)
         member.save()
         judge = Judge.objects.create(member=member)
@@ -438,3 +440,49 @@ class PaymentAttempt(models.Model):
 
     def __str__(self):
         return 'PaymentAttempt object (' + str(self.pk) + ') (' + str(self.participant) + ')'
+
+
+class NotificationData(models.Model):
+    class NotificationStatus(models.TextChoices):
+        Draft = 'Draft'
+        Sent = 'Sent'
+
+    level = models.CharField(choices=Notification.LEVELS, default=Notification.LEVELS.info, max_length=20)
+    text = models.TextField()
+
+    status = models.CharField(
+        choices=NotificationStatus.choices,
+        default=NotificationStatus.Draft,
+        max_length=20
+    )
+    sent_at = models.DateTimeField(null=True, blank=True)
+    sent_by = models.ForeignKey(
+        Member,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name='sent_notification_datas'
+    )
+
+    send_to_all_participants = models.BooleanField(default=False)
+
+    recipients = models.ManyToManyField(Member, blank=True)
+
+    @transaction.atomic
+    def send_notifications(self, sender_user):
+        if self.status == NotificationData.NotificationStatus.Sent:
+            logger.warning('Cant resend notification data')
+            return
+        if self.send_to_all:
+            recipient = Member.objects.filter(is_participant=True)
+        else:
+            recipient = self.recipients.all()
+        notify.send(
+            sender=sender_user,
+            recipient=recipient,
+            verb='inform',
+            action_object=self, level=self.level, public=False, text=self.text
+        )
+        self.status = NotificationData.NotificationStatus.Sent
+        self.sent_by = sender_user
+        self.sent_at = timezone.now()
+        self.save()
