@@ -13,6 +13,7 @@ from kabaramadalapeste.conf import settings
 from django.utils import timezone
 from django.forms.models import BaseInlineFormSet
 from solo.admin import SingletonModelAdmin
+from django.utils.safestring import mark_safe
 
 
 class ChallengeRewardInlineFormSet(BaseInlineFormSet):
@@ -92,8 +93,12 @@ class JudgeableSubmitAdmin(admin.ModelAdmin):
         )
     list_display = ('get_username', 'submitted_at', 'get_challenge_name', 'get_question_title',)
     search_fields = ('submit_status', )
+    ordering = ('submitted_at',)
     exclude = ('judged_at', 'pis', 'judged_by')
-    readonly_fields = ('submitted_answer', 'submitted_at', 'get_challenge_name', 'get_question_title')
+    readonly_fields = (
+        'get_username', 'submitted_answer', 'submitted_at', 'get_challenge_name', 'get_question_title',
+        'get_question_file'
+    )
 
     def get_search_results(self, request, queryset, search_term):
         queryset, use_distinct = super(JudgeableSubmitAdmin, self).get_search_results(
@@ -132,6 +137,12 @@ class JudgeableSubmitAdmin(admin.ModelAdmin):
         except Exception:
             return ''
 
+    def get_question_file(self, obj):
+        try:
+            return mark_safe('<a href="' + obj.pis.question.question.url + '">صورت سوال</a>')
+        except Exception:
+            return ''
+
     def get_question_title(self, obj):
         try:
             return obj.pis.question.title
@@ -155,6 +166,7 @@ class JudgeableSubmitAdmin(admin.ModelAdmin):
     get_username.short_description = 'Username'
     get_challenge_name.short_description = 'Challenge'
     get_question_title.short_description = 'Question'
+    get_question_file.short_description = 'Question File'
 
 
 class TradeOfferSuggestedItemInline(admin.StackedInline):
