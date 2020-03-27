@@ -40,9 +40,9 @@ class GameConf(AppConf):
 
     TRANSLATION_DICT = {
         SEKKE: 'سکه',
-        KEY1: 'کلید نوع ۱',
-        KEY2: 'کلید نوع ۲',
-        KEY3: 'کلید نوع ۳',
+        KEY1: 'کلید طلایی',
+        KEY2: 'کلید آبی',
+        KEY3: 'کلید قرمز',
         VISION: 'توانایی بینش غیبی',
         TRAVEL_EXPRESS: 'توانایی سفر اکسپرس',
         CHALLENGE_PLUS: 'توانایی چالش پلاس',
