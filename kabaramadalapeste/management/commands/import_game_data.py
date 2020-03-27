@@ -3,7 +3,7 @@ from django.db import transaction
 from kabaramadalapeste.conf import settings
 from kabaramadalapeste.models import (
     Challenge, Island, Way, Treasure,
-    TreasureKeyItem, TreasureRewardItem, Peste
+    TreasureKeyItem, TreasureRewardItem, Peste, ChallengeRewardItem
 )
 import os
 import csv
@@ -49,6 +49,18 @@ def import_island_row(row):
         )
 
 
+def import_challenge_row(row):
+    challenge = Challenge.objects.create(
+        challenge_id=row[0],
+        name=row[1],
+        is_judgeable=int(row[2])
+    )
+    challenge.rewards.add(ChallengeRewardItem(reward_type=settings.GAME_SEKKE, amount=row[3]), bulk=False)
+    challenge.rewards.add(ChallengeRewardItem(reward_type=settings.GAME_KEY1, amount=row[4]), bulk=False)
+    challenge.rewards.add(ChallengeRewardItem(reward_type=settings.GAME_KEY2, amount=row[5]), bulk=False)
+    challenge.rewards.add(ChallengeRewardItem(reward_type=settings.GAME_KEY3, amount=row[6]), bulk=False)
+
+
 class Command(BaseCommand):
     help = 'Imports game data like islands, and challenges data'
 
@@ -66,11 +78,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         with transaction.atomic():
             self.import_objects(self.challenges_file, Challenge,
-                                lambda row: Challenge.objects.create(
-                                    challenge_id=row[0],
-                                    name=row[1],
-                                    is_judgeable=int(row[2])
-                                ))
+                                import_challenge_row)
             self.import_objects(self.islands_file, Island,
                                 import_island_row)
             self.import_objects(self.ways_file, Way,
