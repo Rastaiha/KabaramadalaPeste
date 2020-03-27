@@ -12,9 +12,13 @@ from accounts.models import Participant
 from kabaramadalapeste.models import (
     Island, ParticipantIslandStatus, TradeOffer, TradeOfferRequestedItem, PesteConfiguration,
     TradeOfferSuggestedItem, AbilityUsage, BandargahInvestment, BandargahConfiguration, Bully,
-    JudgeableQuestion, ShortAnswerQuestion
+    ShortAnswerQuestion, JudgeableSubmit, ShortAnswerSubmit, BaseSubmit
 )
 from kabaramadalapeste.conf import settings
+from kabaramadalapeste.forms import (
+    EmptySubmitForm, ShortStringSubmitForm, ShortIntSubmitForm,
+    ShortFloatSubmitForm, JudgeableFileSubmitForm
+)
 
 from homepage.models import SiteConfiguration
 
@@ -648,7 +652,7 @@ def invest(request):
                 'status': settings.ERROR_STATUS,
                 'message': 'این مقدار سکه برای سرمایه‌گذاری نداری.'
             })
-        except Exception:
+        except Exception as e:
             logger.error(e, exc_info=True)
             return default_error_response
 
@@ -705,7 +709,7 @@ def island(request):
 @method_decorator(game_running_required, name='dispatch')
 @method_decorator(login_activated_participant_required, name='dispatch')
 class ChallengeView(View):
-    def get(self, request):
+    def _perform_after_general_checks(self, request, perform_func):
         try:
             pis = ParticipantIslandStatus.objects.get(
                 participant=request.user.participant,
@@ -718,16 +722,64 @@ class ChallengeView(View):
             if pis.submit:
                 raise Participant.CantSubmitChallengeAgain
 
-            return render(request, 'kabaramadalapeste/challenge.html', {
-                'without_nav': True,
-                'without_footer': True,
-                'question_title': pis.question.title,
-                'question_pdf_file': pis.question.question,
-                'answer_type': pis.question.get_answer_type()
-            })
+            return perform_func(request, pis)
+
         except (Participant.ParticipantIsNotOnIsland, Participant.DidNotAnchored,
                 Participant.DidNotAcceptChallenge, Participant.CantSubmitChallengeAgain):
             return redirect('kabaramadalapeste:game')
         except Exception as e:
             logger.error(e, exc_info=True)
             return redirect('kabaramadalapeste:game')
+
+    def _perform_get(self, request, pis):
+        return render(request, 'kabaramadalapeste/challenge.html', {
+            'without_nav': True,
+            'without_footer': True,
+            'question_title': pis.question.title,
+            'question_pdf_file': pis.question.question,
+            'answer_type': pis.question.get_answer_type()
+        })
+
+    def get(self, request):
+        return self._perform_after_general_checks(request, self._perform_get)
+
+    @transaction.atomic
+    def _perform_post(self, request, pis):
+        answer_type_forms = {
+            'NO': EmptySubmitForm,
+            'FILE': JudgeableFileSubmitForm,
+            ShortAnswerQuestion.STRING: ShortStringSubmitForm,
+            ShortAnswerQuestion.INTEGER: ShortIntSubmitForm,
+            ShortAnswerQuestion.FLOAT: ShortFloatSubmitForm,
+        }
+        answer_type = pis.question.get_answer_type()
+        form = answer_type_forms[answer_type](request.POST, request.FILES)
+        if not form.is_valid():
+            return redirect('kabaramadalapeste:challenge')
+
+        submit_type_classes = {
+            'NO': JudgeableSubmit,
+            'FILE': JudgeableSubmit,
+            ShortAnswerQuestion.STRING: ShortAnswerSubmit,
+            ShortAnswerQuestion.INTEGER: ShortAnswerSubmit,
+            ShortAnswerQuestion.FLOAT: ShortAnswerSubmit,
+        }
+        SubmitClass = submit_type_classes[answer_type]
+        submit = SubmitClass.objects.create(
+            pis=pis,
+            submitted_at=timezone.now()
+        )
+        if answer_type != 'NO':
+            submit.submitted_answer = form.cleaned_data['answer']
+        if answer_type not in ('NO', 'FILE'):
+            submit.check_answer()
+            if submit.submit_status == BaseSubmit.SubmitStatus.Correct:
+                submit.give_rewards_to_participant()
+                request.user.participant.send_msg_correct_answer(submit)
+            elif submit.submit_status == BaseSubmit.SubmitStatus.Wrong:
+                request.user.participant.send_msg_wrong_answer(submit)
+            submit.save()
+        return redirect('kabaramadalapeste:challenge')
+
+    def post(self, request):
+        return self._perform_after_general_checks(request, self._perform_post)

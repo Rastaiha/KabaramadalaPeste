@@ -1010,9 +1010,11 @@ class ViewsTest(TestCase):
         response = self.client.get(reverse('kabaramadalapeste:challenge'))
         self.assertEqual(response.status_code, 302)
 
-    @mock.patch('kabaramadalapeste.views.render')
-    def test_challenge_page_cant_view_again(self, render_mock):
-        render_mock.return_value = HttpResponse('OK')
+    def test_challenge_submit_not_login(self):
+        response = self.client.post(reverse('kabaramadalapeste:challenge'))
+        self.assertEqual(response.status_code, 302)
+
+    def test_challenge_submit_ok(self):
         island = Island.objects.filter(challenge__is_judgeable=False).first()
         self.participant.set_start_island(island)
         self.participant.put_anchor_on_current_island()
@@ -1021,10 +1023,186 @@ class ViewsTest(TestCase):
             participant=self.participant,
             island=island
         )
-        ShortAnswerSubmit.objects.create(
-            pis=pis,
-        )
+        pis.question.answer_type = ShortAnswerQuestion.INTEGER
+        pis.question.correct_answer = 12
+        pis.question.save()
         self.client.force_login(self.participant.member)
-        response = self.client.get(reverse('kabaramadalapeste:challenge'))
+        response = self.client.post(reverse('kabaramadalapeste:challenge'), data={
+            'answer': '12'
+        })
+        pis.refresh_from_db()
+        self.assertEqual(pis.submit.submit_status, BaseSubmit.SubmitStatus.Correct)
+        self.assertIsNotNone(pis.submit.submitted_at)
+        self.assertIsNotNone(pis.submit.judged_at)
+        self.assertEqual(response.status_code, 302)
 
+    def test_challenge_submit_invalid_answer(self):
+        island = Island.objects.filter(challenge__is_judgeable=False).first()
+        self.participant.set_start_island(island)
+        self.participant.put_anchor_on_current_island()
+        self.participant.accept_challenge_on_current_island()
+        pis = ParticipantIslandStatus.objects.get(
+            participant=self.participant,
+            island=island
+        )
+        pis.question.answer_type = ShortAnswerQuestion.INTEGER
+        pis.question.correct_answer = 12
+        pis.question.save()
+        self.client.force_login(self.participant.member)
+        response = self.client.post(reverse('kabaramadalapeste:challenge'), data={
+            'answer': '12s'
+        })
+        pis.refresh_from_db()
+        self.assertIsNone(pis.submit)
+        self.assertEqual(response.status_code, 302)
+
+    def test_challenge_submit_persian_number(self):
+        island = Island.objects.filter(challenge__is_judgeable=False).first()
+        self.participant.set_start_island(island)
+        self.participant.put_anchor_on_current_island()
+        self.participant.accept_challenge_on_current_island()
+        pis = ParticipantIslandStatus.objects.get(
+            participant=self.participant,
+            island=island
+        )
+        pis.question.answer_type = ShortAnswerQuestion.INTEGER
+        pis.question.correct_answer = 12
+        pis.question.save()
+        self.client.force_login(self.participant.member)
+        response = self.client.post(reverse('kabaramadalapeste:challenge'), data={
+            'answer': '۱۲'
+        })
+        pis.refresh_from_db()
+        self.assertEqual(pis.submit.submit_status, BaseSubmit.SubmitStatus.Correct)
+        self.assertIsNotNone(pis.submit.submitted_at)
+        self.assertIsNotNone(pis.submit.judged_at)
+        self.assertEqual(response.status_code, 302)
+
+    def test_challenge_submit_wrong_answer(self):
+        island = Island.objects.filter(challenge__is_judgeable=False).first()
+        self.participant.set_start_island(island)
+        self.participant.put_anchor_on_current_island()
+        self.participant.accept_challenge_on_current_island()
+        pis = ParticipantIslandStatus.objects.get(
+            participant=self.participant,
+            island=island
+        )
+        pis.question.answer_type = ShortAnswerQuestion.INTEGER
+        pis.question.correct_answer = 12
+        pis.question.save()
+        self.client.force_login(self.participant.member)
+        response = self.client.post(reverse('kabaramadalapeste:challenge'), data={
+            'answer': '13'
+        })
+        pis.refresh_from_db()
+        self.assertEqual(pis.submit.submit_status, BaseSubmit.SubmitStatus.Wrong)
+        self.assertIsNotNone(pis.submit.submitted_at)
+        self.assertIsNotNone(pis.submit.judged_at)
+        self.assertEqual(response.status_code, 302)
+
+    def test_challenge_submit_correct_float(self):
+        island = Island.objects.filter(challenge__is_judgeable=False).first()
+        self.participant.set_start_island(island)
+        self.participant.put_anchor_on_current_island()
+        self.participant.accept_challenge_on_current_island()
+        pis = ParticipantIslandStatus.objects.get(
+            participant=self.participant,
+            island=island
+        )
+        pis.question.answer_type = ShortAnswerQuestion.FLOAT
+        pis.question.correct_answer = 12.2
+        pis.question.save()
+        self.client.force_login(self.participant.member)
+        response = self.client.post(reverse('kabaramadalapeste:challenge'), data={
+            'answer': '12.20'
+        })
+        pis.refresh_from_db()
+        self.assertEqual(pis.submit.submit_status, BaseSubmit.SubmitStatus.Correct)
+        self.assertIsNotNone(pis.submit.submitted_at)
+        self.assertIsNotNone(pis.submit.judged_at)
+        self.assertEqual(response.status_code, 302)
+
+    def test_challenge_submit_wrong_float(self):
+        island = Island.objects.filter(challenge__is_judgeable=False).first()
+        self.participant.set_start_island(island)
+        self.participant.put_anchor_on_current_island()
+        self.participant.accept_challenge_on_current_island()
+        pis = ParticipantIslandStatus.objects.get(
+            participant=self.participant,
+            island=island
+        )
+        pis.question.answer_type = ShortAnswerQuestion.FLOAT
+        pis.question.correct_answer = 12.2
+        pis.question.save()
+        self.client.force_login(self.participant.member)
+        response = self.client.post(reverse('kabaramadalapeste:challenge'), data={
+            'answer': '12.30'
+        })
+        pis.refresh_from_db()
+        self.assertEqual(pis.submit.submit_status, BaseSubmit.SubmitStatus.Wrong)
+        self.assertIsNotNone(pis.submit.submitted_at)
+        self.assertIsNotNone(pis.submit.judged_at)
+        self.assertEqual(response.status_code, 302)
+
+    def test_challenge_submit_correct_str(self):
+        island = Island.objects.filter(challenge__is_judgeable=False).first()
+        self.participant.set_start_island(island)
+        self.participant.put_anchor_on_current_island()
+        self.participant.accept_challenge_on_current_island()
+        pis = ParticipantIslandStatus.objects.get(
+            participant=self.participant,
+            island=island
+        )
+        pis.question.answer_type = ShortAnswerQuestion.STRING
+        pis.question.correct_answer = 'salam'
+        pis.question.save()
+        self.client.force_login(self.participant.member)
+        response = self.client.post(reverse('kabaramadalapeste:challenge'), data={
+            'answer': ' salam  '
+        })
+        pis.refresh_from_db()
+        self.assertEqual(pis.submit.submit_status, BaseSubmit.SubmitStatus.Correct)
+        self.assertIsNotNone(pis.submit.submitted_at)
+        self.assertIsNotNone(pis.submit.judged_at)
+        self.assertEqual(response.status_code, 302)
+
+    def test_challenge_submit_wrong_str(self):
+        island = Island.objects.filter(challenge__is_judgeable=False).first()
+        self.participant.set_start_island(island)
+        self.participant.put_anchor_on_current_island()
+        self.participant.accept_challenge_on_current_island()
+        pis = ParticipantIslandStatus.objects.get(
+            participant=self.participant,
+            island=island
+        )
+        pis.question.answer_type = ShortAnswerQuestion.STRING
+        pis.question.correct_answer = 'salam'
+        pis.question.save()
+        self.client.force_login(self.participant.member)
+        response = self.client.post(reverse('kabaramadalapeste:challenge'), data={
+            'answer': ' salamb  '
+        })
+        pis.refresh_from_db()
+        self.assertEqual(pis.submit.submit_status, BaseSubmit.SubmitStatus.Wrong)
+        self.assertIsNotNone(pis.submit.submitted_at)
+        self.assertIsNotNone(pis.submit.judged_at)
+        self.assertEqual(response.status_code, 302)
+
+    def test_challenge_submit_nothing_ok(self):
+        island = Island.objects.filter(challenge__is_judgeable=True).first()
+        self.participant.set_start_island(island)
+        self.participant.put_anchor_on_current_island()
+        self.participant.accept_challenge_on_current_island()
+        pis = ParticipantIslandStatus.objects.get(
+            participant=self.participant,
+            island=island
+        )
+        pis.question.upload_required = False
+        pis.question.save()
+        self.client.force_login(self.participant.member)
+        response = self.client.post(reverse('kabaramadalapeste:challenge'))
+        pis.refresh_from_db()
+        self.assertIsNotNone(pis.submit.submitted_at)
+        self.assertIsNotNone(pis.submit.submit_status, BaseSubmit.SubmitStatus.Pending)
+        self.assertIsNone(pis.submit.judged_at)
         self.assertEqual(response.status_code, 302)
