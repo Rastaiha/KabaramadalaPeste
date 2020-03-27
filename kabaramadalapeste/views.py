@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import Http404, JsonResponse
 from django.urls import reverse
 from django.views import View
@@ -678,7 +678,19 @@ def exchange(request):
 @game_running_required
 @login_activated_participant_required
 def island(request):
-    return render(request, 'kabaramadalapeste/island.html', {
-        'without_nav': True,
-        'without_footer': True,
-    })
+    try:
+        pis = ParticipantIslandStatus.objects.get(
+            participant=request.user.participant,
+            island=request.user.participant.get_current_island()
+        )
+        if not pis.currently_anchored:
+            raise Participant.DidNotAnchored
+        return render(request, 'kabaramadalapeste/island.html', {
+            'without_nav': True,
+            'without_footer': True,
+        })
+    except (Participant.ParticipantIsNotOnIsland, Participant.DidNotAnchored):
+        return redirect('kabaramadalapeste:game')
+    except Exception as e:
+        logger.error(e, exc_info=True)
+        return redirect('kabaramadalapeste:game')
