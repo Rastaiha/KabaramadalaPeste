@@ -17,7 +17,7 @@
 
             .answer {
                 background: #d1d1d1;
-                padding: 30px;
+                padding: 20px;
                 border-radius: 10px;
                 margin: 0 0 10px
             }
@@ -31,29 +31,27 @@
                 position: absolute;
                 left: 0;
                 top: 0;
-                background: var(--color-5);
-                border: 5px solid green;
-                border-radius: 10px;
+                background: #17ac3a;
+                border: 1px solid green;
+                border-radius: 3px;
                 padding: 10px;
                 border-radius;
                 text-align: center;
-                color: white
-            }
-
-            .download_btn .fas {
-                font-size: 60px;
-            }
-
-            .download_btn>div {
-                margin-top: 10px;
-                font-size: 20px;
+                color: white;
                 font-weight: 900;
+                transition: 0.3s
+            }
+
+            .download_btn:hover,
+            .download_btn:focus {
+                cursor: pointer;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15), 0 1px 3px rgba(0, 0, 0, 0.25);
             }
         </style>
         <div class="question">
             <div class="download_btn">
+                دانلود سوال
                 <i class="fas fa-file-download"></i>
-                <div>دانود فایل سوال</div>
             </div>
             <iframe
                 src="https://docs.google.com/viewer?url=http://dl.riazisara.ir/download/test/olampyad/soal%2Bkelidolampyad1-riazi96.pdf&embedded=true"
@@ -61,7 +59,15 @@
         </div>
 
         <div class="answer">
-            salam
+            <h3 class="text-center mb-4">ارسال پاسخ</h3>
+            <form class="row" method="post">
+                <div class="ml-auto col-5 col-sm-3 col-md-2">
+                    <button class="my-btn w-100">ارسال</button>
+                </div>
+                <div class="mr-auto col-7 col-sm-5 col-md-5">
+                    <input class="w-100" placeholder="پاسخ" style="direction: rtl; text-align: right">
+                </div>
+            </form>
         </div>
     </div>
 </div>
