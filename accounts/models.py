@@ -8,7 +8,6 @@ from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags, strip_spaces_between_tags
-from homepage.models import SiteConfiguration
 from notifications.models import Notification
 from enum import Enum
 from notifications.signals import notify
@@ -356,14 +355,14 @@ class Participant(models.Model):
         if current_pis.did_spade:
             raise Participant.CantSpadeAgain
         with transaction.atomic():
-            self.reduce_property(settings.GAME_SEKKE, SiteConfiguration.get_solo().island_spade_cost)
+            self.reduce_property(settings.GAME_SEKKE, game_models.PesteConfiguration.get_solo().island_spade_cost)
             current_pis.did_spade = True
             current_pis.spaded_at = timezone.now()
             current_pis.save()
             try:
                 if self.currently_at_island.peste.is_found:
                     return False
-                self.add_property(settings.GAME_SEKKE, SiteConfiguration.get_solo().peste_reward)
+                self.add_property(settings.GAME_SEKKE, game_models.PesteConfiguration.get_solo().peste_reward)
                 self.currently_at_island.peste.is_found = True
                 self.currently_at_island.peste.found_by = self
                 self.currently_at_island.peste.found_at = timezone.now()

@@ -4,7 +4,7 @@ from django.db.utils import IntegrityError
 # Create your tests here.
 from accounts.models import Participant
 from kabaramadalapeste.models import (
-    ParticipantIslandStatus, Island, Way, Peste,
+    ParticipantIslandStatus, Island, Way, Peste, PesteConfiguration,
     ShortAnswerSubmit, ShortAnswerQuestion, TradeOffer, BaseSubmit, BandargahInvestment
 )
 from kabaramadalapeste.factory import (
@@ -15,7 +15,6 @@ from accounts.factory import ParticipantFactory
 from unittest import mock
 
 from django.utils import timezone
-from homepage.models import SiteConfiguration
 from datetime import datetime, timedelta
 
 
@@ -713,7 +712,7 @@ class ViewsTest(TestCase):
         self.participant.put_anchor_on_current_island()
         self.participant.add_property(
             settings.GAME_SEKKE,
-            (SiteConfiguration.get_solo().island_spade_cost - self.participant.sekke.amount)
+            (PesteConfiguration.get_solo().island_spade_cost - self.participant.sekke.amount)
         )
         response = self.client.post(reverse('kabaramadalapeste:spade'))
         self.assertEqual(response.status_code, 302)
@@ -724,7 +723,7 @@ class ViewsTest(TestCase):
         self.client.force_login(self.participant.member)
         self.participant.add_property(
             settings.GAME_SEKKE,
-            (SiteConfiguration.get_solo().island_spade_cost - self.participant.sekke.amount)
+            (PesteConfiguration.get_solo().island_spade_cost - self.participant.sekke.amount)
         )
         response = self.client.post(reverse('kabaramadalapeste:spade'))
         self.assertEqual(response.status_code, 200)
@@ -740,7 +739,7 @@ class ViewsTest(TestCase):
         self.client.force_login(self.participant.member)
         self.participant.add_property(
             settings.GAME_SEKKE,
-            (SiteConfiguration.get_solo().island_spade_cost - self.participant.sekke.amount)
+            (PesteConfiguration.get_solo().island_spade_cost - self.participant.sekke.amount)
         )
         response = self.client.post(reverse('kabaramadalapeste:spade'))
         self.assertEqual(response.status_code, 200)
@@ -753,7 +752,7 @@ class ViewsTest(TestCase):
         self.client.force_login(self.participant.member)
         self.participant.add_property(
             settings.GAME_SEKKE,
-            (SiteConfiguration.get_solo().island_spade_cost - self.participant.sekke.amount) - 1
+            (PesteConfiguration.get_solo().island_spade_cost - self.participant.sekke.amount) - 1
         )
         response = self.client.post(reverse('kabaramadalapeste:spade'))
         self.assertEqual(response.status_code, 400)
@@ -765,7 +764,7 @@ class ViewsTest(TestCase):
         self.client.force_login(self.participant.member)
         self.participant.add_property(
             settings.GAME_SEKKE,
-            (SiteConfiguration.get_solo().island_spade_cost - self.participant.sekke.amount)
+            (PesteConfiguration.get_solo().island_spade_cost - self.participant.sekke.amount)
         )
         self.client.post(reverse('kabaramadalapeste:spade'))
         response = self.client.post(reverse('kabaramadalapeste:spade'))
@@ -776,7 +775,7 @@ class ViewsTest(TestCase):
         self.client.force_login(self.participant.member)
         self.participant.add_property(
             settings.GAME_SEKKE,
-            (SiteConfiguration.get_solo().island_spade_cost - self.participant.sekke.amount)
+            (PesteConfiguration.get_solo().island_spade_cost - self.participant.sekke.amount)
         )
         self.client.post(reverse('kabaramadalapeste:spade'))
         response = self.client.post(reverse('kabaramadalapeste:spade'))
@@ -788,7 +787,7 @@ class ViewsTest(TestCase):
         self.client.force_login(self.participant.member)
         self.participant.add_property(
             settings.GAME_SEKKE,
-            (SiteConfiguration.get_solo().island_spade_cost - self.participant.sekke.amount)
+            (PesteConfiguration.get_solo().island_spade_cost - self.participant.sekke.amount)
         )
         self.client.post(reverse('kabaramadalapeste:spade'))
         response = self.client.post(reverse('kabaramadalapeste:spade'))

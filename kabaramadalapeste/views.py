@@ -9,11 +9,11 @@ from django.utils import timezone
 
 from accounts.models import Participant
 
-from kabaramadalapeste.models import Island, ParticipantIslandStatus, TradeOffer, TradeOfferRequestedItem, \
+from kabaramadalapeste.models import (
+    Island, ParticipantIslandStatus, TradeOffer, TradeOfferRequestedItem, PesteConfiguration,
     TradeOfferSuggestedItem, AbilityUsage, BandargahInvestment, BandargahConfiguration, Bully
+)
 from kabaramadalapeste.conf import settings
-
-from homepage.models import SiteConfiguration
 
 import datetime
 import sys
@@ -52,7 +52,7 @@ class SettingsView(View):
             return JsonResponse({
                 'move_price': settings.GAME_MOVE_PRICE,
                 'put_anchor_price': settings.GAME_PUT_ANCHOR_PRICE,
-                'island_spade_cost': SiteConfiguration.get_solo().island_spade_cost
+                'island_spade_cost': PesteConfiguration.get_solo().island_spade_cost
             })
         except Exception as e:
             logger.error(e, exc_info=True)

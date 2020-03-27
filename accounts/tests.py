@@ -7,10 +7,9 @@ from kabaramadalapeste.factory import (
     ShortAnswerQuestionFactory
 )
 from kabaramadalapeste.models import (
-    Way, ParticipantIslandStatus, Island, Peste,
+    Way, ParticipantIslandStatus, Island, Peste, PesteConfiguration,
     ParticipantPropertyItem, ShortAnswerQuestion, Treasure
 )
-from homepage.models import SiteConfiguration
 from kabaramadalapeste.conf import settings
 from collections import defaultdict
 from django.utils import timezone
@@ -442,7 +441,7 @@ class ParticipantTest(TestCase):
         self.participant.put_anchor_on_current_island()
         self.participant.add_property(
             settings.GAME_SEKKE,
-            SiteConfiguration.get_solo().island_spade_cost - self.participant.sekke.amount
+            PesteConfiguration.get_solo().island_spade_cost - self.participant.sekke.amount
         )
         result = self.participant.spade_on_current_island()
         pis = ParticipantIslandStatus.objects.get(
@@ -464,7 +463,7 @@ class ParticipantTest(TestCase):
         self.participant.put_anchor_on_current_island()
         self.participant.add_property(
             settings.GAME_SEKKE,
-            SiteConfiguration.get_solo().island_spade_cost - self.participant.sekke.amount
+            PesteConfiguration.get_solo().island_spade_cost - self.participant.sekke.amount
         )
         result = self.participant.spade_on_current_island()
         pis = ParticipantIslandStatus.objects.get(
@@ -474,7 +473,7 @@ class ParticipantTest(TestCase):
         self.assertTrue(result)
         self.assertEqual(
             self.participant.sekke.amount,
-            SiteConfiguration.get_solo().peste_reward
+            PesteConfiguration.get_solo().peste_reward
         )
         self.assertTrue(pis.did_spade)
         self.assertIsNotNone(pis.spaded_at)
@@ -495,7 +494,7 @@ class ParticipantTest(TestCase):
         self.participant.put_anchor_on_current_island()
         self.participant.add_property(
             settings.GAME_SEKKE,
-            SiteConfiguration.get_solo().island_spade_cost - self.participant.sekke.amount
+            PesteConfiguration.get_solo().island_spade_cost - self.participant.sekke.amount
         )
         result = self.participant.spade_on_current_island()
         pis = ParticipantIslandStatus.objects.get(
@@ -522,7 +521,7 @@ class ParticipantTest(TestCase):
         self.participant.put_anchor_on_current_island()
         self.participant.add_property(
             settings.GAME_SEKKE,
-            (SiteConfiguration.get_solo().island_spade_cost - self.participant.sekke.amount) - 1
+            (PesteConfiguration.get_solo().island_spade_cost - self.participant.sekke.amount) - 1
         )
         with self.assertRaises(Participant.PropertiesAreNotEnough):
             self.participant.spade_on_current_island()
@@ -545,7 +544,7 @@ class ParticipantTest(TestCase):
         self.participant.put_anchor_on_current_island()
         self.participant.add_property(
             settings.GAME_SEKKE,
-            (2 * SiteConfiguration.get_solo().island_spade_cost - self.participant.sekke.amount)
+            (2 * PesteConfiguration.get_solo().island_spade_cost - self.participant.sekke.amount)
         )
         self.participant.spade_on_current_island()
         with self.assertRaises(Participant.CantSpadeAgain):
