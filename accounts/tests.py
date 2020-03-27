@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from accounts.factory import ParticipantFactory
+from accounts.factory import ParticipantFactory, MemberFactory
 from accounts.models import Participant
 from kabaramadalapeste.factory import (
     IslandFactory, ChallengeFactory, TreasureFactory,
@@ -23,6 +23,7 @@ class ParticipantTest(TestCase):
     def setUp(self):
         [ChallengeFactory() for i in range(10)]
         [ShortAnswerQuestionFactory() for i in range(60)]
+        self.super_member = MemberFactory(is_superuser=True)
         self.participant = ParticipantFactory()
         self.all_islands = [IslandFactory(__sequence=i) for i in range(settings.GAME_DEFAULT_ISLAND_COUNT)]
         [TreasureFactory(keys=2, rewards=4) for i in range(settings.GAME_DEFAULT_ISLAND_COUNT - 1)]
@@ -475,6 +476,7 @@ class ParticipantTest(TestCase):
             self.participant.sekke.amount,
             PesteConfiguration.get_solo().peste_reward
         )
+        peste.refresh_from_db()
         self.assertTrue(pis.did_spade)
         self.assertIsNotNone(pis.spaded_at)
         self.assertTrue(peste.is_found)

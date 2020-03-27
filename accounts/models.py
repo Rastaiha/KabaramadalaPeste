@@ -375,6 +375,7 @@ class Participant(models.Model):
                 self.currently_at_island.peste.is_found = True
                 self.currently_at_island.peste.found_by = self
                 self.currently_at_island.peste.found_at = timezone.now()
+                self.currently_at_island.peste.save()
                 self.save()
                 self.send_msg_spade_result(True)
                 return True
