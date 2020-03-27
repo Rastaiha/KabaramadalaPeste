@@ -187,12 +187,12 @@ class BandargahConfigurationAdmin(SingletonModelAdmin):
             for investment in not_applied_investments:
                 investment.participant.add_property(
                     settings.GAME_SEKKE, BandargahConfiguration.get_solo().profit_coefficient * investment.amount)
-                investment.participant.send_msg_bandargah_computed(investment, True)
+                investment.participant.send_msg_bandargah_computed(investment, True, s)
         else:
             for investment in not_applied_investments:
                 investment.participant.add_property(
                     settings.GAME_SEKKE, BandargahConfiguration.get_solo().loss_coefficient * investment.amount)
-                investment.participant.send_msg_bandargah_computed(investment, False)
+                investment.participant.send_msg_bandargah_computed(investment, False, s)
         not_applied_investments.update(is_applied=True)
         return redirect('/admin/')
 
