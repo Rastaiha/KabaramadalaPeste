@@ -1,16 +1,14 @@
 {% extends 'kabaramadalapeste/base.html' %}
 {% load static %}
-{% block styles %}
+{% block game_base_styles %}
 <link rel="stylesheet" href="{% static 'styles/kabaramadalapeste/island.css' %}" />
-<link rel="stylesheet" href="{% static 'styles/kabaramadalapeste/player_info.css' %}" />
-{% endblock styles %}
+{% endblock game_base_styles %}
 {% block game_base_content %}
 <div id="island-container"></div>
 <div style="position: absolute; z-index: 10; top: 0; left: 0">
     <a href="/game/" class="my-btn my-4 mx-4">بازگشت به نقشه</a>
 </div>
 <img class="kabaramadalapeste_logo" src="{% static 'images/game/logo.png' %}" />
-{% include 'kabaramadalapeste/player_info.html' %}
 
 {% include 'modal/prompt.html' with modal_id='resize_modal' modal_title="تغییر ابعاد" modal_question="آیا مایل به بارگذاری مجدد صفحه هستید؟" %}
 {% endblock game_base_content %}

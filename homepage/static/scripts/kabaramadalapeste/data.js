@@ -390,7 +390,7 @@ let data = {
             height: 0.155,
             src: "31.png",
             zIndex: 10,
-            neighborhoods: [17, 18, 30, 34],
+            neighborhoods: [17, 18, 30, 34, 20],
             name: "عجیب"
         },
         {

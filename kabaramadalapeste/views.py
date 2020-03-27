@@ -93,6 +93,17 @@ class IslandInfoView(View):
                 }
                 treasure_keys_persian = pis.treasure.get_keys_persian_string()
             submit_status = pis.submit.submit_status if pis.submit else 'No'
+            estimated_judge_time = 15
+            if not pis.island.challenge.is_judgeable:
+                estimated_judge_time = 0
+            submits = JudgeableSubmit.objects.exclude(submit_status='Pending').filter(pis__island__island_id=island_id).all()
+            if submits.count() > 0:
+                s = 0
+                t = 0
+                for submit in submits:
+                    s += (submit.judged_at - submit.submitted_at).seconds//60
+                    t += 1
+                estimated_judge_time = 5 + s//t
             return JsonResponse({
                 'name': island.name,
                 'challenge_name': island.challenge.name if island.challenge else '',
@@ -106,7 +117,7 @@ class IslandInfoView(View):
                 'participants_inside': ParticipantIslandStatus.objects.filter(
                     island=island, currently_anchored=True
                 ).count(),
-                'judge_estimated_minutes': 0,  # TODO: fill here
+                'judge_estimated_minutes': estimated_judge_time,
                 'submit_status': submit_status,
             })
         except Exception as e:
@@ -135,7 +146,12 @@ class ParticipantInfoView(View):
                 'username': request.user.username,
                 'current_island_id': current_island_id,
                 'currently_anchored': currently_anchored,
-                'properties': properties_dict
+                'properties': properties_dict,
+                'has_free_travel': AbilityUsage.objects.filter(
+                        participant=request.user.participant,
+                        ability_type=settings.GAME_TRAVEL_EXPRESS,
+                        is_active=True
+                    ).all().count() > 0
             })
         except Exception as e:
             logger.error(e, exc_info=True)

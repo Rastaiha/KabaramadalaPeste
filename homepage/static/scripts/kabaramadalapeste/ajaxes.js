@@ -82,3 +82,33 @@ function notifications_unread_list() {
 function mark_as_read(slug) {
     return $.ajax("/notifications/mark-as-read/" + slug + "/");
 }
+
+function create_offer(form) {
+    return $.ajax({
+        method: "POST",
+        url: "/game/create_offer/",
+        data: form.serialize()
+    });
+}
+
+function get_all_offers(form) {
+    return $.ajax("/game/get_all_offers/");
+}
+
+function get_my_offers() {
+    return $.ajax("/game/get_my_offers/");
+}
+
+function delete_offer(pk) {
+    return $.ajax({
+        method: "POST",
+        url: "/game/delete_offer/" + pk + "/"
+    });
+}
+
+function accept_offer(pk) {
+    return $.ajax({
+        method: "POST",
+        url: "/game/accept_offer/" + pk + "/"
+    });
+}

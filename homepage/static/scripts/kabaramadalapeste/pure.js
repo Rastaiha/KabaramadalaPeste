@@ -67,7 +67,7 @@ function update_island_info(response) {
     island_info.find(".island-info-check-time span").text(check_time);
 }
 
-function is_curront_island(island_id) {
+function is_current_island(island_id) {
     return island_id === data.ship.island_id;
 }
 
@@ -79,7 +79,7 @@ function update_island_info_btn(island_id) {
     return is_currently_anchored().then(currently_anchored => {
         let action = "";
         let btn_text = "";
-        if (is_curront_island(island_id)) {
+        if (is_current_island(island_id)) {
             action = "langar";
             if (currently_anchored) {
                 btn_text = "بازگشت به جزیره";

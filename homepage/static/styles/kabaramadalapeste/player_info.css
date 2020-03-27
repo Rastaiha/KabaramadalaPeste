@@ -1,5 +1,5 @@
 .right-info {
-    position: absolute;
+    position: fixed;
     right: -200px;
     transition: 0.3s;
     direction: rtl;
@@ -98,15 +98,19 @@
     color: white;
     font-size: 30px;
     font-weight: 400;
+    height: 35px;
 }
 
 .player-proprty b {
     font-weight: 900;
+    display: inline-block;
+    width: 100px;
+    text-align: center;
 }
 
 .player-proprty img {
     height: 20px;
-    margin-left: 10px;
+    margin-left: 20px;
 }
 
 .kabaramadalapeste_logo {
