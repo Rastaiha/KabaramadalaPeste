@@ -39,6 +39,10 @@ def import_island_row(row):
             name=row[1],
             challenge=Challenge.objects.get(challenge_id=row[2])
         )
+        base_dir = os.path.join(settings.BASE_DIR, 'kabaramadalapeste/initial_data')
+        clue_file = os.path.join(base_dir, 'clues/%s.txt' % row[0])
+        island.peste_guidance = open(clue_file).read()
+        island.save()
     if int(row[3]):
         Peste.objects.create(
             island=island
