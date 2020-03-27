@@ -12,7 +12,7 @@ from accounts.models import Participant
 from kabaramadalapeste.models import (
     Island, ParticipantIslandStatus, TradeOffer, TradeOfferRequestedItem, PesteConfiguration,
     TradeOfferSuggestedItem, AbilityUsage, BandargahInvestment, BandargahConfiguration, Bully,
-    ShortAnswerQuestion, JudgeableSubmit, ShortAnswerSubmit, BaseSubmit
+    ShortAnswerQuestion, JudgeableSubmit, ShortAnswerSubmit, BaseSubmit, Peste
 )
 from kabaramadalapeste.conf import settings
 from kabaramadalapeste.forms import (
@@ -117,6 +117,7 @@ class IslandInfoView(View):
                 'participants_inside': ParticipantIslandStatus.objects.filter(
                     island=island, currently_anchored=True
                 ).count(),
+                'is_spade_available': PesteConfiguration.get_solo().is_peste_available,
                 'judge_estimated_minutes': estimated_judge_time,
                 'submit_status': submit_status,
             })
@@ -290,6 +291,11 @@ class SpadeView(View):
                 'status': settings.OK_STATUS,
                 'found': found
             })
+        except Peste.PesteNotAvailable:
+            return JsonResponse({
+                'status': settings.ERROR_STATUS,
+                'message': 'قابلیت کندوکاو در روز اول فعال نیست.'
+            }, status=400)
         except Participant.ParticipantIsNotOnIsland:
             return JsonResponse({
                 'status': settings.ERROR_STATUS,

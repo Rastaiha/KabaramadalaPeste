@@ -50,6 +50,7 @@ class Island(models.Model):
 class PesteConfiguration(SingletonModel):
     island_spade_cost = models.IntegerField(default=15000)
     peste_reward = models.IntegerField(default=30000)
+    is_peste_available = models.BooleanField(default=False)
 
 
 class Peste(models.Model):
@@ -60,6 +61,9 @@ class Peste(models.Model):
                                  on_delete=models.SET_NULL,
                                  null=True,
                                  blank=True)
+
+    class PesteNotAvailable(Exception):
+        pass
 
 
 class Way(models.Model):

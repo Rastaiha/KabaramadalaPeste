@@ -294,7 +294,8 @@ class Participant(models.Model):
             current_pis.last_anchored_at = timezone.now()
             current_pis.save()
 
-            self.send_msg_peste_guidance()
+            if game_models.PesteConfiguration.get_solo().is_peste_available:
+                self.send_msg_peste_guidance()
 
             active_bullies = self.get_current_island().bullies.all().filter(is_expired=False)
             if active_bullies.count() > 0:
@@ -354,6 +355,8 @@ class Participant(models.Model):
             current_pis.save()
 
     def spade_on_current_island(self):
+        if not game_models.PesteConfiguration.get_solo().is_peste_available:
+            raise game_models.Peste.PesteNotAvailable
         current_pis = game_models.ParticipantIslandStatus.objects.get(
             participant=self,
             island=self.get_current_island()
