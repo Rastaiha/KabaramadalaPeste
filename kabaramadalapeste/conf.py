@@ -46,6 +46,7 @@ class GameConf(AppConf):
         VISION: 'توانایی بینش غیبی',
         TRAVEL_EXPRESS: 'توانایی سفر اکسپرس',
         CHALLENGE_PLUS: 'توانایی چالش پلاس',
+        PROPHECY: '',
         BULLY: 'توانایی زورگیری'
     }
 
