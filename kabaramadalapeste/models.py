@@ -400,9 +400,8 @@ class JudgeableSubmit(BaseSubmit):
     def save(self, *args, **kwargs):
         dt = timezone.now()
         r = ''.join(random.choices(string.ascii_letters + string.digits, k=12))
-        self.submitted_answer = '%s-%s-%s-%s' % (
-            dt.isoformat(),
-            slugify(self.title), r, self.submitted_answer
+        self.submitted_answer = '%s-%s-%s' % (
+            dt.isoformat(), r, self.submitted_answer
         )
         super(JudgeableSubmit, self).save(*args, **kwargs)
 

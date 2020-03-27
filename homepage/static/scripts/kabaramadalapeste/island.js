@@ -144,8 +144,8 @@ $("#prompt_modal_btn").click(function() {
             break;
         case "bill":
             spade()
-                .then(found => {
-                    if (found) {
+                .then(response => {
+                    if (response.found) {
                         my_alert("پسته رو پیدا کردی!!! تبریک می‌گم.", "پسته");
                     } else {
                         my_alert("متاسفانه اینجا خالیه.", "پسته");
