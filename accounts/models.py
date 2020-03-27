@@ -442,6 +442,18 @@ class Participant(models.Model):
             level='info', public=False, text=text
         )
 
+    def send_msg_correct_judged_answer(self, judgeablesubmit):
+        pass  # TODO must be filled with sending appropriate message
+
+    def send_msg_wrong_judged_answer(self, judgeablesubmit):
+        pass  # TODO must be filled with sending appropriate message
+
+    def send_msg_correct_short_answer(self, shortanswersubmit):
+        pass  # TODO must be filled with sending appropriate message
+
+    def send_msg_wrong_short_answer(self, shortanswersubmit):
+        pass  # TODO must be filled with sending appropriate message
+
 
 class JudgeManager(models.Manager):
     @transaction.atomic
