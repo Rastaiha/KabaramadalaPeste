@@ -1,12 +1,19 @@
-from django.db import models
+from django.db import models, transaction
 from kabaramadalapeste.conf import settings
 from accounts.models import Participant
 
-from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from django.contrib.contenttypes.models import ContentType
+from django.utils import timezone
 
 import random
 import logging
+import math
+
+from solo.models import SingletonModel
+from django.template.defaultfilters import slugify
+from enum import Enum
+import string
 
 logger = logging.getLogger(__file__)
 
@@ -18,6 +25,8 @@ class Island(models.Model):
                                   on_delete=models.SET_NULL,
                                   blank=True,
                                   null=True)
+
+    peste_guidance = models.TextField(null=True, blank=True)
 
     class IslandsNotConnected(Exception):
         pass
@@ -36,6 +45,21 @@ class Island(models.Model):
             Way.objects.filter(first_end=self, second_end=other_island).count() != 0 or
             Way.objects.filter(first_end=other_island, second_end=self).count() != 0
         )
+
+
+class PesteConfiguration(SingletonModel):
+    island_spade_cost = models.IntegerField(default=15000)
+    peste_reward = models.IntegerField(default=30000)
+
+
+class Peste(models.Model):
+    island = models.OneToOneField(Island,
+                                  on_delete=models.CASCADE)
+    is_found = models.BooleanField(default=False)
+    found_by = models.ForeignKey('accounts.Participant',
+                                 on_delete=models.SET_NULL,
+                                 null=True,
+                                 blank=True)
 
 
 class Way(models.Model):
@@ -59,7 +83,7 @@ class Challenge(models.Model):
     is_judgeable = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.name
+        return '%s | %s' % (self.name, self.challenge_id)
 
     @property
     def questions(self):
@@ -106,6 +130,18 @@ class BaseQuestion(models.Model):
             self.title, self.challenge.name
         )
 
+    def get_answer_type(self):
+        raise NotImplementedError
+
+    def save(self, *args, **kwargs):
+        dt = timezone.now()
+        r = ''.join(random.choices(string.ascii_letters + string.digits, k=12))
+        self.question = '%s-%s-%s-%s' % (
+            dt.isoformat(),
+            slugify(self.title), r, self.question
+        )
+        super(BaseQuestion, self).save(*args, **kwargs)
+
 
 class ShortAnswerQuestion(BaseQuestion):
     INTEGER = 'INT'
@@ -116,21 +152,67 @@ class ShortAnswerQuestion(BaseQuestion):
         (FLOAT, 'float'),
         (STRING, 'string')
     ]
-    correct_answer = models.CharField(max_length=50)
+    correct_answer = models.CharField(max_length=100)
     answer_type = models.CharField(
         max_length=3,
         choices=ANSWER_TYPE_CHOICES,
         default=STRING,
     )
 
+    pis_set = GenericRelation(
+        'ParticipantIslandStatus',
+        related_query_name='short_answer_question',
+        content_type_field='question_content_type',
+        object_id_field='question_object_id',
+    )
+
+    def get_answer_type(self):
+        return self.answer_type
+
 
 class JudgeableQuestion(BaseQuestion):
-    pass
+    upload_required = models.BooleanField(default=True)
+
+    pis_set = GenericRelation(
+        'ParticipantIslandStatus',
+        related_query_name='judgeable_question',
+        content_type_field='question_content_type',
+        object_id_field='question_object_id',
+    )
+
+    def get_answer_type(self):
+        return 'FILE' if self.upload_required else 'NO'
 
 
 class Treasure(models.Model):
     def __str__(self):
         return 'Treasure %s' % self.id
+
+    def get_keys_persian_string(self):
+        n = self.keys.exclude(amount__exact=0).all().count()
+        s = ''
+        i = 0
+        for treasure_key_item in self.keys.exclude(amount__exact=0).all():
+            s += '%d عدد %s' % (treasure_key_item.amount, settings.GAME_TRANSLATION_DICT[treasure_key_item.key_type])
+            if i < n-2:
+                s += '، '
+            elif i == n-2:
+                s += ' و '
+            i += 1
+        return s
+
+    def get_rewards_persian_string(self):
+        n = self.rewards.exclude(amount__exact=0).all().count()
+        s = ''
+        i = 0
+        for treasure_reward_item in self.rewards.exclude(amount__exact=0).all():
+            s += '%d عدد %s' % (treasure_reward_item.amount, settings.GAME_TRANSLATION_DICT[treasure_reward_item.reward_type])
+            if i < n-2:
+                s += '، '
+            elif i == n-2:
+                s += ' و '
+            i += 1
+        return s
 
 
 class TreasureKeyItem(models.Model):
@@ -189,6 +271,8 @@ class ParticipantIslandStatus(models.Model):
 
     treasure = models.ForeignKey(Treasure, on_delete=models.SET_NULL, null=True)
 
+    is_treasure_visible = models.BooleanField(default=False)
+
     did_open_treasure = models.BooleanField(default=False)
     treasure_opened_at = models.DateTimeField(null=True)
 
@@ -203,12 +287,16 @@ class ParticipantIslandStatus(models.Model):
     did_accept_challenge = models.BooleanField(default=False)
     challenge_accepted_at = models.DateTimeField(null=True)
 
+    did_spade = models.BooleanField(default=False)
+    spaded_at = models.DateTimeField(null=True)
+
     question_content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, null=True)
     question_object_id = models.PositiveIntegerField(null=True)
     question = GenericForeignKey('question_content_type', 'question_object_id')
 
     class Meta:
         unique_together = (("participant", "island"),)
+        verbose_name_plural = 'Participant island statuses'
 
     def assign_question(self, force=False):
         if self.question and not force:
@@ -225,6 +313,97 @@ class ParticipantIslandStatus(models.Model):
         result_question_id = random.choice(list(valid_question_ids))
         self.question = self.island.challenge.questions.get(id=result_question_id[0])
         self.save()
+
+    @property
+    def submit(self):
+        try:
+            if self.question.challenge.is_judgeable:
+                return self.judgeablesubmit
+            return self.shortanswersubmit
+        except (ParticipantIslandStatus.judgeablesubmit.RelatedObjectDoesNotExist,
+                ParticipantIslandStatus.shortanswersubmit.RelatedObjectDoesNotExist, AttributeError):
+            return None
+
+    def __str__(self):
+        return 'ParticipantIslandStatus for %s and %s' % (self.participant, self.island.name)
+
+
+class BaseSubmit(models.Model):
+    class SubmitStatus(models.TextChoices):
+        Pending = 'Pending'
+        Correct = 'Correct'
+        Wrong = 'Wrong'
+
+    pis = models.OneToOneField(ParticipantIslandStatus,
+                               related_name='%(class)s',
+                               on_delete=models.CASCADE)
+    submitted_at = models.DateTimeField(default=timezone.now)
+    submit_status = models.CharField(max_length=20, default=SubmitStatus.Pending,
+                                     choices=SubmitStatus.choices)
+    judged_at = models.DateTimeField(null=True)
+
+    class Meta:
+        abstract = True
+
+    def __str__(self):
+        return 'Submit from %s for question %s with status %s' % (
+            self.pis.participant.member.username, self.pis.question.title, self.submit_status
+        )
+
+    def __init__(self, *args, **kwargs):
+        super(BaseSubmit, self).__init__(*args, **kwargs)
+        self.initial_submit_status = self.submit_status
+
+    def is_bad_change(self, *args, **kwargs):
+        if (self.initial_submit_status != BaseSubmit.SubmitStatus.Pending and
+                self.initial_submit_status != self.submit_status):
+            return True
+        return False
+
+    @transaction.atomic
+    def give_rewards_to_participant(self):
+        for reward in self.pis.question.challenge.rewards.all():
+            self.pis.participant.add_property(reward.key, reward.amount)
+
+
+class ShortAnswerSubmit(BaseSubmit):
+
+    submitted_answer = models.CharField(max_length=100)
+
+    def check_answer(self):
+        question = self.pis.question
+        is_correct = False
+        try:
+            if question.answer_type == ShortAnswerQuestion.INTEGER:
+                is_correct = int(self.submitted_answer) == int(question.correct_answer)
+            elif question.answer_type == ShortAnswerQuestion.FLOAT:
+                is_correct = math.isclose(float(self.submitted_answer), float(question.correct_answer),
+                                          abs_tol=5e-3)
+            else:
+                is_correct = self.submitted_answer == question.correct_answer
+        except ValueError:
+            logger.warn('Type mismatch for %s' % self)
+        self.submit_status = BaseSubmit.SubmitStatus.Correct if is_correct else BaseSubmit.SubmitStatus.Wrong
+        self.judged_at = timezone.now()
+        self.save()
+
+
+class JudgeableSubmit(BaseSubmit):
+    submitted_answer = models.FileField(upload_to='answers/', null=True, blank=True)
+    judge_note = models.CharField(max_length=200, null=True, blank=True)
+
+    judged_by = models.ForeignKey('accounts.Member',
+                                  on_delete=models.SET_NULL,
+                                  null=True,
+                                  blank=True)
+
+    def save(self, *args, **kwargs):
+        dt = timezone.now()
+        r = ''.join(random.choices(string.ascii_letters + string.digits, k=12))
+        self.submitted_answer = '%s-%s-%s' % (
+            dt.isoformat(), r, self.submitted_answer
+        )
+        super(JudgeableSubmit, self).save(*args, **kwargs)
 
 
 class TradeOffer(models.Model):
@@ -244,6 +423,20 @@ class TradeOffer(models.Model):
 
     def __str__(self):
         return 'creator: %s, status: %s' % (self.creator_participant.member.email, self.status)
+
+    def to_dict(self):
+        dic = {
+            'pk': self.pk,
+            'creator_participant_username': self.creator_participant.member.username
+        }
+        for offer_item in self.suggested_items.all():
+            dic['suggested_' + offer_item.property_type] = offer_item.amount
+        for offer_item in self.requested_items.all():
+            dic['requested_' + offer_item.property_type] = offer_item.amount
+        return dic
+
+    class InvalidOfferSelected(Exception):
+        pass
 
 
 class TradeOfferSuggestedItem(models.Model):
@@ -270,3 +463,56 @@ class TradeOfferRequestedItem(models.Model):
 
     class Meta:
         unique_together = (("offer", "property_type"),)
+
+
+class AbilityUsage(models.Model):
+    datetime = models.DateTimeField(auto_now_add=True)
+    participant = models.ForeignKey(Participant, related_name='used_abilities', on_delete=models.CASCADE)
+    ability_type = models.CharField(
+        max_length=3,
+        choices=settings.GAME_ABILITY_TYPE_CHOICES,
+        default=settings.GAME_VISION,
+    )
+    is_active = models.BooleanField(default=False)
+
+    class InvalidAbility(Exception):
+        pass
+
+
+class BandargahConfiguration(SingletonModel):
+    min_possible_invest = models.IntegerField(default=3000)
+    max_possible_invest = models.IntegerField(default=4000)
+    profit_coefficient = models.FloatField(default=1.5)
+    loss_coefficient = models.FloatField(default=0.5)
+    min_interval_investments = models.IntegerField(default=300000)
+    max_interval_investments = models.IntegerField(default=1000000)
+
+
+class BandargahInvestment(models.Model):
+    participant = models.ForeignKey(Participant, related_name='investments', on_delete=models.CASCADE)
+    amount = models.IntegerField(default=0)
+    datetime = models.DateTimeField(auto_now_add=True)
+    is_applied = models.BooleanField(default=False)
+
+    class InvalidAmount(Exception):
+        pass
+
+    class LocationIsNotBandargah(Exception):
+        pass
+
+    class CantInvestTwiceToday(Exception):
+        pass
+
+
+class Bully(models.Model):
+    owner = models.ForeignKey(Participant, related_name='bullies', on_delete=models.CASCADE)
+    island = models.ForeignKey(Island, related_name='bullies', on_delete=models.CASCADE)
+    creation_datetime = models.DateTimeField(auto_now_add=True)
+    is_expired = models.BooleanField(default=False)
+    expired_datetime = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        verbose_name_plural = 'Bullies'
+
+    class CantBeOnBandargah(Exception):
+        pass

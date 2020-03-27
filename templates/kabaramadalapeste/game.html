@@ -44,7 +44,7 @@
             </div>
         </div>
         <div class="mt-1 island-info-action">
-            <a class="my-btn" data-toggle="modal" data-target="#travel_modal"></a>
+            <a class="my-btn mx-2"></a>
         </div>
     </div>
 </div>
@@ -54,9 +54,7 @@
 </div>
 <img class="kabaramadalapeste_logo" src="{% static 'images/game/logo.png' %}" />
 
-{% include 'modal/prompt.html' with modal_id='travel_modal' %}
 {% include 'modal/prompt.html' with modal_id='resize_modal' modal_title="تغییر ابعاد" modal_question="آیا مایل به بارگذاری مجدد صفحه هستید؟" %}
-{% include 'modal/prompt.html' with modal_id='alert_modal' modal_title="موجودی ناکافی" modal_message="دارایی شما برای این عملیات کافی نیست." %}
 
 {% endblock game_base_content %}
 {% block game_base_scripts %}
@@ -70,96 +68,5 @@
     Konva.pixelRatio = 1;
 </script>
 {% endif %}
-<script>
-    $(window).on('resize', function () {
-        $("#resize_modal").modal()
-    });
-    $('#resize_modal_btn').click(function () {
-        location.reload(false);
-    })
-    let gps_start = 0,
-        gps_animation_mode, dx, dy;
-
-    function gps_anime() {
-        if (gps_start !== 0) {
-            let delta = new Date() - gps_start;
-            if (gps_animation_mode) {
-                if (delta > 300) {
-                    data.layer.x(dx);
-                    data.layer2.x(dx);
-                    data.layer.batchDraw();
-                    data.layer2.batchDraw();
-                    gps_start = 0
-                } else {
-                    data.layer.x(10 * Math.sin((delta * 2 * Math.PI) / 10) + dx);
-                    data.layer2.x(data.layer.x());
-                    data.layer.batchDraw();
-                    data.layer2.batchDraw();
-                }
-            } else {
-                if (delta > 1000) {
-                    gps_start = 0;
-                } else {
-                    data.layer.x((data.layer.x() * (1000 - delta) / 1000 + dx * delta / 1000));
-                    data.layer.y((data.layer.y() * (1000 - delta) / 1000 + dy * delta / 1000));
-                    data.layer2.x(data.layer.x());
-                    data.layer2.y(data.layer.y());
-                    data.layer.batchDraw();
-                    data.layer2.batchDraw();
-                }
-            }
-        }
-        requestAnimationFrame(gps_anime);
-    }
-    setTimeout(function () {
-        gps_anime()
-    }, 1000)
-    $(".gps").click(function () {
-        dx = data.stage.width() / 2 - data.ship.elem.x() - data.ship.elem.width() / 2
-        dy = data.stage.height() / 2 - data.ship.elem.y() - data.ship.elem.height() / 2
-
-        data.layer.margin.x = Math.max(
-            data.layer.margin.x,
-            dx,
-            data.stage.width() - data.back.width - dx
-        )
-        data.layer.margin.y = Math.max(
-            data.layer.margin.y,
-            dy,
-            data.stage.height() - data.back.height - dy
-        )
-        gps_animation_mode = 0;
-        if (Math.abs(dx - data.layer.x()) < 1 && Math.abs(dy - data.layer.y()) < 1) {
-            gps_animation_mode = 1;
-        }
-        gps_start = new Date();
-    })
-</script>
-{% comment %} <script>
-    (function () {
-        var script = document.createElement('script');
-        script.onload = function () {
-            var stats = new Stats();
-            document.body.appendChild(stats.dom);
-            requestAnimationFrame(function loop() {
-                stats.update();
-                requestAnimationFrame(loop)
-            });
-        };
-        script.src = '//mrdoob.github.io/stats.js/build/stats.min.js';
-        document.head.appendChild(script);
-    })()
-    setTimeout(function () {
-        var draw = data.layer2.draw;
-        data.layer2.draw = function () {
-            if (typeof stats !== "undefined") {
-                stats.begin()
-                draw.call(this);
-                stats.end()
-            } else {
-                draw.call(this);
-            }
-        }
-    }, 3000)
-</script> {% endcomment %}
+<script src="{% static 'scripts/kabaramadalapeste/game.js' %}"></script>
 {% endblock game_base_scripts %}

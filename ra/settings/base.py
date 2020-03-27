@@ -40,7 +40,10 @@ INSTALLED_APPS = [
     'import_export',
     'homepage',
     'kabaramadalapeste',
-    'accounts'
+    'accounts',
+    'solo',
+    'nested_inline',
+    'notifications'
 ]
 
 MIDDLEWARE = [
@@ -99,7 +102,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Tehran'
 
 USE_I18N = True
 
@@ -133,3 +136,8 @@ django_heroku.settings(locals(), test_runner=False)
 OK_STATUS = 'ok'
 ERROR_STATUS = 'err'
 HELP_STATUS = 'help'
+
+DJANGO_NOTIFICATIONS_CONFIG = {
+    'USE_JSONFIELD': True,
+    'SOFT_DELETE': True
+}

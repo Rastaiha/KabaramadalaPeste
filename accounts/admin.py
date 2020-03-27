@@ -2,7 +2,10 @@ from django.contrib import admin
 from django.utils.safestring import mark_safe
 from django.urls import path, reverse
 from django.shortcuts import redirect
+
 from accounts.models import *
+from kabaramadalapeste.models import ParticipantPropertyItem
+from nested_inline.admin import NestedStackedInline, NestedModelAdmin
 
 from import_export.admin import ExportActionMixin
 from import_export.fields import Field
@@ -50,9 +53,14 @@ class MemberResource(resources.ModelResource):
             return ''
 
 
-class ParticipantInline(admin.StackedInline):
+class ParticipantPropertyItemInline(NestedStackedInline):
+    model = ParticipantPropertyItem
+
+
+class ParticipantInline(NestedStackedInline):
     readonly_fields = ['document', 'gender', 'currently_at_island']
     model = Participant
+    inlines = [ParticipantPropertyItemInline]
 
 
 class IsPaidFilter(admin.SimpleListFilter):
@@ -96,7 +104,7 @@ class IsVerifiedFilter(admin.SimpleListFilter):
         return queryset
 
 
-class MemberAdmin(ExportActionMixin, admin.ModelAdmin):
+class MemberAdmin(ExportActionMixin, NestedModelAdmin):
     resource_class = MemberResource
 
     list_display = ('username', 'real_name', 'get_city', 'get_school', 'is_active', 'get_is_paid', 'get_document_status',
@@ -131,7 +139,6 @@ class MemberAdmin(ExportActionMixin, admin.ModelAdmin):
         try:
             if 'Pending' in obj.participant.document_status:
                 return None
-            print(obj.participant.document_status)
             return obj.participant.document_status == 'Verified'
         except:
             return None
@@ -222,6 +229,43 @@ class PaymentAttemptAdmin(admin.ModelAdmin):
 
     get_username.short_description = 'USERNAME'
     get_real_name.short_description = 'REAL NAME'
+
+
+@admin.register(NotificationData)
+class NotificationDataAdmin(admin.ModelAdmin):
+    list_display = (
+        'id', 'level', 'text', 'send_to_all_participants', 'get_recipients_count', 'status', 'sent_at', 'send_action'
+    )
+    exclude = ('status', 'sent_at', 'sent_by')
+
+    def get_recipients_count(self, obj):
+        return obj.recipients.count()
+
+    get_recipients_count.short_description = 'recipients count if specific'
+
+    def get_urls(self):
+        urls = super().get_urls()
+        custom_urls = [
+            path(
+                'send/<int:pk>/',
+                self.send_notifications,
+                name='send_notifications',
+            ),
+        ]
+        return custom_urls + urls
+
+    def send_action(self, obj):
+        try:
+            if obj.status == NotificationData.NotificationStatus.Draft:
+                return mark_safe('<a class="button" href="' + reverse('admin:send_notifications',
+                                                                      args=[obj.pk]) + '">ارسال</a>')
+        except Exception:
+            return ''
+
+    def send_notifications(self, request, pk):
+        notification_data = NotificationData.objects.get(pk=pk)
+        notification_data.send_notifications(request.user)
+        return redirect('/admin/accounts/notificationdata/')
 
 
 admin.site.register(Member, MemberAdmin)

@@ -24,7 +24,7 @@ class GameConf(AppConf):
     PROPHECY = 'PRC'
     BULLY = 'BLY'
 
-    ABILITY_TYPY_CHOICES = [
+    ABILITY_TYPE_CHOICES = [
         (VISION, 'vision'),
         (TRAVEL_EXPRESS, 'travel express'),
         (CHALLENGE_PLUS, 'challenge plus'),
@@ -34,16 +34,30 @@ class GameConf(AppConf):
 
     TREASURE_REWARD_TYPE_CHOICES = [
         (SEKKE, 'sekke'),
-    ] + TREASURE_KEY_TYPE_CHOICES + ABILITY_TYPY_CHOICES
+    ] + TREASURE_KEY_TYPE_CHOICES + ABILITY_TYPE_CHOICES
 
     PARTICIPANT_PROPERTY_TYPE_CHOICES = TREASURE_REWARD_TYPE_CHOICES
 
-    PARTICIPANT_INITIAL_PROPERTIES = {
-        SEKKE: 100
+    TRANSLATION_DICT = {
+        SEKKE: 'سکه',
+        KEY1: 'کلید طلایی',
+        KEY2: 'کلید آبی',
+        KEY3: 'کلید قرمز',
+        VISION: 'توانایی بینش غیبی',
+        TRAVEL_EXPRESS: 'توانایی سفر اکسپرس',
+        CHALLENGE_PLUS: 'توانایی چالش پلاس',
+        PROPHECY: '',
+        BULLY: 'توانایی زورگیری'
     }
 
-    MOVE_PRICE = 20
-    PUT_ANCHOR_PRICE = 30
+    PARTICIPANT_INITIAL_PROPERTIES = {
+        SEKKE: 1500
+    }
+
+    MOVE_PRICE = 100
+    PUT_ANCHOR_PRICE = 200
+
+    BULLY_DAMAGE = 300
 
     DEFAULT_ISLAND_COUNT = 35
     BANDARGAH_ISLAND_ID = 20
@@ -57,6 +71,9 @@ class GameConf(AppConf):
         (OFFER_ACCEPTED, 'accepted'),
         (OFFER_ACTIVE, 'active')
     ]
+
+    MAXIMUM_ACTIVE_OFFERS = 4
+    BASE_CHALLENGE_PER_DAY = 4
 
     class Meta:
         prefix = 'game'

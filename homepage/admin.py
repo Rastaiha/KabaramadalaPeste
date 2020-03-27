@@ -7,7 +7,7 @@ from solo.admin import SingletonModelAdmin
 from homepage.models import *
 
 
-class SiteConfigAdmin(admin.ModelAdmin):
+class SiteConfigAdmin(SingletonModelAdmin):
     pass
 
 

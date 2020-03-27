@@ -5,12 +5,19 @@
     direction: rtl;
 }
 
-.player-info {
+.notification-box {
     top: 100px;
+    z-index: 2;
+}
+
+.player-info {
+    top: 180px;
+    z-index: 3;
 }
 
 .exchange-info {
-    top: 180px;
+    top: 260px;
+    z-index: 4;
 }
 
 .right-info.show-details {
@@ -31,6 +38,21 @@
     justify-content: center;
     transition: 0.3s;
     transform-origin: top right;
+}
+
+.notification-box .right-info-details {
+    align-items: normal;
+    padding: 0 5px;
+}
+
+.notifications {
+    max-height: 300px;
+    overflow: auto;
+    -ms-overflow-style: none;
+}
+
+.notifications::-webkit-scrollbar {
+    display: none;
 }
 
 .right-info-btn img {
@@ -64,7 +86,7 @@
     font-weight: 600;
 }
 
-.player-item {
+.player-proprty {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -72,17 +94,17 @@
 }
 
 
-.player-item span {
+.player-proprty span {
     color: white;
     font-size: 30px;
     font-weight: 400;
 }
 
-.player-item b {
+.player-proprty b {
     font-weight: 900;
 }
 
-.player-item img {
+.player-proprty img {
     height: 20px;
     margin-left: 10px;
 }
@@ -93,4 +115,123 @@
     top: 5px;
     width: 100px;
     filter: drop-shadow(0.1rem 0.1rem 0.1rem black);
+}
+
+
+.notifications>div {
+    position: relative;
+    padding: 0;
+    display: inline-block;
+}
+
+.notifications .line {
+    position: absolute;
+    top: 0;
+    right: 10px;
+    height: 100%;
+    width: 3px;
+    background: #EBEBEB;
+}
+
+.show-details .notifications .line {
+    animation: appear .5s;
+}
+
+@keyframes appear {
+    0% {
+        transform: translateY(-20rem);
+    }
+
+    100% {
+        transform: translateY(0rem);
+    }
+}
+
+.notifications .notification {
+    position: relative;
+    z-index: 2;
+    margin: 20px 30px 25px 10px;
+    transition: 0.3s;
+}
+
+.show-details .notifications .notification:nth-child(2) {
+    animation: here-am-i 0.5s ease-out 0.1s;
+    animation-fill-mode: both;
+}
+
+.show-details .notifications .notification:nth-child(3) {
+    animation: here-am-i 0.5s ease-out 0.4s;
+    animation-fill-mode: both;
+}
+
+.show-details .notifications .notification:nth-child(4) {
+    animation: here-am-i 0.5s ease-out 0.7s;
+    animation-fill-mode: both;
+}
+
+.show-details .notifications .notification:nth-child(5) {
+    animation: here-am-i 0.5s ease-out 1s;
+    animation-fill-mode: both;
+}
+
+.show-details .notifications .notification:nth-child(6) {
+    animation: here-am-i 0.5s ease-out 1.3s;
+    animation-fill-mode: both;
+}
+
+.show-details .notifications .notification:nth-child(7) {
+    animation: here-am-i 0.5s ease-out 1.6s;
+    animation-fill-mode: both;
+}
+
+.notifications .notification:hover {
+    color: yellow;
+    cursor: default;
+}
+
+.notifications .notification .circle {
+    box-sizing: border-box;
+    position: absolute;
+    height: 11px;
+    width: 11px;
+    background: rgb(212, 212, 167);
+    border: .18rem solid black;
+    box-shadow: 0 0 0 3px #ccc;
+    border-radius: 6px;
+    top: 14px;
+    right: -24px;
+}
+
+.notifications .notification .time {
+    display: block;
+    font-size: .75rem;
+    line-height: 11px;
+    margin-bottom: 2px;
+    direction: ltr;
+    text-align: right;
+    font-weight: 200;
+    color: #ccc;
+}
+
+.notifications .notification p {
+    line-height: 20px;
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 300;
+}
+
+.notifications .notification b {
+    font-weight: 800;
+}
+
+@keyframes here-am-i {
+    from {
+        transform: translate3d(0, 50px, 0);
+        opacity: 0;
+    }
+
+    to {
+        transform: translate3d(0, 0, 0);
+        opacity: 1;
+    }
 }
