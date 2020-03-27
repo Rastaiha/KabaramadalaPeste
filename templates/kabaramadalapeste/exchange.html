@@ -1,135 +1,60 @@
 {% extends 'kabaramadalapeste/base.html' %}
 {% load static %}
-{% block styles %}
+{% block game_base_styles %}
 <link rel="stylesheet" href="{% static 'styles/kabaramadalapeste/exchange.css' %}" />
-{% endblock styles %}
+{% endblock game_base_styles %}
 {% block game_base_content %}
-<div class="full-page-center-item">
-    <div class="container">
-        <a class="my-btn my-2" href="{% url 'kabaramadalapeste:game' %}">بازگشت به بازی</a>
-        <div class="exchange-wrapper my-3">
-            <h2 class="text-center mb-4 mt-2">مبادلات موجود در بازار</h2>
-            <div class="row exchanges-list">
-                <div class="col-md-4 col-sm-6">
-                    <div class="exchange-card">
-                        <h3 class="text-center mb-3">خرگوش زرنگ</h3>
-                        <div class="row">
-                            <div class="col-6">
-                                <div class="exchange-section b-exchange">
-                                    <div class="exchange-type">+</div>
-                                    <div style="display: flex; align-items: center; justify-content: center;">
-                                        <span>
-                                            <b>3 </b>×
-                                        </span>
-                                        <img src="{% static 'images/game/coins.png' %}" />
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-6">
-                                <div class="exchange-section s-exchange">
-                                    <div class="exchange-type">-</div>
-                                    <div style="display: flex; align-items: center; justify-content: center;">
-                                        <span>
-                                            <b>2 </b>×
-                                        </span>
-                                        <img src="{% static 'images/game/coins.png' %}" />
-                                    </div>
-                                    <div style="display: flex; align-items: center; justify-content: center;">
-                                        <span>
-                                            <b>2 </b>×
-                                        </span>
-                                        <img src="{% static 'images/game/coins.png' %}" />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div>
-                            <a class="my-btn w-100">مبادله</a>
-                        </div>
-                    </div>
+<div class="template offer-item-template">
+    <div style="display: flex; align-items: center; justify-content: center;">
+        <span>
+            <b class="offer-item-number"></b> ×
+        </span>
+        <img class="offer-item-img" />
+    </div>
+</div>
+<div class="template offer-template">
+    <div class="col-md-4 col-sm-6">
+        <div class="exchange-card">
+            <h3 class="text-center offer-username mb-3"></h3>
+            <div class="row">
+                <div class="col-6">
+                    <div class="exchange-section b-exchange offer-suggested-list"></div>
                 </div>
-                <div class="col-md-4 col-sm-6">
-                    <div class="exchange-card">
-                        <h3 class="text-center mb-3">خرس مهربون</h3>
-                        <div class="row">
-                            <div class="col-6">
-                                <div class="exchange-section b-exchange">
-                                    <div class="exchange-type">+</div>
-                                    <div style="display: flex; align-items: center; justify-content: center;">
-                                        <span>
-                                            <b>3 </b>×
-                                        </span>
-                                        <img src="{% static 'images/game/coins.png' %}" />
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-6">
-                                <div class="exchange-section s-exchange">
-                                    <div class="exchange-type">-</div>
-                                    <div style="display: flex; align-items: center; justify-content: center;">
-                                        <span>
-                                            <b>2 </b>×
-                                        </span>
-                                        <img src="{% static 'images/game/coins.png' %}" />
-                                    </div>
-                                    <div style="display: flex; align-items: center; justify-content: center;">
-                                        <span>
-                                            <b>2 </b>×
-                                        </span>
-                                        <img src="{% static 'images/game/coins.png' %}" />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div>
-                            <a class="my-btn w-100">مبادله</a>
-                        </div>
+                <div class="col-6">
+                    <div class="exchange-section s-exchange offer-requested-list">
+                        <div class="exchange-type">-</div>
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="exchange-wrapper my-3">
-            <h2 class="text-center mb-4 mt-2">پیشنهادات من</h2>
-            <div class="row exchanges-list">
-                <div class="col-md-4 col-sm-6">
-                    <div class="exchange-card">
-                        <div class="row">
-                            <div class="col-6">
-                                <div class="exchange-section b-exchange">
-                                    <div class="exchange-type">+</div>
-                                    <div style="display: flex; align-items: center; justify-content: center;">
-                                        <span>
-                                            <b>3 </b>×
-                                        </span>
-                                        <img src="{% static 'images/game/coins.png' %}" />
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-6">
-                                <div class="exchange-section s-exchange">
-                                    <div class="exchange-type">-</div>
-                                    <div style="display: flex; align-items: center; justify-content: center;">
-                                        <span>
-                                            <b>2 </b>×
-                                        </span>
-                                        <img src="{% static 'images/game/coins.png' %}" />
-                                    </div>
-                                    <div style="display: flex; align-items: center; justify-content: center;">
-                                        <span>
-                                            <b>2 </b>×
-                                        </span>
-                                        <img src="{% static 'images/game/coins.png' %}" />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div>
-                            در انتظار مبادله
-                        </div>
-                    </div>
-                </div>
+            <div class="offer-btns">
+                <a class="delete-offer my-btn w-100">حذف پیشنهاد</a>
+                <a class="accept-offer my-btn w-100">مبادله</a>
             </div>
         </div>
     </div>
 </div>
+<div class="full-page-center-item">
+    <div class="container">
+        <div>
+            <a class="my-btn my-2" href="{% url 'kabaramadalapeste:game' %}">بازگشت به نقشه</a>
+            <a class="my-btn my-2 back-to-island" style="display: none"
+                href="{% url 'kabaramadalapeste:island' %}">بازگشت به جزیره</a>
+        </div>
+        <div class="exchange-wrapper all-offers my-3">
+            <h2 class="text-center mb-4 mt-2">مبادلات موجود در بازار</h2>
+            <div class="row exchanges-list"></div>
+        </div>
+        <div class="exchange-wrapper my-offers my-3" style="position: relative">
+            <h2 class="text-center mb-5 mt-2">پیشنهادات من</h2>
+            <a class="my-btn" data-toggle="modal" data-target="#add_exchange_modal"
+                style="background: var(--color-5); position: absolute; left: 15px; top: 15px; font-weight: 800; font-size: 25px">پیشنهاد
+                جدید</a>
+            <div class="row exchanges-list"></div>
+        </div>
+    </div>
+</div>
+{% include 'modal/add_exchange.html' with modal_id="add_exchange_modal" modal_md="True" %}
 {% endblock game_base_content %}
+{% block game_base_scripts %}
+<script src="{% static 'scripts/kabaramadalapeste/exchange.js' %}"></script>
+{% endblock game_base_scripts %}

@@ -1,6 +1,6 @@
 <div class="modal fade" id="{{ modal_id }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
     aria-hidden="true">
-    <div class="modal-dialog modal-sm" role="document">
+    <div class="modal-dialog {% if modal_md %} modal-md {% else %} modal-sm {% endif %}" role="document">
         <div class="modal-content">
             <div class="modal-header" style="direction: rtl; border: none">
                 {% block modal_header %}{% endblock %}

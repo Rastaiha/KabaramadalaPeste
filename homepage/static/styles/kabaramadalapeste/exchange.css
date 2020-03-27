@@ -11,12 +11,12 @@
 }
 
 .exchanges-list {
-    max-height: 70vh;
+    max-height: 75vh;
     overflow: auto
 }
 
 .exchange-card {
-    background: #131113;
+    background: #333;
     padding: 10px;
     border-radius: 10px;
     color: white;
@@ -26,13 +26,13 @@
 
 .exchange-section {
     position: relative;
-    padding: 10px;
+    padding: 15px 10px;
     border-radius: 10px;
     margin-bottom: 10px;
 }
 
 .exchange-section span {
-    color: #131113;
+    color: #333;
     font-size: 30px;
     font-weight: 400;
 }
@@ -65,7 +65,7 @@
     text-align: center;
     border-radius: 50%;
     background: white;
-    color: black;
+    color: #333;
     font-weight: 300;
 }
 
@@ -73,4 +73,77 @@
     font-size: 40px;
     line-height: 26px;
     font-weight: 200;
+}
+
+.select-items-box {
+    position: relative;
+    padding: 10px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+}
+
+.select-items-box h3 {
+    font-weight: 900;
+    font-size: 30px;
+    text-align: center;
+    color: white
+}
+
+.request-items {
+    background: rgb(65, 223, 59)
+}
+
+.response-items {
+    background: rgb(250, 97, 97)
+}
+
+.select-item input {
+    margin: auto;
+    width: 60px;
+}
+
+.select-item img {
+    margin: auto;
+    height: 30px;
+}
+
+.select-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 5px;
+}
+
+.select-item-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 5px;
+}
+
+.select-item-header>div {
+    margin: auto;
+    font-weight: 900;
+    font-size: 20px;
+    color: #eaeaea;
+}
+
+.template {
+    display: none
+}
+
+.delete-offer {
+    background-color: var(--color-4);
+}
+
+.del-offer .accept-offer {
+    display: none;
+}
+
+.del-offer .offer-username {
+    display: none;
+}
+
+.acc-offer .delete-offer {
+    display: none;
 }

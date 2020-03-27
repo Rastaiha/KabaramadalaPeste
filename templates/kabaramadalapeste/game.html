@@ -1,13 +1,11 @@
 {% extends 'kabaramadalapeste/base.html' %}
 {% load static %}
-{% block styles %}
+{% block game_base_styles %}
 <link rel="stylesheet" href="{% static 'styles/kabaramadalapeste/game.css' %}" />
-<link rel="stylesheet" href="{% static 'styles/kabaramadalapeste/player_info.css' %}" />
-{% endblock styles %}
+{% endblock game_base_styles %}
 {% block game_base_content %}
 <div id="game-container"></div>
 
-{% include 'kabaramadalapeste/player_info.html' %}
 
 <div class="island-info">
     <div class="island-info-header">

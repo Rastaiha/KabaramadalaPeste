@@ -74,6 +74,13 @@ function default_fail(jqXHR, textStatus) {
     if (typeof jqXHR.responseJSON !== "undefined") {
         err_message = jqXHR.responseJSON.message || textStatus || "خطا";
     }
+    if (
+        err_message === "ایراد در ارتباط." &&
+        $("#alert_modal").hasClass("show") &&
+        $("#alert_modal .modal-message").text() === err_message
+    ) {
+        return;
+    }
     my_alert(err_message, "خطا");
 }
 
@@ -95,7 +102,11 @@ player_property_img = {
     SK: "coins.png",
     K1: "key1.png",
     K2: "key2.png",
-    K3: "key3.png"
+    K3: "key3.png",
+    VIS: "look.png",
+    TXP: "attraction.png",
+    CHP: "problem.png",
+    BLY: "trap.png"
 };
 
 $(".right-info-btn").click(function() {
