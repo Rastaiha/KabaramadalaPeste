@@ -294,6 +294,8 @@ class Participant(models.Model):
             current_pis.last_anchored_at = timezone.now()
             current_pis.save()
 
+            self.send_msg_peste_guidance()
+
             active_bullies = self.get_current_island().bullies.all().filter(is_expired=False)
             if active_bullies.count() > 0:
                 bully = active_bullies[0]
@@ -367,14 +369,17 @@ class Participant(models.Model):
             current_pis.save()
             try:
                 if self.currently_at_island.peste.is_found:
+                    self.send_msg_spade_result(False)
                     return False
                 self.add_property(settings.GAME_SEKKE, game_models.PesteConfiguration.get_solo().peste_reward)
                 self.currently_at_island.peste.is_found = True
                 self.currently_at_island.peste.found_by = self
                 self.currently_at_island.peste.found_at = timezone.now()
                 self.save()
+                self.send_msg_spade_result(True)
                 return True
             except game_models.Island.peste.RelatedObjectDoesNotExist:
+                self.send_msg_spade_result(False)
                 return False
 
     def send_msg_bully_expired(self, bully):
@@ -443,16 +448,70 @@ class Participant(models.Model):
         )
 
     def send_msg_correct_judged_answer(self, judgeablesubmit):
-        pass  # TODO must be filled with sending appropriate message
+        text = 'پاسخی که قبلا به چالش‌ جزیره‌ی %s داده بودی توسط داوران ارزیابی شد و درست بود.' % \
+               (judgeablesubmit.pis.island.name, )
+        notify.send(
+            sender=Member.objects.filter(is_superuser=True).all()[0],
+            recipient=self.member,
+            verb='correct_judged_answer',
+            description='پاسخ صحیح',
+            level='info', public=False, text=text
+        )
 
     def send_msg_wrong_judged_answer(self, judgeablesubmit):
-        pass  # TODO must be filled with sending appropriate message
+        text = 'پاسخی که قبلا به چالش‌ جزیره‌ی %s داده بودی توسط داوران ارزیابی شد و اشتباه بود.' % \
+               (judgeablesubmit.pis.island.name, )
+        notify.send(
+            sender=Member.objects.filter(is_superuser=True).all()[0],
+            recipient=self.member,
+            verb='wrong_judged_answer',
+            description='پاسخ اشتباه',
+            level='info', public=False, text=text
+        )
 
     def send_msg_correct_short_answer(self, shortanswersubmit):
-        pass  # TODO must be filled with sending appropriate message
+        text = 'پاسخی که به چالش‌ جزیره‌ی %s دادی صحیح بود.' % \
+               (shortanswersubmit.pis.island.name, )
+        notify.send(
+            sender=Member.objects.filter(is_superuser=True).all()[0],
+            recipient=self.member,
+            verb='correct_short_answer',
+            description='پاسخ صحیح',
+            level='info', public=False, text=text
+        )
 
     def send_msg_wrong_short_answer(self, shortanswersubmit):
-        pass  # TODO must be filled with sending appropriate message
+        text = 'پاسخی که به چالش‌ جزیره‌ی %s دادی اشتباه بود.' % \
+               (shortanswersubmit.pis.island.name, )
+        notify.send(
+            sender=Member.objects.filter(is_superuser=True).all()[0],
+            recipient=self.member,
+            verb='wrong_short_answer',
+            description='پاسخ اشتباه',
+            level='info', public=False, text=text
+        )
+
+    def send_msg_peste_guidance(self):
+        notify.send(
+            sender=Member.objects.filter(is_superuser=True).all()[0],
+            recipient=self.member,
+            verb='peste_guidance',
+            description='راهنمای گنج پسته',
+            level='info', public=False, text=self.currently_at_island.peste_guidance
+        )
+
+    def send_msg_spade_result(self, was_successful):
+        if was_successful:
+            text = 'تبریک می‌گم! کنلگ‌زنی موفق بود و یه پسته پیدا کردی!'
+        else:
+            text = 'متاسفم. کلنگ‌زنی ناموفق بود و پسته‌ای توی این جزیره پیدا نشد.'
+        notify.send(
+            sender=Member.objects.filter(is_superuser=True).all()[0],
+            recipient=self.member,
+            verb='sapde_result',
+            description='نتیجه‌ی کلنگ‌زنی',
+            level='info', public=True, text=text
+        )
 
 
 class JudgeManager(models.Manager):
