@@ -724,12 +724,13 @@ class ChallengeView(View):
 
             return perform_func(request, pis)
 
-        except (Participant.ParticipantIsNotOnIsland, Participant.DidNotAnchored,
-                Participant.DidNotAcceptChallenge, Participant.CantSubmitChallengeAgain):
+        except (Participant.ParticipantIsNotOnIsland, Participant.DidNotAnchored):
             return redirect('kabaramadalapeste:game')
+        except (Participant.DidNotAcceptChallenge, Participant.CantSubmitChallengeAgain):
+            return redirect('kabaramadalapeste:island')
         except Exception as e:
             logger.error(e, exc_info=True)
-            return redirect('kabaramadalapeste:game')
+            return redirect('kabaramadalapeste:island')
 
     def _perform_get(self, request, pis):
         return render(request, 'kabaramadalapeste/challenge.html', {
@@ -780,7 +781,7 @@ class ChallengeView(View):
             elif submit.submit_status == BaseSubmit.SubmitStatus.Wrong:
                 request.user.participant.send_msg_wrong_short_answer(submit)
             submit.save()
-        return redirect('kabaramadalapeste:challenge')
+        return redirect('kabaramadalapeste:island')
 
     def post(self, request):
         return self._perform_after_general_checks(request, self._perform_post)
