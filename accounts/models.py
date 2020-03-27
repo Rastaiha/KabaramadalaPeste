@@ -472,7 +472,7 @@ class NotificationData(models.Model):
         if self.status == NotificationData.NotificationStatus.Sent:
             logger.warning('Cant resend notification data')
             return
-        if self.send_to_all:
+        if self.send_to_all_participants:
             recipient = Member.objects.filter(is_participant=True)
         else:
             recipient = self.recipients.all()
