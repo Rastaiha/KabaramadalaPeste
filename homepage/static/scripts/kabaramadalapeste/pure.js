@@ -50,11 +50,20 @@ function update_island_info(response) {
             break;
     }
     if (response.did_open_treasure) {
+        island_info.find(".island-info-ganj").removeClass("can-see-keys");
         island_info.find(".island-info-ganj span").text("باز شده");
         island_info
             .find(".island-info-ganj img")
             .attr("src", "/static/images/game/ganj_open.png");
     } else {
+        if (response.treasure_keys !== "unknown") {
+            island_info.find(".island-info-ganj").addClass("can-see-keys");
+            island_info
+                .find(".need-keys")
+                .data("treasure_keys_persian", response.treasure_keys_persian);
+        } else {
+            island_info.find(".island-info-ganj").removeClass("can-see-keys");
+        }
         island_info.find(".island-info-ganj span").text("باز نشده");
         island_info
             .find(".island-info-ganj img")
@@ -66,6 +75,10 @@ function update_island_info(response) {
     }
     island_info.find(".island-info-check-time span").text(check_time);
 }
+
+$(".need-keys").click(function() {
+    my_alert($(this).data("treasure_keys_persian"), "کلید‌های مورد نیاز");
+});
 
 function is_current_island(island_id) {
     return island_id === data.ship.island_id;
@@ -198,6 +211,9 @@ $("#prompt_modal_btn").click(function() {
         move_to(island_id)
             .then(() => travel(island_id))
             .catch(default_fail);
+        $("#prompt_modal").modal("hide");
+        hide_island_info();
+        change_target(null);
     } else if ($(this).data("kind") === "langar") {
         is_currently_anchored()
             .then(currently_anchored => {
@@ -207,10 +223,10 @@ $("#prompt_modal_btn").click(function() {
             })
             .then(() => (window.location.href = "/game/island/"))
             .catch(default_fail);
+        $("#prompt_modal").modal("hide");
+        hide_island_info();
+        change_target(null);
     }
-    $("#prompt_modal").modal("hide");
-    hide_island_info();
-    change_target(null);
 });
 
 $(".island-info-action a").click(function() {

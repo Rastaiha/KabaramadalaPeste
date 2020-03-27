@@ -125,50 +125,55 @@ function set_click_listener(key, elem) {
 }
 
 $("#prompt_modal_btn").click(function() {
-    switch ($(this).data("kind")) {
-        case "ganj":
-            open_treasure()
-                .then(response => {
-                    data.did_open_treasure = true;
-                    change_image(data.e.ganj.elem, "go1.png");
-                    setTimeout(function() {
-                        // let keys = get_keys_string(response.treasure_rewards);
-                        let keys = response.treasure_rewards_persian;
-                        my_alert(
-                            "شما " + keys + " دیافت کردید.",
-                            "باز کردن گنج"
-                        );
-                    }, 1000);
-                })
-                .catch(default_fail);
-            break;
-        case "bill":
-            spade()
-                .then(response => {
-                    if (response.found) {
-                        my_alert("پسته رو پیدا کردی!!! تبریک می‌گم.", "پسته");
-                    } else {
-                        my_alert("متاسفانه اینجا خالیه.", "پسته");
-                    }
-                    data.did_spade = true;
-                })
-                .catch(default_fail);
-            break;
-        case "challenge":
-            accept_challenge()
-                .then(() => {
-                    window.location.href = "/game/challenge/";
-                })
-                .catch(default_fail);
-            break;
-        case "back_to_challenge":
-            window.location.href = "/game/challenge/";
-            break;
+    if ($(this).data("kind")) {
+        switch ($(this).data("kind")) {
+            case "ganj":
+                open_treasure()
+                    .then(response => {
+                        data.did_open_treasure = true;
+                        change_image(data.e.ganj.elem, "go1.png");
+                        setTimeout(function() {
+                            // let keys = get_keys_string(response.treasure_rewards);
+                            let keys = response.treasure_rewards_persian;
+                            my_alert(
+                                "شما " + keys + " دیافت کردید.",
+                                "باز کردن گنج"
+                            );
+                        }, 1000);
+                    })
+                    .catch(default_fail);
+                break;
+            case "bill":
+                spade()
+                    .then(response => {
+                        if (response.found) {
+                            my_alert(
+                                "پسته رو پیدا کردی!!! تبریک می‌گم.",
+                                "پسته"
+                            );
+                        } else {
+                            my_alert("متاسفانه اینجا خالیه.", "پسته");
+                        }
+                        data.did_spade = true;
+                    })
+                    .catch(default_fail);
+                break;
+            case "challenge":
+                accept_challenge()
+                    .then(() => {
+                        window.location.href = "/game/challenge/";
+                    })
+                    .catch(default_fail);
+                break;
+            case "back_to_challenge":
+                window.location.href = "/game/challenge/";
+                break;
 
-        default:
-            break;
+            default:
+                break;
+        }
+        $("#prompt_modal").modal("hide");
     }
-    $("#prompt_modal").modal("hide");
 });
 
 function loadImages(sources) {
