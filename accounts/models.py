@@ -378,19 +378,69 @@ class Participant(models.Model):
                 return False
 
     def send_msg_bully_expired(self, bully):
-        pass  # TODO must be filled with sending appropriate message
+        text = 'تله‌ای که توی جزیره‌ی %s جاسازی کرده بود به علت جاسازی شدن تله‌ی جدید از بین رفت.' % (bully.island.name, )
+        notify.send(
+            sender=Member.objects.filter(is_superuser=True).all()[0],
+            recipient=self.member,
+            verb='bully_expired',
+            description='تله‌ات از بین رفت',
+            level='info', public=False, text=text
+        )
 
     def send_msg_offer_accepted(self, trade_offer):
-        pass  # TODO must be filled with sending appropriate message
+        text = 'پیشنهاد مبادله‌ات توسط %s قبول شد.' % (trade_offer.accepted_participant, )
+        notify.send(
+            sender=Member.objects.filter(is_superuser=True).all()[0],
+            recipient=self.member,
+            verb='offer_accepted',
+            description='پیشنهاد مبادله‌ات قبول شد',
+            level='info', public=False, text=text
+        )
 
     def send_msg_fall_in_bully(self, bully, amount):
-        pass  # TODO must be filled with sending appropriate message
+        text = 'توی تله‌ی جاسازی شده توسط %s افتادی' % (bully.owner, )
+        if amount < game_settings.GAME_BULLY_DAMAGE:
+            text += ' و چون پول کافی نداشتی ازت %d سکه کم شد.' % (amount, )
+        else:
+            text += ' و ازت %d سکه کم شد.' % (amount, )
+        notify.send(
+            sender=Member.objects.filter(is_superuser=True).all()[0],
+            recipient=self.member,
+            verb='fall_in_bully',
+            description='توی تله افتادی',
+            level='info', public=False, text=text
+        )
 
     def send_msg_sb_fall_in_your_bully(self, bully, victim_participant, amount):
-        pass  # TODO must be filled with sending appropriate message
+        text = '%s توی تله‌ی جاسازی شده در جزیره‌ی %s افتاد' % (victim_participant, bully.island.name)
+        if amount < game_settings.GAME_BULLY_DAMAGE:
+            text += ' و چون پول کافی نداشت بهت %d سکه اضافه شد.' % (amount, )
+        else:
+            text += ' و بهت %d سکه اضافه شد.' % (amount, )
+        notify.send(
+            sender=Member.objects.filter(is_superuser=True).all()[0],
+            recipient=self.member,
+            verb='sb_fall_in_your_bully',
+            description='یکی تو تله‌ات افتاد',
+            level='info', public=False, text=text
+        )
 
-    def send_msg_bandargah_computed(self, investment, was_successful):
-        pass  # TODO must be filled with sending appropriate message
+    def send_msg_bandargah_computed(self, investment, was_successful, total_investments):
+        text = 'کار امروز بندرگاه به پایان رسید! مجموع سرمایه‌گذاری‌ها %d سکه بود' % (total_investments, )
+        if was_successful:
+            gain = game_models.BandargahConfiguration.get_solo().profit_coefficient * investment.amount
+            text += ' که درون بازه‌ی سوددهی قرار گرفت'
+        else:
+            gain = game_models.BandargahConfiguration.get_solo().loss_coefficient * investment.amount
+            text += ' که درون بازه‌ی سوددهی قرار نگرفت'
+        text += ' و به تو %d سکه رسید.' % (gain, )
+        notify.send(
+            sender=Member.objects.filter(is_superuser=True).all()[0],
+            recipient=self.member,
+            verb='bandargah_computed',
+            description='نتیجه‌ی سرمایه‌گذاری در بندرگاه',
+            level='info', public=False, text=text
+        )
 
 
 class JudgeManager(models.Manager):

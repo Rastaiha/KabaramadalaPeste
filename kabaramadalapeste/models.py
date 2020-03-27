@@ -463,5 +463,8 @@ class Bully(models.Model):
     is_expired = models.BooleanField(default=False)
     expired_datetime = models.DateTimeField(null=True, blank=True)
 
+    class Meta:
+        verbose_name_plural = 'Bullies'
+
     class CantBeOnBandargah(Exception):
         pass
