@@ -74,14 +74,20 @@ function set_click_listener(key, elem) {
         case "bill":
             elem.on("click tap", function() {
                 if (!data.did_spade) {
-                    my_prompt(
-                        "برای بیل‌زدن باید فلان سکه بدی. می‌خوای این کارو بکنی؟",
-                        "بیل‌زدن",
-                        {
-                            kind: "bill"
-                        }
-                    );
-                    $("#prompt_modal").modal("show");
+                    settings()
+                        .then(response => {
+                            my_prompt(
+                                "برای بیل‌زدن باید " +
+                                    response.island_spade_cost +
+                                    " سکه بدی. می‌خوای این کارو بکنی؟",
+                                "بیل‌زدن",
+                                {
+                                    kind: "bill"
+                                }
+                            );
+                            $("#prompt_modal").modal("show");
+                        })
+                        .catch(default_fail);
                 } else {
                     my_alert("قبلاً اینجا رو بیل زدی!", "بیل‌زدن");
                 }
