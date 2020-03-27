@@ -465,8 +465,8 @@ class BandargahConfiguration(SingletonModel):
     max_possible_invest = models.IntegerField(default=4000)
     profit_coefficient = models.FloatField(default=1.5)
     loss_coefficient = models.FloatField(default=0.5)
-    min_interval_investments = models.IntegerField(default=30000)
-    max_interval_investments = models.IntegerField(default=42000)
+    min_interval_investments = models.IntegerField(default=300000)
+    max_interval_investments = models.IntegerField(default=1000000)
 
 
 class BandargahInvestment(models.Model):

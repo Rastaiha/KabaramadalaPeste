@@ -72,7 +72,7 @@ class GameConf(AppConf):
     ]
 
     MAXIMUM_ACTIVE_OFFERS = 4
-    BASE_CHALLENGE_PER_DAY = 5
+    BASE_CHALLENGE_PER_DAY = 4
 
     class Meta:
         prefix = 'game'
