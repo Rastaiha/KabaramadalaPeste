@@ -3,6 +3,7 @@ from django.urls import reverse
 from django.http import HttpResponse
 from django.db.utils import IntegrityError
 # Create your tests here.
+from homepage.models import SiteConfiguration
 from accounts.models import Participant
 from kabaramadalapeste.models import (
     ParticipantIslandStatus, Island, Way, Peste, PesteConfiguration,
@@ -172,6 +173,9 @@ class ViewsTest(TestCase):
             participant.init_pis()
             participant.init_properties()
         self.participant = self.all_participants[0]
+        config = SiteConfiguration.get_solo()
+        config.is_game_running = True
+        config.save()
 
     def test_settings_not_login(self):
         response = self.client.get(reverse('kabaramadalapeste:settings'))
