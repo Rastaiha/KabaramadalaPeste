@@ -4,6 +4,9 @@
 {% block base_content %}
 <div style="overflow: hidden; width: 100vw; position: relative">
     {% block game_base_content %}{% endblock game_base_content %}
+
+    {% include 'modal/prompt.html' with modal_id='prompt_modal' %}
+    {% include 'modal/alert.html' with modal_id='alert_modal'%}
 </div>
 {% endblock base_content %}
 {% block scripts %}

@@ -8,6 +8,7 @@
 <div id="island-container"></div>
 <img class="kabaramadalapeste_logo" src="{% static 'images/game/logo.png' %}" />
 {% include 'kabaramadalapeste/player_info.html' %}
+
 {% include 'modal/prompt.html' with modal_id='resize_modal' modal_title="تغییر ابعاد" modal_question="آیا مایل به بارگذاری مجدد صفحه هستید؟" %}
 {% endblock game_base_content %}
 

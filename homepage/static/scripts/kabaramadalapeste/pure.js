@@ -1,9 +1,3 @@
-function my_alert(message, title = "") {
-    $("#alert_modal .modal-message").text(message);
-    $("#alert_modal .modal-title").text(title);
-    $("#alert_modal").modal("show");
-}
-
 function get_island_info_position(island) {
     let x = island.elem.x() + data.layer.x() + island.elem.width() + 10,
         y = island.elem.y() + data.layer.y() + island.elem.height() / 2;
@@ -32,143 +26,147 @@ function get_island(island_id) {
     }
 }
 
-function show_island_info(island) {
-    pos = get_island_info_position(island);
+function update_sttings(response) {
+    data.move_price = response.move_price;
+    data.put_anchor_price = response.put_anchor_price;
+}
 
-    get_island_info(island.id)
-        .done(function(response) {
-            island_info.addClass("hide");
-            island_info.removeClass("show");
-            island_info.find(".island-name span").text(response.name);
-            island_info.find(".island_kind span").text(response.challenge_name);
+function update_island_info(response) {
+    island_info.find(".island-name span").text(response.name);
+    island_info.find(".island_kind span").text(response.challenge_name);
+    island_info.find(".island_persons span").text(response.participants_inside);
+    island_info.find(".island-info-question span").text("حل نشده");
+    /** TODO: fix challeng state */
+    if (response.did_open_treasure) {
+        island_info.find(".island-info-ganj span").text("باز شده");
+        island_info
+            .find(".island-info-ganj img")
+            .attr("src", "/static/images/game/ganj_open.png");
+    } else {
+        island_info.find(".island-info-ganj span").text("باز نشده");
+        island_info
+            .find(".island-info-ganj img")
+            .attr("src", "/static/images/game/ganj.png");
+    }
+    let check_time = " لحظه";
+    if (response.judge_estimated_minutes) {
+        check_time = response.judge_estimated_minutes + " دقیقه";
+    }
+    island_info.find(".island-info-check-time span").text(check_time);
+}
+
+function is_curront_island(island_id) {
+    return island_id === data.ship.island_id;
+}
+
+function is_neighbor(island_id) {
+    return get_island(data.ship.island_id).neighborhoods.includes(island_id);
+}
+
+function update_island_info_btn(island_id) {
+    return is_currently_anchored().then(currently_anchored => {
+        let action = "";
+        let btn_text = "";
+        if (is_curront_island(island_id)) {
+            action = "langar";
+            if (currently_anchored) {
+                btn_text = "بازگشت به جزیره";
+            } else {
+                btn_text = "لنگر انداختن";
+            }
+        } else if (is_neighbor(island_id)) {
+            action = "travel";
+            if (currently_anchored) {
+                btn_text = "سفر و برداشتن لنگر";
+            } else {
+                btn_text = "سفر";
+            }
+        }
+        island_info.find(".island-info-action a").data("kind", action);
+        island_info.find(".island-info-action a").text(btn_text);
+
+        if (action) {
             island_info
-                .find(".island_persons span")
-                .text(response.participants_inside);
+                .find(".island-info-action a")
+                .css("display", "inline-block");
+        } else {
+            island_info.find(".island-info-action a").css("display", "none");
+        }
+        return {
+            action: action,
+            currently_anchored: currently_anchored,
+            island_id: island_id
+        };
+    });
+}
 
-            let is_solved = Math.floor(Math.random() * 4);
-            switch (is_solved) {
-                case 0:
-                    island_info
-                        .find(".island-info-question span")
-                        .text("حل نشده");
-                    break;
-                case 1:
-                    island_info
-                        .find(".island-info-question span")
-                        .text("در دست تصحیح");
-                    break;
-                case 2:
-                    island_info
-                        .find(".island-info-question span")
-                        .text("جواب صحیح");
-                    break;
-                case 3:
-                    island_info
-                        .find(".island-info-question span")
-                        .text("جواب غلط");
-                    break;
-                default:
-                    island_info
-                        .find(".island-info-question span")
-                        .text("حل نشده");
-                    break;
-            }
+function update_modal(response) {
+    let title = "";
+    let question = "";
+    if (response.action === "langar" && !response.currently_anchored) {
+        title = "لنگر انداختن";
+        question =
+            "هزینه لنگر انداختن " +
+            data.put_anchor_price +
+            " سکه است. آیا مایل به آن هستید؟";
+    } else if (response.action === "travel") {
+        if (response.currently_anchored) {
+            title = "سفر و برداشتن لنگر";
+            question =
+                "هزینه سفر " +
+                data.move_price +
+                " سکه است. آیا مایل به آن هستید؟" +
+                "</br><small style='color:#222; font-weight: 300'>" +
+                "دقت کنید لنگر شما از جزیره‌ای که در آن هستید برداشته خواهد شد." +
+                "</small>";
+        } else {
+            title = "سفر";
+            question =
+                "هزینه سفر " +
+                data.move_price +
+                " سکه است. آیا مایل به آن هستید؟";
+        }
+    }
+    my_prompt(question, title, {
+        kind: response.action,
+        island_id: response.island_id
+    });
+    return response.island_id;
+}
 
-            if (response.did_open_treasure) {
-                island_info.find(".island-info-ganj span").text("باز شده");
-                island_info
-                    .find(".island-info-ganj img")
-                    .attr("src", "/static/images/game/ganj_open.png");
-            } else {
-                island_info.find(".island-info-ganj span").text("باز نشده");
-                island_info
-                    .find(".island-info-ganj img")
-                    .attr("src", "/static/images/game/ganj.png");
-            }
+function is_currently_anchored() {
+    return get_player_info().then(player_info => {
+        return player_info.currently_anchored;
+    });
+}
 
-            let check_time = " لحظه";
-            if (response.judge_estimated_minutes) {
-                check_time = response.judge_estimated_minutes + " دقیقه";
-            }
-            island_info.find(".island-info-check-time span").text(check_time);
+function hide_island_info() {
+    if (island_info.hasClass("show")) {
+        island_info.removeClass("show");
+        island_info.addClass("hide");
+    }
+}
 
-            if (island.id === data.ship.island_id) {
-                get_player_info()
-                    .done(function(response) {
-                        if (response.currently_anchored) {
-                            island_info
-                                .find(".island-info-action a")
-                                .text("بازگشت به جزیره");
-                        } else {
-                            island_info
-                                .find(".island-info-action a")
-                                .text("لنگر انداختن");
-                        }
-                    })
-                    .fail(default_fail);
-                island_info
-                    .find(".island-info-action a")
-                    .data("kind", "langar");
-                $("#travel_modal .modal-title").text("لنگر انداختن");
-                $("#travel_modal .modal-question").text(
-                    "هزینه لنگر انداختن ۲۰ سکه است. آیا مایل به آن هستید؟"
-                );
-                island_info
-                    .find(".island-info-action a")
-                    .css("display", "inline-block");
-                $("#travel_modal_btn").data("kind", "langar");
-                $("#travel_modal_btn").data("island_id", island.id);
-            } else if (
-                get_island(data.ship.island_id).neighborhoods.includes(
-                    island.id
-                )
-            ) {
-                island_info.find(".island-info-action a").text("سفر");
-                island_info
-                    .find(".island-info-action a")
-                    .data("kind", "travel");
-                get_player_info()
-                    .done(function(response) {
-                        if (response.currently_anchored) {
-                            $("#travel_modal .modal-title").text(
-                                "سفر و برداشتن لنگر"
-                            );
-                            $("#travel_modal .modal-question").text(
-                                "هزینه سفر ۲۰ سکه است. آیا مایل به آن هستید؟(دقت کنید برای سفر لنگر شما برداشته خواهد شد)"
-                            );
-                        } else {
-                            $("#travel_modal .modal-title").text("سفر");
-                            $("#travel_modal .modal-question").text(
-                                "هزینه سفر ۲۰ سکه است. آیا مایل به آن هستید؟"
-                            );
-                        }
-                    })
-                    .fail(default_fail);
+function show_island_info(island) {
+    setTimeout(() => {
+        pos = get_island_info_position(island);
+        island_info.css("left", pos.x + "px");
+        island_info.css("top", pos.y + "px");
+        island_info.removeClass("hide");
+        island_info.addClass("show");
+    }, 100);
+}
 
-                island_info
-                    .find(".island-info-action a")
-                    .css("display", "inline-block");
-                $("#travel_modal_btn").data("kind", "travel");
-                $("#travel_modal_btn").data("island_id", island.id);
-            } else {
-                island_info.find(".island-info-action a").data("target", "");
-                island_info.find(".island-info-action a").text("");
-                island_info
-                    .find(".island-info-action a")
-                    .css("display", "none");
-                $("#travel_modal_btn").data("kind", "");
-                $("#travel_modal_btn").data("island_id", "");
-            }
-
-            setTimeout(() => {
-                island_info.css("left", pos.x + "px");
-                island_info.css("top", pos.y + "px");
-
-                island_info.removeClass("hide");
-                island_info.addClass("show");
-            }, 100);
-        })
-        .fail(default_fail);
+function update_and_show_island_info(island) {
+    settings()
+        .then(update_sttings)
+        .then(hide_island_info)
+        .then(() => update_island_info_btn(island.id))
+        .then(update_modal)
+        .then(get_island_info)
+        .then(update_island_info)
+        .then(() => show_island_info(island))
+        .catch(default_fail);
 }
 
 function show_player_info() {
@@ -182,47 +180,39 @@ function travel(island_id) {
     data.ship.elem.y(island.elem.y() - 15);
 }
 
-$("#travel_modal_btn").click(function() {
+$("#prompt_modal_btn").click(function() {
     if ($(this).data("kind") === "travel") {
         let island_id = $(this).data("island_id");
         move_to(island_id)
-            .done(function() {
-                travel(island_id);
-            })
-            .fail(default_fail);
+            .then(() => travel(island_id))
+            .catch(default_fail);
     } else if ($(this).data("kind") === "langar") {
-        get_player_info()
-            .done(function(response) {
-                if (response.currently_anchored) {
-                    window.location.href = "/game/island/";
-                } else {
-                    put_anchor()
-                        .done(function() {
-                            window.location.href = "/game/island/";
-                        })
-                        .fail(default_fail);
+        is_currently_anchored()
+            .then(currently_anchored => {
+                if (!currently_anchored) {
+                    return put_anchor();
                 }
             })
-            .fail(default_fail);
+            .then(() => (window.location.href = "/game/island/"))
+            .catch(default_fail);
     }
-    $("#travel_modal").modal("hide");
-    island_info.addClass("hide");
-    island_info.removeClass("show");
+    $("#prompt_modal").modal("hide");
+    hide_island_info();
     change_target(null);
 });
 
 $(".island-info-action a").click(function() {
     if ($(this).data("kind") === "langar") {
-        get_player_info()
-            .done(function(response) {
-                if (response.currently_anchored) {
+        is_currently_anchored()
+            .then(currently_anchored => {
+                if (currently_anchored) {
                     window.location.href = "/game/island/";
                 } else {
-                    $("#travel_modal").modal("show");
+                    $("#prompt_modal").modal("show");
                 }
             })
-            .fail(default_fail);
+            .catch(default_fail);
     } else {
-        $("#travel_modal").modal("show");
+        $("#prompt_modal").modal("show");
     }
 });

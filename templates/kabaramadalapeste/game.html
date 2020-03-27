@@ -54,9 +54,7 @@
 </div>
 <img class="kabaramadalapeste_logo" src="{% static 'images/game/logo.png' %}" />
 
-{% include 'modal/prompt.html' with modal_id='travel_modal' %}
 {% include 'modal/prompt.html' with modal_id='resize_modal' modal_title="تغییر ابعاد" modal_question="آیا مایل به بارگذاری مجدد صفحه هستید؟" %}
-{% include 'modal/alert.html' with modal_id='alert_modal' modal_title="موجودی ناکافی" modal_message="دارایی شما برای این عملیات کافی نیست." %}
 
 {% endblock game_base_content %}
 {% block game_base_scripts %}

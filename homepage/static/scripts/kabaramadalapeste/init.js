@@ -183,14 +183,12 @@ function init_islands() {
                 document.body.style.cursor = "pointer";
                 if (typeof data.ship === "undefined") {
                     set_start_island(island.id)
-                        .done(function() {
-                            init_ship_data(island.id);
-                            init_ship();
-                        })
-                        .fail(default_fail);
+                        .then(() => init_ship_data(island.id))
+                        .then(init_ship)
+                        .catch(default_fail);
                 } else if (data.target !== island) {
                     change_target(island);
-                    show_island_info(island);
+                    update_and_show_island_info(island);
                 }
 
                 if (typeof e !== "undefined") {
@@ -298,17 +296,19 @@ function init_game() {
     init_layer();
     init_backgronud();
 
-    get_player_info().done(function(response) {
-        if (response.current_island_id) {
-            init_ship_data(response.current_island_id);
-            init_ship();
-        } else {
-            my_alert(
-                "در ابتدای بازی شما باید جزیره‌ای را برای شروع انتخاب کنید.",
-                "انتخاب جزیره اولیه"
-            );
-        }
-    });
+    get_player_info()
+        .then(response => {
+            if (response.current_island_id) {
+                init_ship_data(response.current_island_id);
+                init_ship();
+            } else {
+                my_alert(
+                    "در ابتدای بازی شما باید جزیره‌ای را برای شروع انتخاب کنید.",
+                    "انتخاب جزیره اولیه"
+                );
+            }
+        })
+        .catch(default_fail);
 
     init_islands();
     init_ways();

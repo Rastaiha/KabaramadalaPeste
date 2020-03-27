@@ -6,11 +6,11 @@ let data = {
     },
     e: {
         ganj: {
-            src: "g.png",
-            x: 0.21,
-            y: 0.764,
-            width: 0.13,
-            height: 0.175
+            src: "gc.png",
+            x: 0.2,
+            y: 0.76,
+            width: 0.135,
+            height: 0.22
         },
         bill: {
             src: "bill.png",
@@ -29,23 +29,108 @@ let data = {
     }
 };
 
-function my_alert(message, title = "") {
-    $("#alert_modal .modal-message").text(message);
-    $("#alert_modal .modal-title").text(title);
-    $("#alert_modal").modal("show");
+function set_click_listener(key, elem) {
+    switch (key) {
+        case "ganj":
+            elem.on("click tap", function() {
+                if (!data.did_open_treasure) {
+                    let title = "باز کردن گنج";
+                    let keys = "";
+                    let is_first = true;
+                    for (const key in data.treasure_keys) {
+                        if (data.treasure_keys.hasOwnProperty(key)) {
+                            if (data.treasure_keys[key]) {
+                                if (!is_first) {
+                                    keys += "، ";
+                                }
+                                keys +=
+                                    data.treasure_keys[key] +
+                                    " عدد کلید نوع " +
+                                    key.replace("K", "");
+                                is_first = false;
+                            }
+                        }
+                    }
+                    keys = keys.replace(/،([^،]*)$/, " و" + "$1");
+                    let question =
+                        "برای باز کردن این گنج باید " +
+                        keys +
+                        " مصرف کنی." +
+                        " می‌خوای این کارو بکنی؟";
+                    my_prompt(question, title, {
+                        kind: "ganj"
+                    });
+                    $("#prompt_modal").modal("show");
+                } else {
+                    my_alert("این گنج رو قبلا باز کردی.", "گنج");
+                }
+            });
+            break;
+        case "bill":
+            elem.on("click tap", function() {
+                my_prompt(
+                    "برای بیل‌زدن باید فلان سکه بدی. می‌خوای این کارو بکنی؟",
+                    "بیل‌زدن",
+                    {
+                        kind: "bill"
+                    }
+                );
+                $("#prompt_modal").modal("show");
+            });
+            break;
+        case "eskelet":
+            elem.on("click tap", function() {
+                switch (data.submit_status) {
+                    case "No":
+                        my_prompt("آماده‌ای برای چالش؟", "چالش", {
+                            kind: "challeng"
+                        });
+                        $("#prompt_modal").modal("show");
+                        break;
+                    case "Pending":
+                        my_alert("در حال تصحیح", "چالش");
+                        break;
+                    case "Correct":
+                        my_alert("آفرین چالش رو درست حل کردی.", "چالش");
+                        break;
+                    case "Wrong":
+                        my_alert("جوابت غلط بوده!", "چالش");
+                        break;
+                }
+            });
+            break;
+    }
 }
 
-get_player_info()
-    .done(function(response) {
-        data.island_id = response.current_island_id;
-        get_island_info(data.island_id)
-            .done(function(response) {
-                data.treasure_keys = response.treasure_keys;
-                my_alert(response.treasure_keys, data.island_id);
-            })
-            .fail(default_fail);
-    })
-    .fail(default_fail);
+$("#prompt_modal_btn").click(function() {
+    switch ($(this).data("kind")) {
+        case "ganj":
+            open_treasure().catch(default_fail);
+            $("#prompt_modal").modal("hide");
+            break;
+        case "bill":
+            spade()
+                .then(found => {
+                    if (found) {
+                        my_alert("پسته رو پیدا کردی!!! تبریک می‌گم.", "پسته");
+                    } else {
+                        my_alert("متاسفانه اینجا خالیه.", "پسته");
+                    }
+                })
+                .catch(default_fail);
+            break;
+        case "challeng":
+            accept_challenge()
+                .then(() => {
+                    window.location.href = "/game/challeng/";
+                })
+                .catch(default_fail);
+            break;
+
+        default:
+            break;
+    }
+});
 
 function loadImages(sources) {
     return new Promise(resolve => {
@@ -110,6 +195,7 @@ function init_game() {
                 });
                 data.layer.batchDraw();
             });
+            set_click_listener(key, element.elem);
             data.layer.add(element.elem);
         }
     }
@@ -138,24 +224,43 @@ function init_game() {
     data.layer.batchDraw();
 }
 
-data.back.width = data.width;
-data.back.height = (data.back.width / 1200) * 685;
-if (data.width / 1200 < data.height / 685) {
-    data.back.height = data.height;
-    data.back.width = (data.back.height / 685) * 1200;
-}
+get_player_info()
+    .then(response => {
+        if (!response.currently_anchored) {
+            window.location.href = "/game/";
+        }
+        data.island_id = response.current_island_id;
+    })
+    .then(() => get_island_info(data.island_id))
+    .then(response => {
+        data.treasure_keys = response.treasure_keys;
+        data.did_open_treasure = response.did_open_treasure;
+        if (data.did_open_treasure) {
+            data.e.ganj.src = "go2.png";
+        }
+        data.submit_status = response.submit_status;
+    })
+    .then(() => {
+        data.back.width = data.width;
+        data.back.height = (data.back.width / 1200) * 685;
+        if (data.width / 1200 < data.height / 685) {
+            data.back.height = data.height;
+            data.back.width = (data.back.height / 685) * 1200;
+        }
 
-data.back.x = (data.width - data.back.width) / 3.5;
-data.back.y = data.height - data.back.height;
+        data.back.x = (data.width - data.back.width) / 3.5;
+        data.back.y = data.height - data.back.height;
 
-let sources = [data.back.src];
-for (const key in data.e) {
-    if (data.e.hasOwnProperty(key)) {
-        const element = data.e[key];
-        sources.push(element.src);
-    }
-}
-loadImages(sources).then(init_game);
+        let sources = [data.back.src];
+        for (const key in data.e) {
+            if (data.e.hasOwnProperty(key)) {
+                const element = data.e[key];
+                sources.push(element.src);
+            }
+        }
+        loadImages(sources).then(init_game);
+    })
+    .catch(default_fail);
 
 $(window).on("resize", function() {
     $("#resize_modal").modal();

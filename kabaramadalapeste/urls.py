@@ -10,7 +10,7 @@ from .views import (
 
 
 urlpatterns = [
-    path('settings',
+    path('settings/',
          SettingsView.as_view(), name="settings"),
     path('island_info/<int:island_id>/',
          IslandInfoView.as_view(), name="island_info"),
