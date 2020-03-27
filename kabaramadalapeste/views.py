@@ -135,7 +135,12 @@ class ParticipantInfoView(View):
                 'username': request.user.username,
                 'current_island_id': current_island_id,
                 'currently_anchored': currently_anchored,
-                'properties': properties_dict
+                'properties': properties_dict,
+                'has_free_travel': AbilityUsage.objects.filter(
+                        participant=request.user.participant,
+                        ability_type=settings.GAME_TRAVEL_EXPRESS,
+                        is_active=True
+                    ).all().count() > 0
             })
         except Exception as e:
             logger.error(e, exc_info=True)
