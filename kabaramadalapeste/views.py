@@ -197,8 +197,16 @@ class OpenTreasureView(View):
     def post(self, request):
         try:
             request.user.participant.open_treasure_on_current_island()
+            pis = ParticipantIslandStatus.objects.get(
+                participant=request.user.participant,
+                island=request.user.participant.currently_at_island
+            )
+            treasure_rewards = {
+                reward_item.reward_type: reward_item.amount for reward_item in pis.treasure.rewards.all()
+            }
             return JsonResponse({
-                'status': settings.OK_STATUS
+                'status': settings.OK_STATUS,
+                'treasure_rewards': treasure_rewards
             })
         except Participant.ParticipantIsNotOnIsland:
             return JsonResponse({
