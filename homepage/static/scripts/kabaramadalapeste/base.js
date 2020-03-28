@@ -173,8 +173,38 @@ $(".right-info-btn").click(function() {
                 if (response.all_count > 0) {
                     $(".notifications > div").html('<div class="line"></div>');
                     response.all_list.forEach(notif => {
+                        let notif_time = new Date(notif.timestamp);
+                        let notif_day = notif_time.getDay();
+                        let today = new Date().getDay();
+                        if (today - notif_day === 0) {
+                            let am_pm = "AM";
+                            if (notif_time.getHours() > 12) {
+                                am_pm = "PM";
+                            }
+                            notif_time =
+                                (notif_time.getHours() % 12) +
+                                ":" +
+                                notif_time.getMinutes() +
+                                " " +
+                                am_pm;
+                        } else if ((today - notif_day) % 7 === 1) {
+                            notif_time = "Yesterday";
+                        } else {
+                            var weekday = [
+                                "Sunday",
+                                "Monday",
+                                "Tuesday",
+                                "Wednesday",
+                                "Thursday",
+                                "Friday",
+                                "Saturday"
+                            ];
+                            notif_time = weekday[notif_day];
+                        }
                         $(".notifications > div").append(
-                            '<div class="notification"><div class="circle"></div><span class="time">9:24 AM</span><b>' +
+                            '<div class="notification"><div class="circle"></div><span class="time">' +
+                                notif_time +
+                                "</span><b>" +
                                 (notif.description || "پیام ادمین") +
                                 "</b><p>" +
                                 (notif.data.text || notif.data.message) +
