@@ -244,7 +244,7 @@ $("#prompt_modal_btn").click(function() {
                 my_alert(
                     "ویژگی " +
                         prop_details[ability_type].persian +
-                        "برای شما فعال شد.",
+                        " برای شما فعال شد.",
                     "فعال شدن ویژگی"
                 );
             })
