@@ -228,6 +228,7 @@
     margin: 0;
     font-size: 1.1rem;
     font-weight: 300;
+    text-align: right
 }
 
 .notifications .notification b {
