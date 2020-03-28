@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'accounts',
     'solo',
     'nested_inline',
+    'easy_thumbnails',
     'notifications'
 ]
 
@@ -138,4 +139,10 @@ HELP_STATUS = 'help'
 DJANGO_NOTIFICATIONS_CONFIG = {
     'USE_JSONFIELD': True,
     'SOFT_DELETE': True
+}
+
+THUMBNAIL_ALIASES = {
+    '': {
+        'avatar': {'size': (80, 80), 'crop': True},
+    },
 }

@@ -8,7 +8,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.utils import timezone
 from django.contrib.sites.shortcuts import get_current_site
 from accounts.models import Participant
-
+from easy_thumbnails.files import get_thumbnailer
 from kabaramadalapeste.models import (
     Island, ParticipantIslandStatus, TradeOffer, TradeOfferRequestedItem, PesteConfiguration,
     TradeOfferSuggestedItem, AbilityUsage, BandargahInvestment, BandargahConfiguration, Bully,
@@ -17,7 +17,7 @@ from kabaramadalapeste.models import (
 from kabaramadalapeste.conf import settings
 from kabaramadalapeste.forms import (
     EmptySubmitForm, ShortStringSubmitForm, ShortIntSubmitForm,
-    ShortFloatSubmitForm, JudgeableFileSubmitForm
+    ShortFloatSubmitForm, JudgeableFileSubmitForm, ProfilePictureUploadFrom
 )
 
 from homepage.models import SiteConfiguration
@@ -145,6 +145,7 @@ class ParticipantInfoView(View):
                 currently_anchored = pis.currently_anchored
             return JsonResponse({
                 'username': request.user.username,
+                'picture_url': get_thumbnailer(request.user.participant.picture)['avatar'].url,
                 'did_won_peste': request.user.participant.did_won_peste(),
                 'current_island_id': current_island_id,
                 'currently_anchored': currently_anchored,
@@ -731,6 +732,18 @@ def island(request):
     except Exception as e:
         logger.error(e, exc_info=True)
         return redirect('kabaramadalapeste:game')
+
+
+@login_activated_participant_required
+def set_picture(request):
+    if request.method == 'POST':
+        form = ProfilePictureUploadFrom(request.POST, request.FILES)
+        if not form.is_valid():
+            return redirect('kabaramadalapeste:game')
+        print(form.cleaned_data)
+        request.user.participant.picture = form.cleaned_data['picture']
+        request.user.participant.save()
+    return redirect('kabaramadalapeste:game')
 
 
 @method_decorator(game_running_required, name='dispatch')

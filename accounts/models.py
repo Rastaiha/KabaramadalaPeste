@@ -17,6 +17,7 @@ from collections import defaultdict
 import logging
 import random
 import re
+from easy_thumbnails.fields import ThumbnailerImageField
 logger = logging.getLogger(__file__)
 
 # Create your models here.
@@ -84,6 +85,7 @@ class Participant(models.Model):
         pass
 
     member = models.OneToOneField(Member, related_name='participant', on_delete=models.CASCADE)
+    picture = ThumbnailerImageField(upload_to='picture', blank=True)
     school = models.CharField(max_length=200)
     city = models.CharField(max_length=40)
     document = models.ImageField(upload_to='documents/')
