@@ -179,6 +179,9 @@ class TradeOfferRequestedItemInline(admin.StackedInline):
 
 @admin.register(TradeOffer)
 class TradeOfferAdmin(admin.ModelAdmin):
+    list_display = ('creator_participant', 'status', 'creation_datetime', 'close_datetime', 'accepted_participant')
+    list_filter = ('status', )
+    search_fields = ('creator_participant__member__username', 'accepted_participant__member__username')
     inlines = [TradeOfferRequestedItemInline, TradeOfferSuggestedItemInline]
 
 
@@ -217,10 +220,27 @@ class BandargahConfigurationAdmin(SingletonModelAdmin):
         return redirect('/admin/')
 
 
+@admin.register(AbilityUsage)
+class AbilityUsageAdmin(admin.ModelAdmin):
+    list_display = ('participant', 'datetime', 'ability_type', 'is_active')
+    list_filter = ('ability_type', 'is_active')
+    search_fields = ('participant__member__username',)
+
+
+@admin.register(Bully)
+class BullyAdmin(admin.ModelAdmin):
+    list_display = ('owner', 'island', 'creation_datetime', 'is_expired', 'expired_datetime')
+    list_filter = ('is_expired', 'island',)
+    search_fields = ('owner__member__username',)
+
+
+@admin.register(BandargahInvestment)
+class BandargahInvestmentAdmin(admin.ModelAdmin):
+    list_display = ('participant', 'amount', 'datetime', 'is_applied')
+    list_filter = ('is_applied',)
+    search_fields = ('participant__member__username',)
+
+
 admin.site.register(Island)
 admin.site.register(Way)
-admin.site.register(AbilityUsage)
-admin.site.register(BandargahInvestment)
-admin.site.register(Bully)
 admin.site.register(ParticipantIslandStatus)
-
