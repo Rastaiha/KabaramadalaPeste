@@ -578,6 +578,7 @@ def use_ability(request):
                     active_bully.expired_datetime = timezone.now()
                     active_bully.is_expired = True
                     active_bully.owner.send_msg_bully_expired(active_bully)
+                    active_bully.save()
                 bully = Bully.objects.create(
                     owner=request.user.participant,
                     is_expired=False,
