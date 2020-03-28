@@ -132,8 +132,9 @@
                 }, 1000)
             }
             e.preventDefault()
+        } else {
+            $("#send").click()
         }
-        $("#send").click()
     })
     $("#prompt_modal_btn").click(function () {
         if ($(this).data('kind') === "challenge") {
