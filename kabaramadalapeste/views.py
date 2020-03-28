@@ -763,7 +763,7 @@ class ChallengeView(View):
             'without_nav': True,
             'without_footer': True,
             'question_title': pis.question.title,
-            'question_pdf_file': pis.question.question,
+            'question_pdf_file': pis.question.question.url,
             'answer_type': pis.question.get_answer_type()
         })
 
