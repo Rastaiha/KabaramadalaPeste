@@ -143,26 +143,27 @@ class BaseQuestion(models.Model):
         # Call standard save
         super(BaseQuestion, self).save(*args, **kwargs)
 
-        initial_path = self.question.path
+        if not settings.TESTING and self.question:
+            initial_path = self.question.path
 
-        # New path in the form eg '/images/uploadmodel/1/image.jpg'
-        dt = timezone.now()
-        r = ''.join(random.choices(string.ascii_letters + string.digits, k=12))
-        new_n = '-'.join([r, dt.strftime('%H-%M-%S-%f'), os.path.basename(initial_path)])
-        new_name = 'soals/' + new_n
-        new_path = os.path.join(settings.MEDIA_ROOT, 'soals', new_n)
+            # New path in the form eg '/images/uploadmodel/1/image.jpg'
+            dt = timezone.now()
+            r = ''.join(random.choices(string.ascii_letters + string.digits, k=12))
+            new_n = '-'.join([r, dt.strftime('%H-%M-%S-%f'), os.path.basename(initial_path)])
+            new_name = 'soals/' + new_n
+            new_path = os.path.join(settings.MEDIA_ROOT, 'soals', new_n)
 
-        # Create dir if necessary and move file
-        if not os.path.exists(os.path.dirname(new_path)):
-            os.makedirs(os.path.dirname(new_path))
+            # Create dir if necessary and move file
+            if not os.path.exists(os.path.dirname(new_path)):
+                os.makedirs(os.path.dirname(new_path))
 
-        os.rename(initial_path, new_path)
+            os.rename(initial_path, new_path)
 
-        # Update the image_file field
-        self.question.name = new_name
+            # Update the image_file field
+            self.question.name = new_name
 
-        # Save changes
-        super(BaseQuestion, self).save(*args, **kwargs)
+            # Save changes
+            super(BaseQuestion, self).save(*args, **kwargs)
 
 
 class ShortAnswerQuestion(BaseQuestion):
@@ -424,7 +425,7 @@ class JudgeableSubmit(BaseSubmit):
         # Call standard save
         super(JudgeableSubmit, self).save(*args, **kwargs)
 
-        if self.submitted_answer:
+        if not settings.TESTING and self.submitted_answer:
             initial_path = self.submitted_answer.path
 
             # New path in the form eg '/images/uploadmodel/1/image.jpg'
