@@ -9,6 +9,7 @@ from django.utils import timezone
 from django.contrib.sites.shortcuts import get_current_site
 from accounts.models import Participant
 
+from kabaramadalapeste.cache import ParticipantsDataCache
 from kabaramadalapeste.models import (
     Island, ParticipantIslandStatus, TradeOffer, TradeOfferRequestedItem, PesteConfiguration,
     TradeOfferSuggestedItem, AbilityUsage, BandargahInvestment, BandargahConfiguration, Bully,
@@ -155,6 +156,19 @@ class ParticipantInfoView(View):
                         is_active=True
                     ).all().count() > 0
             })
+        except Exception as e:
+            logger.error(e, exc_info=True)
+            return default_error_response
+
+
+@method_decorator(game_running_required, name='dispatch')
+@method_decorator(login_activated_participant_required, name='dispatch')
+class AllParticipantsInfoView(View):
+    def get(self, request):
+        try:
+            data = ParticipantsDataCache.get_data()
+            del(data[request.user.participant.pk])
+            return JsonResponse(data)
         except Exception as e:
             logger.error(e, exc_info=True)
             return default_error_response

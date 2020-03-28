@@ -4,7 +4,7 @@ from .views import (
     game, game2, exchange, island, ChallengeView, IslandInfoView, MoveToIslandView,
     SetStartIslandView, PutAnchorView, OpenTreasureView,
     ParticipantInfoView, create_offer, get_all_offers,
-    get_my_offers, delete_offer, accept_offer,
+    get_my_offers, delete_offer, accept_offer, AllParticipantsInfoView,
     AcceptChallengeView, use_ability, SettingsView, SpadeView, invest
 )
 
@@ -16,6 +16,8 @@ urlpatterns = [
          IslandInfoView.as_view(), name="island_info"),
     path('participant_info/', ParticipantInfoView.as_view(),
          name="participant_info"),
+    path('all_participants_info/', AllParticipantsInfoView.as_view(),
+         name="all_participants_info"),
 
     path('set_start_island/<int:dest_island_id>/',
          SetStartIslandView.as_view(), name="set_start_island"),
