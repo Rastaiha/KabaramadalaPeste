@@ -233,6 +233,7 @@ class PaymentAttemptAdmin(admin.ModelAdmin):
 
 @admin.register(NotificationData)
 class NotificationDataAdmin(admin.ModelAdmin):
+    filter_horizontal = ('recipients',)
     list_display = (
         'id', 'level', 'text', 'send_to_all_participants', 'get_recipients_count', 'status', 'sent_at', 'send_action'
     )
