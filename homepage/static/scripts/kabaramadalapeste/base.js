@@ -152,7 +152,9 @@ $(".right-info-btn").click(function() {
                         $(".player-propties").append(
                             '<div class="player-proprty"><span><b class="proprty-count">' +
                                 response.properties[key] +
-                                ' </b>×</span><img src="' +
+                                ' </b>×</span><img title="' +
+                                prop_details[key].persian +
+                                '" src="' +
                                 prop_details[key].src +
                                 '" /></div>'
                         );

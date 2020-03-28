@@ -41,6 +41,9 @@ get_player_info()
                         offer_item_template
                             .find("img")
                             .attr("src", prop_details[property].src);
+                        offer_item_template
+                            .find("img")
+                            .attr("title", prop_details[property].persian);
                         offer_template
                             .find(".offer-" + property_type + "-list")
                             .append(offer_item_template.html());
