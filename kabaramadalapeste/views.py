@@ -6,7 +6,7 @@ from django.utils.decorators import method_decorator
 from django.db import transaction
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.utils import timezone
-
+from django.contrib.sites.shortcuts import get_current_site
 from accounts.models import Participant
 
 from kabaramadalapeste.models import (
@@ -764,6 +764,7 @@ class ChallengeView(View):
             'without_footer': True,
             'question_title': pis.question.title,
             'question_pdf_file': request.build_absolute_uri(pis.question.question.url),
+            'question_pdf_file_without_http': ''.join([get_current_site(request).domain, pis.question.question.url]),
             'answer_type': pis.question.get_answer_type()
         })
 
