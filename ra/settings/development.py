@@ -48,6 +48,7 @@ LOGGING = {
 }
 
 TESTING = sys.argv[1] == 'test'
+# TESTING = True
 REGISTRATION_FEE = get_environment_var('REGISTRATION_FEE', '500')
 
 # Activate Django-Heroku.
