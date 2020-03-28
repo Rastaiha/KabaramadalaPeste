@@ -91,8 +91,8 @@
                 <input id="answer" name="answer" type="text" class="w-100" placeholder="پاسخ"
                     style="direction: rtl; text-align: right" required>
                 {% elif answer_type == "FILE" %}
-                <input id="answer" name="answer" type="file" class="w-100 file-input" placeholder="پاسخ"
-                    style="direction: rtl; text-align: right" required>
+                <input id="answer" name="answer" type="file" class="w-100 file-input" accept="image/*,application/pdf"
+                    placeholder="پاسخ" style="direction: rtl; text-align: right" required>
                 {% endif %}
             </div>
         </form>
