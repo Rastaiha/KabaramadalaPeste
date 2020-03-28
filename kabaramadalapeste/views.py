@@ -739,7 +739,6 @@ def set_picture(request):
         form = ProfilePictureUploadForm(request.POST, request.FILES)
         if not form.is_valid():
             return redirect('kabaramadalapeste:game')
-        print(form.cleaned_data)
         request.user.participant.picture = form.cleaned_data['picture']
         request.user.participant.save()
     return redirect('kabaramadalapeste:game')

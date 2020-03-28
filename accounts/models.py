@@ -86,7 +86,7 @@ class Participant(models.Model):
         pass
 
     member = models.OneToOneField(Member, related_name='participant', on_delete=models.CASCADE)
-    picture = ThumbnailerImageField(upload_to='picture', blank=True, default="picture/user_default.png")
+    picture = ThumbnailerImageField(upload_to='picture', default="picture/user_default.png")
     school = models.CharField(max_length=200)
     city = models.CharField(max_length=40)
     document = models.ImageField(upload_to='documents/')
@@ -108,7 +108,8 @@ class Participant(models.Model):
     @property
     def picture_url(self):
         try:
-            return get_thumbnailer(request.user.participant.picture)['avatar'].url
+            pic = self.picture if self.picture else 'picture/user_default.png'
+            return get_thumbnailer(pic)['avatar'].url
         except Exception:
             return ''
 
