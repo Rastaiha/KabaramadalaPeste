@@ -162,6 +162,11 @@ class Participant(models.Model):
     def get_safe_sekke(self):
         return self.get_safe_property(game_settings.GAME_SEKKE)
 
+    def did_won_peste(self):
+        if self.peste_set.count():
+            return True
+        return False
+
     def today_challenges_opened_count(self):
         today_begin = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
         today_end = today_begin + timedelta(days=1)
