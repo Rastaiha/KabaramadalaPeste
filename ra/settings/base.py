@@ -11,7 +11,6 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
-import django_heroku
 
 
 def get_environment_var(var_name, default, prefixed=True):
@@ -40,7 +39,10 @@ INSTALLED_APPS = [
     'import_export',
     'homepage',
     'kabaramadalapeste',
-    'accounts'
+    'accounts',
+    'solo',
+    'nested_inline',
+    'notifications'
 ]
 
 MIDDLEWARE = [
@@ -99,7 +101,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Tehran'
 
 USE_I18N = True
 
@@ -128,8 +130,12 @@ EMAIL_USE_SSL = False
 DEFAULT_FROM_EMAIL = "Rastaiha <" + EMAIL_HOST_USER + ">"
 
 # Activate Django-Heroku.
-django_heroku.settings(locals())
 
 OK_STATUS = 'ok'
 ERROR_STATUS = 'err'
 HELP_STATUS = 'help'
+
+DJANGO_NOTIFICATIONS_CONFIG = {
+    'USE_JSONFIELD': True,
+    'SOFT_DELETE': True
+}

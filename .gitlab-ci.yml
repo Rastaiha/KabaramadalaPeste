@@ -7,3 +7,10 @@ production:
   - dpl --provider=heroku --app=$HEROKU_APP_PRODUCTION --api-key=$HEROKU_API_KEY --skip-cleanup
   only:
   - development
+
+test:
+  image: python:3.6
+  script:
+  - pip install -r requirements.txt
+  - python manage.py migrate
+  - python manage.py test

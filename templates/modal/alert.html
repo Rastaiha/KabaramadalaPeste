@@ -1,0 +1,15 @@
+{% extends 'modal/base.html' %}
+{% block modal_header %}
+
+<h5 class="modal-title">{% if modal_title %}{{ modal_title }}{% endif %}</h5>
+
+{% endblock %}
+{% block modal_content %}
+
+<p class="modal-message">{% if modal_message %}{{ modal_message }}{% endif %}</p>
+<div class="my-row">
+    <button id="{{ modal_id }}_btn" class="my-btn mr-auto" style="background: var(--blue-3)" data-dismiss="modal">متوجه
+        شدم</button>
+</div>
+
+{% endblock %}

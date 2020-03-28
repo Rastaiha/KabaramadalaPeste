@@ -1,0 +1,17 @@
+<div class="modal fade" id="{{ modal_id }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog {% if modal_md %} modal-md {% else %} modal-sm {% endif %}" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="direction: rtl; border: none">
+                {% block modal_header %}{% endblock %}
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+                    style="margin:-1rem auto -1rem -1rem ;">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" style="direction: rtl; text-align: right; border: none">
+                {% block modal_content %}{% endblock %}
+            </div>
+        </div>
+    </div>
+</div>

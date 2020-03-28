@@ -1,2 +1,21 @@
 {% extends 'base/base.html' %}
+{% load static %}
 {% block title %}کابارآمادالاپسته{% endblock title %}
+{% block styles %}
+<link rel="stylesheet" href="{% static 'styles/kabaramadalapeste/player_info.css' %}" />
+{% block game_base_styles %}{% endblock game_base_styles %}
+{% endblock styles %}
+{% block base_content %}
+<div style="overflow: hidden; width: 100vw; position: relative">
+    {% block game_base_content %}{% endblock game_base_content %}
+
+    {% include 'kabaramadalapeste/player_info.html' %}
+    {% include 'modal/prompt.html' with modal_id='prompt_modal' %}
+    {% include 'modal/alert.html' with modal_id='alert_modal'%}
+</div>
+{% endblock base_content %}
+{% block scripts %}
+<script src="{% static 'scripts/kabaramadalapeste/ajaxes.js' %}"></script>
+<script src="{% static 'scripts/kabaramadalapeste/base.js' %}"></script>
+{% block game_base_scripts %}{% endblock game_base_scripts %}
+{% endblock scripts %}

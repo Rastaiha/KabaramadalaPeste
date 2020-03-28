@@ -1,0 +1,101 @@
+{% extends 'modal/base.html' %}
+{% load static %}
+{% block modal_header %}
+
+<h5 class="modal-title">پیشنهاد جدید</h5>
+
+{% endblock %}
+{% block modal_content %}
+<form class="mb-3">
+    {% csrf_token %}
+    <div class="row">
+        <div class="col-6">
+            <div class="select-items-box request-items">
+                <h3>تقاضا</h3>
+                <div class="select-item-header">
+                    <div>نوع</div>
+                    <div>تعداد</div>
+                </div>
+                <div class="select-item">
+                    <img title="سکه" src="{% static 'images/game/coins.png' %}" />
+                    <input name="requested_SK" value="0" type="number" min="0">
+                </div>
+                <div class="select-item">
+                    <img title="کلید طلایی" src="{% static 'images/game/key1.png' %}" />
+                    <input name="requested_K1" value="0" type="number" min="0">
+                </div>
+                <div class="select-item">
+                    <img title="کلید آبی" src="{% static 'images/game/key2.png' %}" />
+                    <input name="requested_K2" value="0" type="number" min="0">
+                </div>
+                <div class="select-item">
+                    <img title="کلید قرمز" src="{% static 'images/game/key3.png' %}" />
+                    <input name="requested_K3" value="0" type="number" min="0">
+                </div>
+                <div class="select-item">
+                    <img title="بینش غیبی" src="{% static 'images/game/look.png' %}" />
+                    <input name="requested_VIS" value="0" type="number" min="0">
+                </div>
+                <div class="select-item">
+                    <img title="سفر اکسپرس" src="{% static 'images/game/attraction.png' %}" />
+                    <input name="requested_TXP" value="0" type="number" min="0">
+                </div>
+                <div class="select-item">
+                    <img title="چالش پلاس" src="{% static 'images/game/problem.png' %}" />
+                    <input name="requested_CHP" value="0" type="number" min="0">
+                </div>
+                <div class="select-item">
+                    <img title="زورگیری" src="{% static 'images/game/trap.png' %}" />
+                    <input name="requested_BLY" value="0" type="number" min="0">
+                </div>
+            </div>
+        </div>
+        <div class="col-6">
+            <div class="select-items-box response-items">
+                <h3>عرضه</h3>
+                <div class="select-item-header">
+                    <div>نوع</div>
+                    <div>تعداد</div>
+                </div>
+                <div class="select-item">
+                    <img title="سکه" src="{% static 'images/game/coins.png' %}" />
+                    <input name="suggested_SK" value="0" type="number" min="0">
+                </div>
+                <div class="select-item">
+                    <img title="کلید طلایی" src="{% static 'images/game/key1.png' %}" />
+                    <input name="suggested_K1" value="0" type="number" min="0">
+                </div>
+                <div class="select-item">
+                    <img title="کلید آبی" src="{% static 'images/game/key2.png' %}" />
+                    <input name="suggested_K2" value="0" type="number" min="0">
+                </div>
+                <div class="select-item">
+                    <img title="کلید قرمز" src="{% static 'images/game/key3.png' %}" />
+                    <input name="suggested_K3" value="0" type="number" min="0">
+                </div>
+                <div class="select-item">
+                    <img title="بینش غیبی" src="{% static 'images/game/look.png' %}" />
+                    <input name="suggested_VIS" value="0" type="number" min="0">
+                </div>
+                <div class="select-item">
+                    <img title="سفر اکسپرس" src="{% static 'images/game/attraction.png' %}" />
+                    <input name="suggested_TXP" value="0" type="number" min="0">
+                </div>
+                <div class="select-item">
+                    <img title="چالش پلاس" src="{% static 'images/game/problem.png' %}" />
+                    <input name="suggested_CHP" value="0" type="number" min="0">
+                </div>
+                <div class="select-item">
+                    <img title="زورگیری" src="{% static 'images/game/trap.png' %}" />
+                    <input name="suggested_BLY" value="0" type="number" min="0">
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<div class="my-row">
+    <a id="{{ modal_id }}_btn" class="my-btn w-100"
+        style="background: var(--color-5); font-weight: 900; font-size: 23px">انتشار</a>
+</div>
+
+{% endblock modal_content %}
