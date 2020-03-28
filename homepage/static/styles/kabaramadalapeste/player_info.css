@@ -6,22 +6,22 @@
 }
 
 .notification-box {
-    top: 100px;
+    top: 50px;
     z-index: 2;
 }
 
 .player-info {
-    top: 180px;
+    top: 130px;
     z-index: 3;
 }
 
 .exchange-info {
-    top: 260px;
+    top: 210px;
     z-index: 4;
 }
 
 .use-ability-info {
-    top: 340px;
+    top: 290px;
     z-index: 5;
 }
 
@@ -103,8 +103,9 @@
     color: white;
     font-size: 30px;
     font-weight: 400;
-    height: 35px;
+    height: 33px;
 }
+
 
 .player-proprty b {
     font-weight: 900;
