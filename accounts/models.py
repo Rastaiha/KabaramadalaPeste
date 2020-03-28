@@ -11,6 +11,7 @@ from django.utils.html import strip_tags, strip_spaces_between_tags
 from notifications.models import Notification
 from enum import Enum
 from notifications.signals import notify
+from easy_thumbnails.files import get_thumbnailer
 
 from collections import defaultdict
 
@@ -85,7 +86,7 @@ class Participant(models.Model):
         pass
 
     member = models.OneToOneField(Member, related_name='participant', on_delete=models.CASCADE)
-    picture = ThumbnailerImageField(upload_to='picture', blank=True)
+    picture = ThumbnailerImageField(upload_to='picture', blank=True, default="picture/user_default.png")
     school = models.CharField(max_length=200)
     city = models.CharField(max_length=40)
     document = models.ImageField(upload_to='documents/')
@@ -103,6 +104,13 @@ class Participant(models.Model):
 
     def __str__(self):
         return str(self.member)
+
+    @property
+    def picture_url(self):
+        try:
+            return get_thumbnailer(request.user.participant.picture)['avatar'].url
+        except Exception:
+            return ''
 
     def get_property(self, property_type):
         if self.properties.filter(property_type__exact=property_type).count() == 0:

@@ -8,7 +8,6 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.utils import timezone
 from django.contrib.sites.shortcuts import get_current_site
 from accounts.models import Participant
-from easy_thumbnails.files import get_thumbnailer
 from kabaramadalapeste.models import (
     Island, ParticipantIslandStatus, TradeOffer, TradeOfferRequestedItem, PesteConfiguration,
     TradeOfferSuggestedItem, AbilityUsage, BandargahInvestment, BandargahConfiguration, Bully,
@@ -145,7 +144,7 @@ class ParticipantInfoView(View):
                 currently_anchored = pis.currently_anchored
             return JsonResponse({
                 'username': request.user.username,
-                'picture_url': get_thumbnailer(request.user.participant.picture)['avatar'].url,
+                'picture_url': request.user.participant.picture_url,
                 'did_won_peste': request.user.participant.did_won_peste(),
                 'current_island_id': current_island_id,
                 'currently_anchored': currently_anchored,
