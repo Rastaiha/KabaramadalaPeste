@@ -319,7 +319,9 @@ get_player_info()
     .catch(default_fail);
 
 $(window).on("resize", function() {
-    $("#resize_modal").modal();
+    if (!isMobile) {
+        $("#resize_modal").modal();
+    }
 });
 $("#resize_modal_btn").click(function() {
     location.reload(false);
