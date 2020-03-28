@@ -94,7 +94,7 @@ class IslandInfoView(View):
                 treasure_keys_persian = pis.treasure.get_keys_persian_string()
             submit_status = pis.submit.submit_status if pis.submit else 'No'
             estimated_judge_time = 15
-            if not pis.island.challenge.is_judgeable:
+            if not pis.island.challenge or not pis.island.challenge.is_judgeable:
                 estimated_judge_time = 0
             submits = JudgeableSubmit.objects.exclude(submit_status='Pending').filter(pis__island__island_id=island_id).all()
             if submits.count() > 0:
@@ -763,7 +763,7 @@ class ChallengeView(View):
             'without_nav': True,
             'without_footer': True,
             'question_title': pis.question.title,
-            'question_pdf_file': pis.question.question,
+            'question_pdf_file': pis.question.question.url,
             'answer_type': pis.question.get_answer_type()
         })
 
