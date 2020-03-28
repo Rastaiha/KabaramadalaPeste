@@ -74,9 +74,7 @@
         <h3 class="text-center mb-4">ارسال پاسخ</h3>
         <form id="form" class="row" method="post" enctype="multipart/form-data">
             <div class="ml-auto col-5 col-sm-3 col-md-2">
-                {% if not answer_type == "NO" %}
                 <a class="submit-form my-btn w-100">ارسال</a>
-                {% endif %}
             </div>
             <button id="send" type="submit" style="display:none"></button>
             <div class="mr-auto col-7 col-sm-5 col-md-5">
@@ -116,25 +114,21 @@
         document.getElementById("form").checkValidity()
     })
     $('.submit-form').click(function (e) {
-        if (input) {
-            if (input.checkValidity()) {
-                my_prompt(
-                    "آیا می‌خوای جوابتو ارسال کنی؟ توجه کن که یکبار بیشتر نمی‌تونی ارسال داشته باشی.",
-                    "ارسال پاسخ", {
-                        kind: "challenge"
-                    });
-                $("#prompt_modal").modal("show");
-            } else {
-                input.setCustomValidity(input.validationMessage);
-                input.reportValidity();
-                setTimeout(function () {
-                    input.setCustomValidity('');
-                }, 1000)
-            }
-            e.preventDefault()
+        if (!input || input.checkValidity()) {
+            my_prompt(
+                "آیا می‌خوای جوابتو ارسال کنی؟ توجه کن که یکبار بیشتر نمی‌تونی ارسال داشته باشی.",
+                "ارسال پاسخ", {
+                    kind: "challenge"
+                });
+            $("#prompt_modal").modal("show");
         } else {
-            $("#send").click()
+            input.setCustomValidity(input.validationMessage);
+            input.reportValidity();
+            setTimeout(function () {
+                input.setCustomValidity('');
+            }, 1000)
         }
+        e.preventDefault()
     })
     $("#prompt_modal_btn").click(function () {
         if ($(this).data('kind') === "challenge") {
