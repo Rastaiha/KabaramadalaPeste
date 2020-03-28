@@ -278,6 +278,7 @@ class CustomNotificationAdmin(NotificationAdmin):
     list_filter = (
         'verb', *NotificationAdmin.list_filter
     )
+    search_fields = ('recipient__username', 'description', 'data')
 
 
 admin.site.unregister(Notification)

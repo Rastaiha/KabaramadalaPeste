@@ -145,6 +145,7 @@ class ParticipantInfoView(View):
                 currently_anchored = pis.currently_anchored
             return JsonResponse({
                 'username': request.user.username,
+                'did_won_peste': request.user.participant.did_won_peste(),
                 'current_island_id': current_island_id,
                 'currently_anchored': currently_anchored,
                 'properties': properties_dict,
