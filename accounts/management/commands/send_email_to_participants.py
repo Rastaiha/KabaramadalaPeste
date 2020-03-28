@@ -32,10 +32,13 @@ class Command(BaseCommand):
         msg.attach_alternative(html_content, "text/html")
         msg.send()
 
+        self.stdout.write(
+            self.style.SUCCESS('Successfully sent email for %s' % email)
+        )
+
     def handle(self, *args, **options):
         from_file = 'auth/greet.html'
         title = 'اطلاعات شروع بازی'
-        print(options)
         if options['file']:
             from_file = options['file']
         if options['title']:
@@ -46,6 +49,14 @@ class Command(BaseCommand):
             par = Participant.objects.filter(is_activated=True, document_status='Verified').first()
             for email in options['emails']:
                 self.send_one(email, par, title, from_file)
+
+            self.stdout.write(
+                self.style.SUCCESS('Sent %s emails' % len(options['emails']))
+            )
             return
         for par in Participant.objects.filter(is_activated=True, document_status='Verified'):
             self.send_one(par.member.email, par, title, from_file)
+        self.stdout.write(
+            self.style.SUCCESS(
+                'Sent %s emails' % Participant.objects.filter(is_activated=True, document_status='Verified').count())
+        )
