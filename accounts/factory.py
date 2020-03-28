@@ -15,3 +15,5 @@ class ParticipantFactory(factory.django.DjangoModelFactory):
         model = Participant
 
     member = factory.SubFactory(MemberFactory)
+    document_status = 'Verified'
+    is_activated = True

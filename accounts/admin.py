@@ -153,19 +153,19 @@ class MemberAdmin(ExportActionMixin, NestedModelAdmin):
         try:
             if obj.participant.document_status == 'Verified':
                 return mark_safe('<a class="button" href="' + reverse('admin:unverify_member',
-                                                                      args=str(obj.pk)) + '">عدم تایید</a>' + '&nbsp;'
+                                                                      args=[obj.pk]) + '">عدم تایید</a>' + '&nbsp;'
                                  '<a class="button" href="' + reverse('admin:pend_member',
-                                                                       args=str(obj.pk)) + '">در حال بررسی</a>')
+                                                                       args=[obj.pk]) + '">در حال بررسی</a>')
             elif obj.participant.document_status == 'Rejected':
                 return mark_safe('<a class="button" href="' + reverse('admin:verify_member',
-                                                                      args=str(obj.pk)) + '">تایید</a>' + '&nbsp;'
+                                                                      args=[obj.pk]) + '">تایید</a>' + '&nbsp;'
                                  '<a class="button" href="' + reverse('admin:pend_member',
-                                                                       args=str(obj.pk)) + '">در حال بررسی</a>')
+                                                                       args=[obj.pk]) + '">در حال بررسی</a>')
             else:
                 return mark_safe('<a class="button" href="' + reverse('admin:verify_member',
-                                                                      args=str(obj.pk)) + '">تایید</a>' + '&nbsp;'
+                                                                      args=[obj.pk]) + '">تایید</a>' + '&nbsp;'
                                  '<a class="button" href="' + reverse('admin:unverify_member',
-                                                                       args=str(obj.pk)) + '">عدم تایید</a>')
+                                                                       args=[obj.pk]) + '">عدم تایید</a>')
         except:
             return None
 
