@@ -388,6 +388,19 @@ class BaseSubmit(models.Model):
         for reward in self.pis.question.challenge.rewards.all():
             self.pis.participant.add_property(reward.reward_type, reward.amount)
 
+    def get_rewards_persian(self):
+        n = self.pis.question.challenge.rewards.exclude(amount__exact=0).all().count()
+        s = ''
+        i = 0
+        for treasure_reward_item in self.pis.question.challenge.rewards.exclude(amount__exact=0).all():
+            s += '%d عدد %s' % (treasure_reward_item.amount, settings.GAME_TRANSLATION_DICT[treasure_reward_item.reward_type])
+            if i < n-2:
+                s += '، '
+            elif i == n-2:
+                s += ' و '
+            i += 1
+        return s
+
 
 class ShortAnswerSubmit(BaseSubmit):
 

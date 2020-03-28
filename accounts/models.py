@@ -452,8 +452,8 @@ class Participant(models.Model):
         )
 
     def send_msg_correct_judged_answer(self, judgeablesubmit):
-        text = 'پاسخی که قبلا به چالش‌ جزیره‌ی %s داده بودی توسط داوران ارزیابی شد و درست بود.' % \
-               (judgeablesubmit.pis.island.name, )
+        text = 'پاسخی که قبلا به چالش‌ جزیره‌ی %s داده بودی توسط داوران ارزیابی شد و درست بود. %s دریافت کردی.' % \
+               (judgeablesubmit.pis.island.name, judgeablesubmit.get_rewards_persian())
         notify.send(
             sender=Member.objects.filter(is_superuser=True).all()[0],
             recipient=self.member,
@@ -474,8 +474,8 @@ class Participant(models.Model):
         )
 
     def send_msg_correct_short_answer(self, shortanswersubmit):
-        text = 'پاسخی که به چالش‌ جزیره‌ی %s دادی صحیح بود.' % \
-               (shortanswersubmit.pis.island.name, )
+        text = 'پاسخی که به چالش‌ جزیره‌ی %s دادی صحیح بود. %s دریافت کردی.' % \
+               (shortanswersubmit.pis.island.name, shortanswersubmit.get_rewards_persian())
         notify.send(
             sender=Member.objects.filter(is_superuser=True).all()[0],
             recipient=self.member,
