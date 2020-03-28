@@ -425,7 +425,7 @@ class JudgeableSubmit(BaseSubmit):
         # Call standard save
         super(JudgeableSubmit, self).save(*args, **kwargs)
 
-        if not settings.TESTING and self.submitted_answer:
+        if not settings.TESTING and self.submitted_answer and len(self.submitted_answer) < 20:
             initial_path = self.submitted_answer.path
 
             # New path in the form eg '/images/uploadmodel/1/image.jpg'

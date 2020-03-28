@@ -65,5 +65,6 @@ LOGGING = {
     },
 }
 
+TESTING = False
 REGISTRATION_FEE = get_environment_var('REGISTRATION_FEE', '15000')
 DOMAIN = get_environment_var('DOMAIN', 'https://rastaiha.ir')
