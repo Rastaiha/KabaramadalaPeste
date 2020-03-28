@@ -8,6 +8,10 @@ class Command(BaseCommand):
 
     @transaction.atomic
     def handle(self, *args, **kwargs):
+        i = 0
+        n = Participant.objects.all().count()
         for participant in Participant.objects.all():
+            print('Participant<%s> number %d out of %d (%0.1f%%)' % (participant.member.email, i, n, i/n*100))
             participant.init_pis()
             participant.init_properties()
+            i += 1
