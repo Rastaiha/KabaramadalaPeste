@@ -1,4 +1,5 @@
 from ra.settings.base import *
+import sys
 import django_heroku
 
 # SECURITY WARNING: keep the secret key used in production secret!
@@ -46,6 +47,7 @@ LOGGING = {
     },
 }
 
+TESTING = sys.argv[1] == 'test'
 REGISTRATION_FEE = get_environment_var('REGISTRATION_FEE', '500')
 
 # Activate Django-Heroku.

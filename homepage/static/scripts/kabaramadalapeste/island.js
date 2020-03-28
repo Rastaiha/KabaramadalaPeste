@@ -136,7 +136,7 @@ $("#prompt_modal_btn").click(function() {
                             // let keys = get_keys_string(response.treasure_rewards);
                             let keys = response.treasure_rewards_persian;
                             my_alert(
-                                "شما " + keys + " دیافت کردید.",
+                                "شما " + keys + " دریافت کردید.",
                                 "باز کردن گنج"
                             );
                         }, 1000);

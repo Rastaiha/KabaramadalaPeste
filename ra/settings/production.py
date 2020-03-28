@@ -29,6 +29,8 @@ DATABASES = {
     }
 }
 
+
+STATIC_ROOT = get_environment_var('STATIC_ROOT', 'staticfiles')
 LOG_LEVEL = get_environment_var('LOG_LEVEL', 'INFO')
 
 LOGGING = {
