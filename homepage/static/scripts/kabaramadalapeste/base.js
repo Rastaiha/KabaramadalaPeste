@@ -212,7 +212,7 @@ $(".right-info-btn").click(function() {
                         );
                     });
                 } else {
-                    $(".notifications > div").append(
+                    $(".notifications > div").html(
                         '<div class="notification">هیچ پیامی برای شما ارسال نشده</div>'
                     );
                 }

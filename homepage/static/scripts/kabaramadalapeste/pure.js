@@ -32,7 +32,6 @@ function update_sttings(response) {
 }
 
 function update_island_info(response) {
-    console.log(response);
     if (response.island_id === 20 && data.ship.island_id === 20) {
         island_info.addClass("in_bandargah");
     } else {
