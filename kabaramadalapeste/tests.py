@@ -15,7 +15,6 @@ from kabaramadalapeste.factory import (
 from kabaramadalapeste.conf import settings
 from accounts.factory import ParticipantFactory, MemberFactory
 from unittest import mock
-
 from django.utils import timezone
 from datetime import datetime, timedelta
 

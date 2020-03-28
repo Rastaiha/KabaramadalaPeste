@@ -6,6 +6,8 @@ from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelatio
 from django.contrib.contenttypes.models import ContentType
 from django.utils import timezone
 
+from easy_thumbnails.files import get_thumbnailer
+
 import random
 import logging
 import math
@@ -482,7 +484,8 @@ class TradeOffer(models.Model):
     def to_dict(self):
         dic = {
             'pk': self.pk,
-            'creator_participant_username': self.creator_participant.member.username
+            'creator_participant_username': self.creator_participant.member.username,
+            'creator_participant_picture_url': get_thumbnailer(self.creator_participant.picture)['avatar'].url
         }
         for offer_item in self.suggested_items.all():
             dic['suggested_' + offer_item.property_type] = offer_item.amount

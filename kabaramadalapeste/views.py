@@ -17,7 +17,7 @@ from kabaramadalapeste.models import (
 from kabaramadalapeste.conf import settings
 from kabaramadalapeste.forms import (
     EmptySubmitForm, ShortStringSubmitForm, ShortIntSubmitForm,
-    ShortFloatSubmitForm, JudgeableFileSubmitForm, ProfilePictureUploadFrom
+    ShortFloatSubmitForm, JudgeableFileSubmitForm, ProfilePictureUploadForm
 )
 
 from homepage.models import SiteConfiguration
@@ -737,7 +737,7 @@ def island(request):
 @login_activated_participant_required
 def set_picture(request):
     if request.method == 'POST':
-        form = ProfilePictureUploadFrom(request.POST, request.FILES)
+        form = ProfilePictureUploadForm(request.POST, request.FILES)
         if not form.is_valid():
             return redirect('kabaramadalapeste:game')
         print(form.cleaned_data)
