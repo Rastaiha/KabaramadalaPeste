@@ -288,6 +288,10 @@ get_player_info()
         if (data.did_open_treasure) {
             data.e.ganj.src = "go2.png";
         }
+        if (!data.is_spade_available) {
+            data.e.bill.width = 0;
+            data.e.bill.height = 0;
+        }
         data.did_accept_challenge = response.did_accept_challenge;
         data.did_spade = response.did_spade;
         data.submit_status = response.submit_status;
