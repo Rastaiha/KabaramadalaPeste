@@ -285,6 +285,61 @@ function init_ship_data(island_id) {
         island_id: island_id
     };
 }
+let other_player_info = $(".other-user-info");
+function init_other_players() {
+    data.op = [];
+    for (let i = 0; i < 300; i++) {
+        data.op.push({});
+        data.op[i].elem = new Konva.Image({
+            x: -100,
+            y: -100,
+            image: data.images[data.ship.src],
+            width: Math.floor((data.ship.width * data.back.width) / 4),
+            height: Math.floor((data.ship.height * data.back.height) / 4),
+            perfectDrawEnabled: false
+        });
+
+        data.op[i].elem.on("mouseover touchstart", function(e) {
+            let x =
+                data.op[i].elem.x() +
+                data.layer.x() -
+                other_player_info.width() / 2;
+            let y =
+                data.op[i].elem.y() +
+                data.layer.y() -
+                other_player_info.height() -
+                40;
+            other_player_info.css("left", x + "px");
+            other_player_info.css("top", y + "px");
+            other_player_info.removeClass("hide");
+            other_player_info.addClass("show");
+        });
+
+        data.op[i].elem.on("mouseout touchend", function(e) {
+            other_player_info.removeClass("show");
+            other_player_info.addClass("hide");
+        });
+
+        data.layer2.add(data.op[i].elem);
+
+        data.op[i].ox = Math.random() * 200 + 500;
+        data.op[i].oy = Math.random() * 200 + 500;
+        data.op[i].or = Math.random() * 200 + 100;
+    }
+
+    let start = new Date();
+    function animate() {
+        let delta = new Date() - start;
+        for (let i = 0; i < data.op.length; i++) {
+            data.op[i].elem.offsetX(Math.sin(delta / data.op[i].ox));
+            data.op[i].elem.offsetY(Math.sin(delta / data.op[i].oy));
+            data.op[i].elem.rotate(Math.sin(delta / data.op[i].or) / 10);
+        }
+        data.layer2.batchDraw();
+        requestAnimationFrame(animate);
+    }
+    animate();
+}
 
 function init_game() {
     data.stage = new Konva.Stage({
@@ -300,7 +355,9 @@ function init_game() {
         .then(response => {
             if (response.current_island_id) {
                 init_ship_data(response.current_island_id);
+                init_other_players();
                 init_ship();
+                get_other_players();
             } else {
                 my_alert(
                     "در ابتدای بازی شما باید جزیره‌ای را برای شروع انتخاب کنید.",

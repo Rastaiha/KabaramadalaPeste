@@ -299,3 +299,44 @@ $(".island-info-action a").click(function() {
         $("#prompt_modal").modal("show");
     }
 });
+
+function get_other_players() {
+    all_players_info().then(other_players => {
+        other_players = [];
+        let count = Math.floor(Math.random() * 300);
+        for (let i = 0; i < count; i++) {
+            other_players.push({
+                username: "جغد وحشی",
+                img:
+                    "https://cdn.myket.ir/image/myket/icon/ir.amoo.jogd.dana_1dc3709e-b726-4e2b-90e7-09c5ced0d0e8.png",
+                island_id: Math.floor(Math.random() * 34) + 1
+            });
+        }
+        for (let i = 0; i < other_players.length; i++) {
+            island = get_island(other_players[i].island_id);
+            let direction = Math.floor(Math.random() * 4);
+            let x = island.elem.x();
+            let y = island.elem.y();
+            if (direction === 0) {
+                x += Math.floor(Math.random() * island.elem.width());
+            }
+            if (direction === 1) {
+                y += Math.floor(Math.random() * island.elem.height());
+            }
+            if (direction === 2) {
+                x += island.elem.width();
+                y += Math.floor(Math.random() * island.elem.height());
+            }
+            if (direction === 3) {
+                y += island.elem.height();
+                x += Math.floor(Math.random() * island.elem.width());
+            }
+            data.op[i].elem.setAttrs({
+                x: x,
+                y: y
+            });
+        }
+    });
+
+    setTimeout(get_other_players, 60000);
+}

@@ -18,6 +18,10 @@ function get_player_info() {
     return $.ajax("/game/participant_info/");
 }
 
+function all_players_info() {
+    return $.ajax("/game/all_participants_info/");
+}
+
 function get_island_info(island_id) {
     return $.ajax("/game/island_info/" + island_id + "/").then(response => {
         response.island_id = island_id;
