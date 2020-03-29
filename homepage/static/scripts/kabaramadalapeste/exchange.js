@@ -14,6 +14,10 @@ get_player_info()
             let offer_item_template = $(".offer-item-template");
 
             offer_template
+                .find(".offer-user-img")
+                .attr("src", offer.creator_participant_picture_url);
+
+            offer_template
                 .find(".offer-username")
                 .text(offer.creator_participant_username);
             offer_template
