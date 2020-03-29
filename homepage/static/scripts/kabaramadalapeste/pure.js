@@ -302,18 +302,16 @@ $(".island-info-action a").click(function() {
 
 function get_other_players() {
     all_players_info().then(other_players => {
-        other_players = [];
-        let count = Math.floor(Math.random() * 300);
-        for (let i = 0; i < count; i++) {
-            other_players.push({
-                username: "جغد وحشی",
-                img:
-                    "https://cdn.myket.ir/image/myket/icon/ir.amoo.jogd.dana_1dc3709e-b726-4e2b-90e7-09c5ced0d0e8.png",
-                island_id: Math.floor(Math.random() * 34) + 1
+        for (let i = 0; i < data.op.length; i++) {
+            data.op[i].un = "";
+            data.op[i].pp = "";
+            data.op[i].elem.setAttrs({
+                x: -100,
+                y: -100
             });
         }
         for (let i = 0; i < other_players.length; i++) {
-            island = get_island(other_players[i].island_id);
+            island = get_island(other_players[i].ii);
             let direction = Math.floor(Math.random() * 4);
             let x = island.elem.x();
             let y = island.elem.y();
@@ -335,6 +333,8 @@ function get_other_players() {
                 x: x,
                 y: y
             });
+            data.op[i].un = other_players[i].un;
+            data.op[i].pp = other_players[i].pp;
         }
     });
 

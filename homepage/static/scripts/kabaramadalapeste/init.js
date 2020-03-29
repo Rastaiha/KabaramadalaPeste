@@ -309,6 +309,10 @@ function init_other_players() {
                 data.layer.y() -
                 other_player_info.height() -
                 40;
+            other_player_info
+                .find(".other-user-img")
+                .attr("src", data.op[i].pp);
+            other_player_info.find(".other-user-name").text(data.op[i].un);
             other_player_info.css("left", x + "px");
             other_player_info.css("top", y + "px");
             other_player_info.removeClass("hide");
