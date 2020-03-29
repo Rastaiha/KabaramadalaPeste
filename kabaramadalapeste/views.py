@@ -168,7 +168,7 @@ class AllParticipantsInfoView(View):
     def get(self, request):
         try:
             data = ParticipantsDataCache.get_data().copy()
-            del(data[request.user.participant.pk])
+            data.pop(request.user.participant.pk, None)
             return JsonResponse(list(data.values()), safe=False)
         except Exception as e:
             logger.error(e, exc_info=True)
