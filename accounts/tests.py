@@ -8,7 +8,7 @@ from kabaramadalapeste.factory import (
 )
 from kabaramadalapeste.models import (
     Way, ParticipantIslandStatus, Island, Peste, PesteConfiguration,
-    ParticipantPropertyItem, ShortAnswerQuestion, Treasure
+    ParticipantPropertyItem, ShortAnswerQuestion, Treasure, GameEventLog
 )
 from kabaramadalapeste.conf import settings
 from collections import defaultdict
@@ -79,6 +79,7 @@ class ParticipantTest(TestCase):
         self.assertTrue(pis_dest.currently_in)
         self.assertIsNotNone(pis_dest.reached_at)
         self.assertEqual(self.participant.currently_at_island, self.island)
+        self.assertEqual(GameEventLog.objects.count(), 1)
 
     def test_move_first(self):
         self.participant.init_pis()
@@ -97,6 +98,7 @@ class ParticipantTest(TestCase):
         self.assertTrue(pis_dest.currently_in)
         self.assertIsNotNone(pis_dest.reached_at)
         self.assertEqual(self.participant.currently_at_island, self.island)
+        self.assertEqual(GameEventLog.objects.count(), 2)
 
     # def test_move_free(self):
     #     self.participant.init_pis()
@@ -117,6 +119,7 @@ class ParticipantTest(TestCase):
 
         with self.assertRaises(Participant.PropertiesAreNotEnough):
             self.participant.move(self.island)
+        self.assertEqual(GameEventLog.objects.count(), 1)
 
     # def test_move_less_sekke_free(self):
     #     self.participant.init_pis()
@@ -160,6 +163,7 @@ class ParticipantTest(TestCase):
         self.assertTrue(pis_dest.currently_in)
         self.assertIsNotNone(pis_dest.reached_at)
         self.assertEqual(self.participant.currently_at_island, self.island)
+        self.assertEqual(GameEventLog.objects.count(), 3)
 
     def test_put_anchor_ok(self):
         self.participant.init_pis()
@@ -178,12 +182,14 @@ class ParticipantTest(TestCase):
         self.assertTrue(pis_current.is_treasure_visible)
         self.assertIsNotNone(pis_current.last_anchored_at)
         self.assertEqual(prev_sekke - after_sekke, settings.GAME_PUT_ANCHOR_PRICE)
+        self.assertEqual(GameEventLog.objects.count(), 2)
 
     def test_put_anchor_not_set_start_island(self):
         self.participant.init_pis()
         self.participant.init_properties()
         with self.assertRaises(Participant.ParticipantIsNotOnIsland):
             self.participant.put_anchor_on_current_island()
+        self.assertEqual(GameEventLog.objects.count(), 0)
 
     def test_put_anchor_again(self):
         self.participant.init_pis()
@@ -192,6 +198,7 @@ class ParticipantTest(TestCase):
         self.participant.put_anchor_on_current_island()
         with self.assertRaises(Participant.CantPutAnchorAgain):
             self.participant.put_anchor_on_current_island()
+        self.assertEqual(GameEventLog.objects.count(), 2)
 
     def test_put_anchor_not_enough_sekke(self):
         self.participant.init_pis()
@@ -211,6 +218,7 @@ class ParticipantTest(TestCase):
         self.assertFalse(pis.currently_anchored)
         self.assertFalse(pis.is_treasure_visible)
         self.assertIsNone(pis.last_anchored_at)
+        self.assertEqual(GameEventLog.objects.count(), 1)
 
     def test_init_properties(self):
         PARTICIPANT_INITIAL_PROPERTIES = {
@@ -263,6 +271,7 @@ class ParticipantTest(TestCase):
         pis.refresh_from_db()
         self.assertTrue(pis.did_open_treasure)
         self.assertIsNotNone(pis.treasure_opened_at)
+        self.assertEqual(GameEventLog.objects.count(), 3)
 
     def test_open_treasure_twice(self):
         self.participant.init_pis()
@@ -283,6 +292,7 @@ class ParticipantTest(TestCase):
         self.participant.open_treasure_on_current_island()
         with self.assertRaises(Participant.CantOpenTreasureAgain):
             self.participant.open_treasure_on_current_island()
+        self.assertEqual(GameEventLog.objects.count(), 3)
 
     def test_open_treasure_not_enough(self):
         self.participant.init_pis()
@@ -322,6 +332,7 @@ class ParticipantTest(TestCase):
         pis.refresh_from_db()
         self.assertFalse(pis.did_open_treasure)
         self.assertIsNone(pis.treasure_opened_at)
+        self.assertEqual(GameEventLog.objects.count(), 2)
 
     def test_open_treasure_not_at_island(self):
         self.participant.init_pis()
@@ -329,6 +340,7 @@ class ParticipantTest(TestCase):
 
         with self.assertRaises(Participant.ParticipantIsNotOnIsland):
             self.participant.open_treasure_on_current_island()
+        self.assertEqual(GameEventLog.objects.count(), 0)
 
     def test_open_treasure_did_not_anchor(self):
         self.participant.init_pis()
@@ -337,6 +349,7 @@ class ParticipantTest(TestCase):
 
         with self.assertRaises(Participant.DidNotAnchored):
             self.participant.open_treasure_on_current_island()
+        self.assertEqual(GameEventLog.objects.count(), 1)
 
     def test_accept_challenge_ok(self):
         self.participant.init_pis()
@@ -352,6 +365,7 @@ class ParticipantTest(TestCase):
         pis.refresh_from_db()
         self.assertTrue(pis.did_accept_challenge)
         self.assertIsNotNone(pis.challenge_accepted_at)
+        self.assertEqual(GameEventLog.objects.count(), 3)
 
     def test_accept_challenge_twice(self):
         self.participant.init_pis()
@@ -362,6 +376,7 @@ class ParticipantTest(TestCase):
         self.participant.accept_challenge_on_current_island()
         with self.assertRaises(Participant.CantAcceptChallengeAgain):
             self.participant.accept_challenge_on_current_island()
+        self.assertEqual(GameEventLog.objects.count(), 3)
 
     def test_accept_challenge_not_at_island(self):
         self.participant.init_pis()
@@ -369,6 +384,7 @@ class ParticipantTest(TestCase):
 
         with self.assertRaises(Participant.ParticipantIsNotOnIsland):
             self.participant.accept_challenge_on_current_island()
+        self.assertEqual(GameEventLog.objects.count(), 0)
 
     def test_accept_challenge_did_not_anchor(self):
         self.participant.init_pis()
@@ -377,6 +393,7 @@ class ParticipantTest(TestCase):
 
         with self.assertRaises(Participant.DidNotAnchored):
             self.participant.accept_challenge_on_current_island()
+        self.assertEqual(GameEventLog.objects.count(), 1)
 
     @mock.patch('accounts.models.timezone.now')
     def test_accept_challenge_limit(self, now_mock):
@@ -406,6 +423,7 @@ class ParticipantTest(TestCase):
 
         with self.assertRaises(Participant.MaximumChallengePerDayExceeded):
             self.participant.accept_challenge_on_current_island()
+        self.assertEqual(GameEventLog.objects.count(), 2)
 
     @mock.patch('accounts.models.timezone.now')
     def test_accept_challenge_ok_one_less(self, now_mock):
@@ -437,6 +455,7 @@ class ParticipantTest(TestCase):
         pis.refresh_from_db()
         self.assertTrue(pis.did_accept_challenge)
         self.assertIsNotNone(pis.challenge_accepted_at)
+        self.assertEqual(GameEventLog.objects.count(), 3)
 
     def test_spade_ok_no_peste(self):
         self.participant.init_pis()
@@ -456,6 +475,7 @@ class ParticipantTest(TestCase):
         self.assertEqual(self.participant.sekke.amount, 0)
         self.assertTrue(pis.did_spade)
         self.assertIsNotNone(pis.spaded_at)
+        self.assertEqual(GameEventLog.objects.count(), 3)
 
     def test_spade_ok_with_peste(self):
         peste = Peste.objects.create(
@@ -485,6 +505,7 @@ class ParticipantTest(TestCase):
         self.assertTrue(peste.is_found)
         self.assertIsNotNone(peste.found_by)
         self.assertIsNotNone(peste.found_at)
+        self.assertEqual(GameEventLog.objects.count(), 3)
 
     def test_spade_ok_with_peste_found_before(self):
         other_participant = ParticipantFactory()
@@ -512,6 +533,7 @@ class ParticipantTest(TestCase):
         self.assertIsNotNone(pis.spaded_at)
         self.assertTrue(peste.is_found)
         self.assertEqual(peste.found_by, other_participant)
+        self.assertEqual(GameEventLog.objects.count(), 3)
 
     def test_spade_ok_with_peste_not_enough_property(self):
         other_participant = ParticipantFactory()
@@ -535,6 +557,7 @@ class ParticipantTest(TestCase):
             island=self.island
         )
         self.assertIsNone(pis.spaded_at)
+        self.assertEqual(GameEventLog.objects.count(), 2)
 
     def test_spade_twice(self):
         other_participant = ParticipantFactory()
@@ -554,6 +577,7 @@ class ParticipantTest(TestCase):
         self.participant.spade_on_current_island()
         with self.assertRaises(Participant.CantSpadeAgain):
             self.participant.spade_on_current_island()
+        self.assertEqual(GameEventLog.objects.count(), 3)
 
     def test_spade_not_at_island(self):
         self.participant.init_pis()
@@ -561,3 +585,4 @@ class ParticipantTest(TestCase):
 
         with self.assertRaises(Participant.ParticipantIsNotOnIsland):
             self.participant.spade_on_current_island()
+        self.assertEqual(GameEventLog.objects.count(), 0)

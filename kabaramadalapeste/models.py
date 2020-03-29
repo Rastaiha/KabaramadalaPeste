@@ -584,3 +584,31 @@ class Bully(models.Model):
 
     class CantBeOnBandargah(Exception):
         pass
+
+
+class GameEventLog(models.Model):
+    class EventTypes(models.TextChoices):
+        Nope = 'Nope'
+        SetStart = 'Set start'
+        Move = 'Move'
+        Anchor = 'Anchor'
+        OpenTreasure = 'Open treasure'
+        Spade = 'Spade'
+        AcceptChallenge = 'Accept challenge'
+        CreateOffer = 'Create offer'
+        DeleteOffer = 'Delete offer'
+        AcceptOffer = 'Accept offer'
+        UseAbility = 'Use ability'
+        Invest = 'Invest'
+        Submit = 'Submit'
+        BullyTarget = 'Bully target'
+
+    who = models.ForeignKey(Participant, related_name='logs', on_delete=models.DO_NOTHING)
+    when = models.DateTimeField()
+    where = models.ForeignKey(Island, related_name='logs', on_delete=models.DO_NOTHING, null=True)
+    event_type = models.CharField(max_length=20, default=EventTypes.Nope,
+                                  choices=EventTypes.choices)
+
+    related_content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, null=True)
+    related_object_id = models.PositiveIntegerField(null=True)
+    related = GenericForeignKey('related_content_type', 'related_object_id')

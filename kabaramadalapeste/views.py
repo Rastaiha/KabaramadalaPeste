@@ -12,7 +12,7 @@ from accounts.models import Participant
 from kabaramadalapeste.models import (
     Island, ParticipantIslandStatus, TradeOffer, TradeOfferRequestedItem, PesteConfiguration,
     TradeOfferSuggestedItem, AbilityUsage, BandargahInvestment, BandargahConfiguration, Bully,
-    ShortAnswerQuestion, JudgeableSubmit, ShortAnswerSubmit, BaseSubmit, Peste
+    ShortAnswerQuestion, JudgeableSubmit, ShortAnswerSubmit, BaseSubmit, Peste, GameEventLog
 )
 from kabaramadalapeste.conf import settings
 from kabaramadalapeste.forms import (
@@ -405,6 +405,13 @@ def create_offer(request):
                 )
                 trade_requested_item.save()
             trade_offer.save()
+            GameEventLog.objects.create(
+                who=request.user.participant,
+                when=timezone.now(),
+                where=None,
+                event_type=GameEventLog.EventTypes.CreateOffer,
+                related=trade_offer
+            )
             return JsonResponse({
                 'status': settings.OK_STATUS
             })
@@ -469,6 +476,13 @@ def delete_offer(request, pk):
         trade_offer.status = settings.GAME_OFFER_DELETED
         trade_offer.close_datetime = timezone.now()
         trade_offer.save()
+        GameEventLog.objects.create(
+            who=request.user.participant,
+            when=timezone.now(),
+            where=None,
+            event_type=GameEventLog.EventTypes.DeleteOffer,
+            related=trade_offer
+        )
         return JsonResponse({
             'status': settings.OK_STATUS
         })
@@ -511,6 +525,13 @@ def accept_offer(request, pk):
         trade_offer.accepted_participant = request.user.participant
         trade_offer.close_datetime = timezone.now()
         trade_offer.save()
+        GameEventLog.objects.create(
+            who=request.user.participant,
+            when=timezone.now(),
+            where=None,
+            event_type=GameEventLog.EventTypes.AcceptOffer,
+            related=trade_offer
+        )
         trade_offer.creator_participant.send_msg_offer_accepted(trade_offer)
         return JsonResponse({
             'status': settings.OK_STATUS
@@ -587,6 +608,13 @@ def use_ability(request):
                 )
                 bully.save()
             ability_usage.save()
+            GameEventLog.objects.create(
+                who=request.user.participant,
+                when=timezone.now(),
+                where=current_island,
+                event_type=GameEventLog.EventTypes.UseAbility,
+                related=ability_usage
+            )
             return JsonResponse({
                 'status': settings.OK_STATUS
             })
@@ -651,6 +679,13 @@ def invest(request):
                 is_applied=False
             )
             investment.save()
+            GameEventLog.objects.create(
+                who=request.user.participant,
+                when=timezone.now(),
+                where=current_island,
+                event_type=GameEventLog.EventTypes.Invest,
+                related=investment
+            )
             return JsonResponse({
                 'status': settings.OK_STATUS
             })
@@ -809,6 +844,13 @@ class ChallengeView(View):
             elif submit.submit_status == BaseSubmit.SubmitStatus.Wrong:
                 request.user.participant.send_msg_wrong_short_answer(submit)
         submit.save()
+        GameEventLog.objects.create(
+            who=request.user.participant,
+            when=timezone.now(),
+            where=pis.island,
+            event_type=GameEventLog.EventTypes.Submit,
+            related=submit
+        )
         return redirect('kabaramadalapeste:island')
 
     def post(self, request):

@@ -238,6 +238,14 @@ class Participant(models.Model):
             self.currently_at_island = dest_island
             self.save()
 
+            game_models.GameEventLog.objects.create(
+                who=self,
+                when=timezone.now(),
+                where=None,
+                event_type=game_models.GameEventLog.EventTypes.SetStart,
+                related=dest_island
+            )
+
     def get_current_island(self):
         if not self.currently_at_island:
             raise Participant.ParticipantIsNotOnIsland
@@ -282,6 +290,13 @@ class Participant(models.Model):
 
             self.currently_at_island = dest_island
             self.save()
+            game_models.GameEventLog.objects.create(
+                who=self,
+                when=timezone.now(),
+                where=src_pis.island,
+                event_type=game_models.GameEventLog.EventTypes.Move,
+                related=dest_pis.island
+            )
 
     def put_anchor_on_current_island(self):
         current_pis = game_models.ParticipantIslandStatus.objects.get(
@@ -306,6 +321,13 @@ class Participant(models.Model):
             if active_bullies.count() > 0:
                 bully = active_bullies[0]
                 if bully.owner.pk != self.pk:
+                    game_models.GameEventLog.objects.create(
+                        who=self,
+                        when=timezone.now(),
+                        where=current_pis.island,
+                        event_type=game_models.GameEventLog.EventTypes.BullyTarget,
+                        related=bully
+                    )
                     try:
                         self.reduce_property(game_settings.GAME_SEKKE, game_settings.GAME_BULLY_DAMAGE)
                         self.send_msg_fall_in_bully(bully, game_settings.GAME_BULLY_DAMAGE)
@@ -317,6 +339,13 @@ class Participant(models.Model):
                         self.send_msg_fall_in_bully(bully, damage)
                         bully.owner.add_property(game_settings.GAME_SEKKE, damage)
                         bully.owner.send_msg_sb_fall_in_your_bully(bully, self, damage)
+
+            game_models.GameEventLog.objects.create(
+                who=self,
+                when=timezone.now(),
+                where=current_pis.island,
+                event_type=game_models.GameEventLog.EventTypes.Anchor
+            )
 
     def open_treasure_on_current_island(self):
         current_pis = game_models.ParticipantIslandStatus.objects.get(
@@ -337,6 +366,13 @@ class Participant(models.Model):
             current_pis.did_open_treasure = True
             current_pis.treasure_opened_at = timezone.now()
             current_pis.save()
+            game_models.GameEventLog.objects.create(
+                who=self,
+                when=timezone.now(),
+                where=current_pis.island,
+                event_type=game_models.GameEventLog.EventTypes.OpenTreasure,
+                related=treasure
+            )
 
     def accept_challenge_on_current_island(self):
         current_pis = game_models.ParticipantIslandStatus.objects.get(
@@ -358,6 +394,13 @@ class Participant(models.Model):
             current_pis.did_accept_challenge = True
             current_pis.challenge_accepted_at = timezone.now()
             current_pis.save()
+            game_models.GameEventLog.objects.create(
+                who=self,
+                when=timezone.now(),
+                where=current_pis.island,
+                event_type=game_models.GameEventLog.EventTypes.AcceptChallenge,
+                related=current_pis.question
+            )
 
     def spade_on_current_island(self):
         if not game_models.PesteConfiguration.get_solo().is_peste_available:
@@ -375,6 +418,12 @@ class Participant(models.Model):
             current_pis.did_spade = True
             current_pis.spaded_at = timezone.now()
             current_pis.save()
+            event_log = game_models.GameEventLog.objects.create(
+                who=self,
+                when=timezone.now(),
+                where=current_pis.island,
+                event_type=game_models.GameEventLog.EventTypes.Spade
+            )
             try:
                 if self.currently_at_island.peste.is_found:
                     self.send_msg_spade_result(False)
@@ -385,6 +434,8 @@ class Participant(models.Model):
                 self.currently_at_island.peste.found_at = timezone.now()
                 self.currently_at_island.peste.save()
                 self.save()
+                event_log.related = self.currently_at_island.peste
+                event_log.save()
                 self.send_msg_spade_result(True)
                 return True
             except game_models.Island.peste.RelatedObjectDoesNotExist:
