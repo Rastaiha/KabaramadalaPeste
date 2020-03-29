@@ -448,6 +448,8 @@ class Participant(models.Model):
                 event_log.related = self.currently_at_island.peste
                 event_log.save()
                 self.send_msg_spade_result(True)
+                for p in Participant.objects.all():
+                    p.send_msg_peste_news(self)
                 return True
             except game_models.Island.peste.RelatedObjectDoesNotExist:
                 self.send_msg_spade_result(False)
@@ -572,10 +574,20 @@ class Participant(models.Model):
             level='info', public=False, text=self.currently_at_island.peste_guidance
         )
 
+    def send_msg_peste_news(self, winner_participant):
+        text = 'دوستان پسته طلایی توسط %s پیدا شد دیگر کلنگ نزنید چون پسته ای در کار نیست.' % (winner_participant, )
+        notify.send(
+            sender=Member.objects.filter(is_superuser=True).all()[0],
+            recipient=self.member,
+            verb='peste_news',
+            description='خبر پسته‌ی طلایی',
+            level='info', public=False, text=text
+        )
+
     @transaction.atomic
     def send_msg_spade_result(self, was_successful):
         if was_successful:
-            text = 'تبریک می‌گم! کنلگ‌زنی موفق بود و یه پسته پیدا کردی!'
+            text = 'تبریک می‌گم! پسسسسستتتتتتتتتتتتتتههههههههههه طلایی رو یافتی!'
         else:
             text = 'متاسفم. کلنگ‌زنی ناموفق بود و پسته‌ای توی این جزیره پیدا نشد.'
         notif = notify.send(
