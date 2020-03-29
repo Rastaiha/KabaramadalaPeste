@@ -293,8 +293,7 @@ function init_other_animation() {
         for (const key in data.op) {
             if (data.op.hasOwnProperty(key)) {
                 const element = data.op[key];
-                if(typeof element.elem !== "undefined"){
-
+                if (typeof element.elem !== "undefined") {
                     element.elem.offsetX(Math.sin(delta / element.ox));
                     element.elem.offsetY(Math.sin(delta / element.oy));
                     element.elem.rotate(Math.sin(delta / element.or) / 10);
