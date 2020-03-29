@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'accounts',
     'solo',
     'nested_inline',
+    'easy_thumbnails',
     'notifications'
 ]
 
@@ -140,4 +141,13 @@ DJANGO_NOTIFICATIONS_CONFIG = {
     'SOFT_DELETE': True
 }
 
+
+THUMBNAIL_ALIASES = {
+    '': {
+        'avatar': {'size': (80, 80), 'crop': True},
+    },
+}
+
+
 STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
+

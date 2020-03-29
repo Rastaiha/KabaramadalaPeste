@@ -5,7 +5,7 @@ from .views import (
     SetStartIslandView, PutAnchorView, OpenTreasureView,
     ParticipantInfoView, create_offer, get_all_offers,
     get_my_offers, delete_offer, accept_offer,
-    AcceptChallengeView, use_ability, SettingsView, SpadeView, invest
+    AcceptChallengeView, use_ability, SettingsView, SpadeView, invest, set_picture
 )
 
 
@@ -42,4 +42,5 @@ urlpatterns = [
     path('exchange/', exchange, name="exchange"),
     path('island/', island, name="island"),
     path('challenge/', ChallengeView.as_view(), name="challenge"),
+    path('set_picture/', set_picture, name="set_picture"),
 ]
