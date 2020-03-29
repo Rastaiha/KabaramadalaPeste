@@ -382,7 +382,7 @@ function get_other_players() {
                 }
             }
 
-            if (typeof data.ship !== "undefined") {
+            if (typeof data.ship.elem !== "undefined") {
                 data.ship.elem.moveToTop();
             }
         }
