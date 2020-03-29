@@ -1,5 +1,6 @@
 from kabaramadalapeste.models import Participant
 from django.utils import timezone
+from datetime import timedelta
 
 
 class ParticipantsDataCache:
@@ -8,9 +9,13 @@ class ParticipantsDataCache:
     seconds_between = 60
 
     @classmethod
+    def clear(cls):
+        cls.last_calculated = None
+
+    @classmethod
     def calc_data(cls):
         data = {}
-        for par in Participant.objects.filter(is_activated=True, document_status='Verified'):
+        for par in Participant.objects.filter(is_activated=True, document_status='Verified').exclude(currently_at_island__isnull=True):
             data[par.pk] = {
                 'un': par.member.username,
                 'pp': par.picture_url,
