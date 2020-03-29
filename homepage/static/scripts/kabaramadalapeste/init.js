@@ -186,7 +186,7 @@ function init_islands() {
 
             island.elem.on("click tap", function(e) {
                 document.body.style.cursor = "pointer";
-                if (typeof data.ship === "undefined") {
+                if (typeof data.ship.elem === "undefined") {
                     set_start_island(island.id)
                         .then(() => set_ship_position(island.id))
                         .then(init_ship)
