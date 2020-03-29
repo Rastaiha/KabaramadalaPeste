@@ -323,6 +323,12 @@ function get_position_other_player(island_id) {
 }
 let other_player_info = $(".other-user-info");
 
+function hide_player_info() {
+    other_player_info.addClass("hide");
+    other_player_info.removeClass("show");
+    other_player_info.find(".other-user-img").attr("src", "");
+}
+
 function get_other_players() {
     all_players_info().then(ops => {
         for (let i = 0; i < ops.length; i++) {
