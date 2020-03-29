@@ -138,7 +138,8 @@ HELP_STATUS = 'help'
 
 DJANGO_NOTIFICATIONS_CONFIG = {
     'USE_JSONFIELD': True,
-    'SOFT_DELETE': True
+    'SOFT_DELETE': True,
+    'NUM_TO_FETCH': 40,
 }
 
 
