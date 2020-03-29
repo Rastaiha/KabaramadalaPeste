@@ -210,12 +210,12 @@ class BandargahConfigurationAdmin(SingletonModelAdmin):
         if BandargahConfiguration.get_solo().min_interval_investments < s < BandargahConfiguration.get_solo().max_interval_investments:
             for investment in not_applied_investments:
                 investment.participant.add_property(
-                    settings.GAME_SEKKE, BandargahConfiguration.get_solo().profit_coefficient * investment.amount)
+                    settings.GAME_SEKKE, int(BandargahConfiguration.get_solo().profit_coefficient * investment.amount))
                 investment.participant.send_msg_bandargah_computed(investment, True, s)
         else:
             for investment in not_applied_investments:
                 investment.participant.add_property(
-                    settings.GAME_SEKKE, BandargahConfiguration.get_solo().loss_coefficient * investment.amount)
+                    settings.GAME_SEKKE, int(BandargahConfiguration.get_solo().loss_coefficient * investment.amount))
                 investment.participant.send_msg_bandargah_computed(investment, False, s)
         not_applied_investments.update(is_applied=True)
         return redirect('/admin/')

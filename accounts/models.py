@@ -507,10 +507,10 @@ class Participant(models.Model):
     def send_msg_bandargah_computed(self, investment, was_successful, total_investments):
         text = 'کار امروز بندرگاه به پایان رسید! مجموع سرمایه‌گذاری‌ها %d سکه بود' % (total_investments, )
         if was_successful:
-            gain = game_models.BandargahConfiguration.get_solo().profit_coefficient * investment.amount
+            gain = int(game_models.BandargahConfiguration.get_solo().profit_coefficient * investment.amount)
             text += ' که درون بازه‌ی سوددهی قرار گرفت'
         else:
-            gain = game_models.BandargahConfiguration.get_solo().loss_coefficient * investment.amount
+            gain = int(game_models.BandargahConfiguration.get_solo().loss_coefficient * investment.amount)
             text += ' که درون بازه‌ی سوددهی قرار نگرفت'
         text += ' و به تو %d سکه رسید.' % (gain, )
         notify.send(
