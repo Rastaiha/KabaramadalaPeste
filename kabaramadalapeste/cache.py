@@ -12,9 +12,9 @@ class ParticipantsDataCache:
         data = {}
         for par in Participant.objects.filter(is_activated=True, document_status='Verified'):
             data[par.pk] = {
-                'username': par.member.username,
+                'un': par.member.username,
                 # 'picture': par.profile_url,  # TODO: uncomment here
-                'island_id': par.currently_at_island.island_id if par.currently_at_island else None
+                'ii': par.currently_at_island.island_id if par.currently_at_island else None
             }
         return data
 

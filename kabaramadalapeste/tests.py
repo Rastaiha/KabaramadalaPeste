@@ -375,6 +375,13 @@ class ViewsTest(TestCase):
         response = self.client.get(reverse('kabaramadalapeste:all_participants_info'))
         self.assertEqual(len(response.json()), 9)
 
+    def test_all_participants_info_ok_twice(self):
+        self.participant.set_start_island(self.island)
+        self.client.force_login(self.participant.member)
+        self.client.get(reverse('kabaramadalapeste:all_participants_info'))
+        response = self.client.get(reverse('kabaramadalapeste:all_participants_info'))
+        self.assertEqual(len(response.json()), 9)
+
     def test_participant_info_ok_won_peste(self):
         self.participant.set_start_island(self.island)
         self.client.force_login(self.participant.member)
