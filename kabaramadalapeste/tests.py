@@ -7,7 +7,8 @@ from homepage.models import SiteConfiguration
 from accounts.models import Participant
 from kabaramadalapeste.models import (
     ParticipantIslandStatus, Island, Way, Peste, PesteConfiguration,
-    ShortAnswerSubmit, ShortAnswerQuestion, TradeOffer, BaseSubmit, BandargahInvestment
+    ShortAnswerSubmit, ShortAnswerQuestion, TradeOffer, BaseSubmit, BandargahInvestment,
+    GameEventLog
 )
 from kabaramadalapeste.factory import (
     ChallengeFactory, IslandFactory, ShortAnswerQuestionFactory, TreasureFactory, JudgeableQuestionFactory
@@ -670,11 +671,13 @@ class ViewsTest(TestCase):
             'suggested_' + settings.GAME_SEKKE: '1',
         }
         response = self.client.post(reverse('kabaramadalapeste:create_offer'), data=data)
+        self.assertEqual(GameEventLog.objects.count(), 1)
         self.assertEqual(response.json()['status'], settings.OK_STATUS)
         response = self.client.get(reverse('kabaramadalapeste:get_my_offers'))
         self.assertEqual(len(response.json()['offers']), 1)
         pk = response.json()['offers'][0]['pk']
         response = self.client.get(reverse('kabaramadalapeste:delete_offer', kwargs={'pk':pk}))
+        self.assertEqual(GameEventLog.objects.count(), 2)
         self.assertEqual(response.json()['status'], settings.OK_STATUS)
         self.assertEqual(old_sekke, self.participant.sekke.amount)
         response = self.client.get(reverse('kabaramadalapeste:get_my_offers'))
@@ -710,12 +713,14 @@ class ViewsTest(TestCase):
             'suggested_' + settings.GAME_SEKKE: '1',
         }
         response = self.client.post(reverse('kabaramadalapeste:create_offer'), data=data)
+        self.assertEqual(GameEventLog.objects.count(), 1)
         self.assertEqual(response.json()['status'], settings.OK_STATUS)
         self.client.force_login(participant1.member)
         response = self.client.get(reverse('kabaramadalapeste:get_all_offers'))
         self.assertEqual(len(response.json()['offers']), 1)
         pk = response.json()['offers'][0]['pk']
         response = self.client.get(reverse('kabaramadalapeste:accept_offer', kwargs={'pk':pk}))
+        self.assertEqual(GameEventLog.objects.count(), 2)
         self.assertEqual(response.json()['status'], settings.OK_STATUS)
         response = self.client.get(reverse('kabaramadalapeste:get_all_offers'))
         self.assertEqual(len(response.json()['offers']), 0)
@@ -747,6 +752,7 @@ class ViewsTest(TestCase):
             'ability_type': settings.GAME_TRAVEL_EXPRESS
         }
         response = self.client.post(reverse('kabaramadalapeste:use_ability'), data=data)
+        self.assertEqual(GameEventLog.objects.count(), 2)
         self.assertEqual(response.json()['status'], settings.OK_STATUS)
         old_sekke = self.participant.sekke.amount
         self.client.force_login(self.participant.member)
@@ -775,6 +781,7 @@ class ViewsTest(TestCase):
             'ability_type': settings.GAME_VISION
         }
         response = self.client.post(reverse('kabaramadalapeste:use_ability'), data=data)
+        self.assertEqual(GameEventLog.objects.count(), 2)
         self.assertEqual(response.json()['status'], settings.OK_STATUS)
         pis = ParticipantIslandStatus.objects.get(
             participant=self.participant,
@@ -815,7 +822,7 @@ class ViewsTest(TestCase):
         with self.assertRaises(Participant.MaximumChallengePerDayExceeded):
             self.participant.accept_challenge_on_current_island()
 
-    def test_bully_not_anchored(self):
+    def test_bully_ok(self):
         self.participant.add_property(settings.GAME_BULLY, 1)
         self.participant.set_start_island(self.island)
         self.participant.put_anchor_on_current_island()
@@ -823,7 +830,9 @@ class ViewsTest(TestCase):
         data = {
             'ability_type': settings.GAME_BULLY
         }
+        self.assertEqual(GameEventLog.objects.count(), 2)
         response = self.client.post(reverse('kabaramadalapeste:use_ability'), data=data)
+        self.assertEqual(GameEventLog.objects.count(), 3)
         self.assertEqual(response.json()['status'], settings.OK_STATUS)
         participant1 = self.all_participants[1]
         participant1.set_start_island(self.island)
@@ -831,13 +840,15 @@ class ViewsTest(TestCase):
         old_sekke = self.participant.sekke.amount
         old_sekke1 = participant1.sekke.amount
         participant1.add_property(settings.GAME_SEKKE, settings.GAME_PUT_ANCHOR_PRICE)
+        self.assertEqual(GameEventLog.objects.count(), 4)
         participant1.put_anchor_on_current_island()
+        self.assertEqual(GameEventLog.objects.count(), 6)
         sekke = self.participant.sekke.amount
         sekke1 = participant1.sekke.amount
         self.assertEqual(old_sekke + settings.GAME_BULLY_DAMAGE, sekke)
         self.assertEqual(old_sekke1, sekke1 + settings.GAME_BULLY_DAMAGE)
 
-    def test_bully_ok(self):
+    def test_bully_not_anchored(self):
         self.participant.add_property(settings.GAME_BULLY, 1)
         self.participant.set_start_island(self.island)
         self.client.force_login(self.participant.member)
@@ -947,6 +958,7 @@ class ViewsTest(TestCase):
         self.assertEqual(response.json()['status'], settings.OK_STATUS)
         self.assertEqual(1, BandargahInvestment.objects.all().count())
         self.assertEqual(old_sekke, self.participant.sekke.amount + 3000)
+        self.assertEqual(GameEventLog.objects.count(), 2)
         BandargahInvestment.objects.all().delete()
 
     @mock.patch('kabaramadalapeste.views.render')
@@ -1086,6 +1098,7 @@ class ViewsTest(TestCase):
             'answer': '12'
         })
         pis.refresh_from_db()
+        self.assertEqual(GameEventLog.objects.count(), 4)
         self.assertEqual(pis.submit.submit_status, BaseSubmit.SubmitStatus.Correct)
         self.assertIsNotNone(pis.submit.submitted_at)
         self.assertIsNotNone(pis.submit.judged_at)
