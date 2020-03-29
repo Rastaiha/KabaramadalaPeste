@@ -191,7 +191,7 @@ $(".right-info-btn").click(function() {
                         let today = new Date().getDay();
                         if (today - notif_day === 0) {
                             let am_pm = "AM";
-                            if (notif_time.getHours() > 12) {
+                            if (notif_time.getHours() > 11) {
                                 am_pm = "PM";
                             }
                             notif_time =

@@ -299,3 +299,94 @@ $(".island-info-action a").click(function() {
         $("#prompt_modal").modal("show");
     }
 });
+
+function get_position_other_player(island_id) {
+    island = get_island(island_id);
+    let direction = Math.floor(Math.random() * 4);
+    let x = island.elem.x();
+    let y = island.elem.y();
+    if (direction === 0) {
+        x += Math.floor(Math.random() * island.elem.width());
+    }
+    if (direction === 1) {
+        y += Math.floor(Math.random() * island.elem.height());
+    }
+    if (direction === 2) {
+        x += island.elem.width();
+        y += Math.floor(Math.random() * island.elem.height());
+    }
+    if (direction === 3) {
+        y += island.elem.height();
+        x += Math.floor(Math.random() * island.elem.width());
+    }
+    return { x: x, y: y };
+}
+let other_player_info = $(".other-user-info");
+
+function get_other_players() {
+    all_players_info().then(ops => {
+        for (let i = 0; i < ops.length; i++) {
+            let username = ops[i].un;
+            if (typeof data.op[username] === "undefined") {
+                data.op[username] = {
+                    pp: ops[i].pp,
+                    ii: ops[i].ii
+                };
+                let pos = get_position_other_player(ops[i].ii);
+                data.op[username].elem = new Konva.Image({
+                    x: pos.x,
+                    y: pos.y,
+                    image: data.images[data.ship.src],
+                    width: Math.floor((data.ship.width * data.back.width) / 4),
+                    height: Math.floor(
+                        (data.ship.height * data.back.height) / 4
+                    ),
+                    perfectDrawEnabled: false
+                });
+
+                data.op[username].elem.on("mouseover touchstart", function(e) {
+                    let x =
+                        data.op[username].elem.x() +
+                        data.layer.x() -
+                        other_player_info.width() / 2;
+                    let y =
+                        data.op[username].elem.y() +
+                        data.layer.y() -
+                        other_player_info.height() -
+                        40;
+                    other_player_info
+                        .find(".other-user-img")
+                        .attr("src", data.op[username].pp);
+                    other_player_info.find(".other-user-name").text(username);
+                    other_player_info.css("left", x + "px");
+                    other_player_info.css("top", y + "px");
+                    other_player_info.removeClass("hide");
+                    other_player_info.addClass("show");
+                });
+
+                data.op[username].elem.on("mouseout touchend", function(e) {
+                    other_player_info.removeClass("show");
+                    other_player_info.addClass("hide");
+                });
+
+                data.layer2.add(data.op[username].elem);
+
+                data.op[username].ox = Math.random() * 200 + 500;
+                data.op[username].oy = Math.random() * 200 + 500;
+                data.op[username].or = Math.random() * 200 + 100;
+            } else {
+                if (data.op[username].ii !== ops[i].ii) {
+                    data.op[username].elem.setAttrs(
+                        get_position_other_player(ops[i].ii)
+                    );
+                }
+            }
+
+            if (typeof data.ship.elem !== "undefined") {
+                data.ship.elem.moveToTop();
+            }
+        }
+    });
+
+    setTimeout(get_other_players, 60000);
+}
