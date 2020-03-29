@@ -139,3 +139,5 @@ DJANGO_NOTIFICATIONS_CONFIG = {
     'USE_JSONFIELD': True,
     'SOFT_DELETE': True
 }
+
+STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
