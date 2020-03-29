@@ -522,8 +522,12 @@ class Participant(models.Model):
         )
 
     def send_msg_correct_judged_answer(self, judgeablesubmit):
-        text = 'پاسخی که قبلا به چالش‌ جزیره‌ی %s داده بودی توسط داوران ارزیابی شد و درست بود. %s دریافت کردی.' % \
-               (judgeablesubmit.pis.island.name, judgeablesubmit.get_rewards_persian())
+        if judgeablesubmit.judge_note:
+            text = 'پاسخی که قبلا به چالش‌ جزیره‌ی %s داده بودی توسط داوران ارزیابی شد و درست بود. %s دریافت کردی. مصحح بهت گفته: %s' % \
+                (judgeablesubmit.pis.island.name, judgeablesubmit.get_rewards_persian(), judgeablesubmit.judge_note)
+        else:
+            text = 'پاسخی که قبلا به چالش‌ جزیره‌ی %s داده بودی توسط داوران ارزیابی شد و درست بود. %s دریافت کردی.' % \
+                (judgeablesubmit.pis.island.name, judgeablesubmit.get_rewards_persian())
         notify.send(
             sender=Member.objects.filter(is_superuser=True).all()[0],
             recipient=self.member,
@@ -533,8 +537,12 @@ class Participant(models.Model):
         )
 
     def send_msg_wrong_judged_answer(self, judgeablesubmit):
-        text = 'پاسخی که قبلا به چالش‌ جزیره‌ی %s داده بودی توسط داوران ارزیابی شد و اشتباه بود.' % \
-               (judgeablesubmit.pis.island.name, )
+        if judgeablesubmit.judge_note:
+            text = 'پاسخی که قبلا به چالش‌ جزیره‌ی %s داده بودی توسط داوران ارزیابی شد و اشتباه بود. مصحح بهت گفته:' % \
+                (judgeablesubmit.pis.island.name, judgeablesubmit.judge_note)
+        else:
+            text = 'پاسخی که قبلا به چالش‌ جزیره‌ی %s داده بودی توسط داوران ارزیابی شد و اشتباه بود.' % \
+                (judgeablesubmit.pis.island.name, )
         notify.send(
             sender=Member.objects.filter(is_superuser=True).all()[0],
             recipient=self.member,
