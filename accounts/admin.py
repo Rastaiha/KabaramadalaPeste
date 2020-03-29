@@ -59,10 +59,10 @@ class ParticipantPropertyItemInline(NestedStackedInline):
     model = ParticipantPropertyItem
 
 
-class ParticipantInline(NestedStackedInline):
+class ParticipantInline(admin.StackedInline):
     readonly_fields = ['document', 'gender', 'currently_at_island']
     model = Participant
-    inlines = [ParticipantPropertyItemInline]
+    # inlines = [ParticipantPropertyItemInline]
 
 
 class IsPaidFilter(admin.SimpleListFilter):
@@ -106,11 +106,11 @@ class IsVerifiedFilter(admin.SimpleListFilter):
         return queryset
 
 
-class MemberAdmin(ExportActionMixin, NestedModelAdmin):
+class MemberAdmin(ExportActionMixin, admin.ModelAdmin):
     resource_class = MemberResource
 
     list_display = ('username', 'real_name', 'get_city', 'get_school', 'is_active', 'get_is_paid', 'get_document_status',
-                    'get_document', 'account_actions')
+                    'get_document', 'account_actions', 'get_has_seen_day1', 'get_has_seen_day2')
     list_filter = ('is_active', IsPaidFilter, IsVerifiedFilter)
     readonly_fields = ['username', 'email']
     fields = ['first_name', 'username', 'email', 'is_active', 'is_participant']
@@ -210,6 +210,26 @@ class MemberAdmin(ExportActionMixin, NestedModelAdmin):
         member.participant.save()
         return redirect('/admin/accounts/member/')
 
+    def get_has_seen_day1(self, obj):
+        return Notification.objects.filter(
+            unread=False,
+            verb='inform',
+            timestamp__day=28,
+            timestamp__month=3,
+            timestamp__year=2020,
+            recipient=obj
+        ).all().count() > 0
+
+    def get_has_seen_day2(self, obj):
+        return Notification.objects.filter(
+            unread=False,
+            verb='inform',
+            timestamp__day=29,
+            timestamp__month=3,
+            timestamp__year=2020,
+            recipient=obj
+        ).all().count() > 0
+
     get_school.short_description = 'SCHOOL'
     get_city.short_description = 'CITY'
     get_is_paid.boolean = True
@@ -218,6 +238,10 @@ class MemberAdmin(ExportActionMixin, NestedModelAdmin):
     get_document_status.short_description = 'IS VERIFIED'
     get_document.short_description = 'DOCUMENT'
     account_actions.short_description = 'VERIFY'
+    get_has_seen_day1.boolean = True
+    get_has_seen_day1.short_description = 'SEEN DAY 1'
+    get_has_seen_day2.boolean = True
+    get_has_seen_day2.short_description = 'SEEN DAY 2'
 
 
 class PaymentAttemptAdmin(admin.ModelAdmin):
