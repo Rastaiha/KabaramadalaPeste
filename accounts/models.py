@@ -413,7 +413,8 @@ class Participant(models.Model):
         )
 
     def send_msg_offer_accepted(self, trade_offer):
-        text = 'پیشنهاد مبادله‌ات توسط %s قبول شد.' % (trade_offer.accepted_participant, )
+        text = 'پیشنهاد مبادله‌ات توسط %s قبول شد. %s گرفتی.' % \
+               (trade_offer.accepted_participant, trade_offer.get_requested_items_persian())
         notify.send(
             sender=Member.objects.filter(is_superuser=True).all()[0],
             recipient=self.member,

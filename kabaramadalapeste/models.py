@@ -491,6 +491,19 @@ class TradeOffer(models.Model):
             dic['requested_' + offer_item.property_type] = offer_item.amount
         return dic
 
+    def get_requested_items_persian(self):
+        n = self.requested_items.exclude(amount__exact=0).all().count()
+        s = ''
+        i = 0
+        for requested_item in self.requested_items.exclude(amount__exact=0).all():
+            s += '%d عدد %s' % (requested_item.amount, settings.GAME_TRANSLATION_DICT[requested_item.property_type])
+            if i < n-2:
+                s += '، '
+            elif i == n-2:
+                s += ' و '
+            i += 1
+        return s
+
     class InvalidOfferSelected(Exception):
         pass
 
