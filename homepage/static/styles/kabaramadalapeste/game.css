@@ -13,6 +13,46 @@
     z-index: 10;
 }
 
+.other-user-info {
+    position: absolute;
+    background: #eaeaea;
+    left: 10px;
+    top: 10px;
+    max-width: 300px;
+    opacity: 0;
+    z-index: 100000000;
+    border-radius: 40px 15px;
+    border: 4px solid var(--blue-3);
+    box-shadow: inset 0 0 0 2px #333, 0 0 0 2px #33333399, 0 4px 8px rgba(0, 0, 0, 0.2), 0 2px 6px rgba(0, 0, 0, 0.5);
+    text-align: center;
+    direction: ltr;
+    transform: scaleY(0);
+    z-index: 10;
+    padding: 10px 20px;
+}
+
+.other-user-info img {
+    background-color: white;
+    width: 60px;
+    height: 60px;
+    margin-bottom: 5px;
+    border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15), 0 1px 3px rgba(0, 0, 0, 0.25);
+}
+
+.other-user-name {
+    font-size: 17px;
+    font-weight: 900;
+}
+
+.other-user-info.show {
+    animation: show_island-info 0.2s forwards;
+}
+
+.other-user-info.hide {
+    animation: hide_island-info 0.1s forwards;
+}
+
 .bandargah .island-info-header-details,
 .bandargah .island-info-details {
     display: none

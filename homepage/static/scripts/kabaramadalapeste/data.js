@@ -28,29 +28,11 @@ let data = {
         width: 0.05,
         height: 0.05
     },
-    players: [
-        {
-            x: 0.2,
-            y: 0.2,
-            src: "ship.png",
-            width: 0.025,
-            height: 0.026
-        },
-        {
-            x: 0.25,
-            y: 0.2,
-            src: "ship.png",
-            width: 0.025,
-            height: 0.026
-        },
-        {
-            x: 0.23,
-            y: 0.25,
-            src: "ship.png",
-            width: 0.025,
-            height: 0.026
-        }
-    ],
+    ship: {
+        src: "ship.png",
+        width: 0.06,
+        height: 0.065
+    },
     islands: [
         {
             id: 1,
