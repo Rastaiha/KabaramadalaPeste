@@ -1,11 +1,16 @@
 from kabaramadalapeste.models import Participant
 from django.utils import timezone
+from datetime import timedelta
 
 
 class ParticipantsDataCache:
     data = {}
     last_calculated = None
     seconds_between = 60
+
+    @classmethod
+    def clear(cls):
+        cls.last_calculated = None
 
     @classmethod
     def calc_data(cls):
