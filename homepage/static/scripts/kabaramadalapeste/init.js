@@ -32,10 +32,15 @@ function init_layer() {
     });
     data.layer2 = new Konva.Layer();
 
-    data.layer.on("dragend mouseup mouseover", function() {
+    data.layer.on("dragend mouseup mouseover touchend", function() {
         document.body.style.cursor = "grab";
         data.layer2.x(data.layer.x());
         data.layer2.y(data.layer.y());
+    });
+
+    data.layer.on("touchend", function() {
+        other_player_info.removeClass("show");
+        other_player_info.addClass("hide");
     });
 
     data.layer.on("dragstart click touchend", function() {
@@ -191,6 +196,9 @@ function init_islands() {
                     update_and_show_island_info(island);
                 }
 
+                other_player_info.removeClass("show");
+                other_player_info.addClass("hide");
+
                 if (typeof e !== "undefined") {
                     e.evt.preventDefault();
                     e.cancelBubble = true;
@@ -205,6 +213,9 @@ function init_islands() {
                     e.evt.preventDefault();
                     e.cancelBubble = true;
                 }
+
+                other_player_info.removeClass("show");
+                other_player_info.addClass("hide");
             });
 
             island.elem.on("mouseout", function(e) {
@@ -254,6 +265,9 @@ function init_ship() {
             e.evt.preventDefault();
             e.cancelBubble = true;
         }
+
+        other_player_info.removeClass("show");
+        other_player_info.addClass("hide");
     });
 
     data.layer2.add(data.ship.elem);
