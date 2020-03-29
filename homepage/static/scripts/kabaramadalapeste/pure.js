@@ -316,12 +316,12 @@ function get_position_other_player(island_id) {
         x += 10;
     }
     if (direction === 2) {
-        x += island.elem.width() - 10;
-        y += Math.floor(Math.random() * island.elem.height()) - h;
+        x += island.elem.width() - 10 - w;
+        y += Math.floor(Math.random() * island.elem.height());
     }
     if (direction === 3) {
-        y += island.elem.height() - 10;
-        x += Math.floor(Math.random() * island.elem.width()) - w;
+        y += island.elem.height() - 10 - h;
+        x += Math.floor(Math.random() * island.elem.width());
     }
     return { x: x, y: y };
 }
