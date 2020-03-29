@@ -11,12 +11,14 @@ from django.utils.html import strip_tags, strip_spaces_between_tags
 from notifications.models import Notification
 from enum import Enum
 from notifications.signals import notify
+from easy_thumbnails.files import get_thumbnailer
 
 from collections import defaultdict
 
 import logging
 import random
 import re
+from easy_thumbnails.fields import ThumbnailerImageField
 logger = logging.getLogger(__file__)
 
 # Create your models here.
@@ -84,6 +86,7 @@ class Participant(models.Model):
         pass
 
     member = models.OneToOneField(Member, related_name='participant', on_delete=models.CASCADE)
+    picture = ThumbnailerImageField(upload_to='picture', default="picture/user_default.png")
     school = models.CharField(max_length=200)
     city = models.CharField(max_length=40)
     document = models.ImageField(upload_to='documents/')
@@ -101,6 +104,14 @@ class Participant(models.Model):
 
     def __str__(self):
         return str(self.member)
+
+    @property
+    def picture_url(self):
+        try:
+            pic = self.picture if self.picture else 'picture/user_default.png'
+            return get_thumbnailer(pic)['avatar'].url
+        except Exception:
+            return ''
 
     def get_property(self, property_type):
         if self.properties.filter(property_type__exact=property_type).count() == 0:
@@ -386,6 +397,8 @@ class Participant(models.Model):
                 self.currently_at_island.peste.save()
                 self.save()
                 self.send_msg_spade_result(True)
+                for p in Participant.objects.all():
+                    p.send_msg_peste_news(self)
                 return True
             except game_models.Island.peste.RelatedObjectDoesNotExist:
                 self.send_msg_spade_result(False)
@@ -510,10 +523,20 @@ class Participant(models.Model):
             level='info', public=False, text=self.currently_at_island.peste_guidance
         )
 
+    def send_msg_peste_news(self, winner_participant):
+        text = 'دوستان پسته طلایی توسط %s پیدا شد دیگر کلنگ نزنید چون پسته ای در کار نیست.' % (winner_participant, )
+        notify.send(
+            sender=Member.objects.filter(is_superuser=True).all()[0],
+            recipient=self.member,
+            verb='peste_news',
+            description='خبر پسته‌ی طلایی',
+            level='info', public=False, text=text
+        )
+
     @transaction.atomic
     def send_msg_spade_result(self, was_successful):
         if was_successful:
-            text = 'تبریک می‌گم! کنلگ‌زنی موفق بود و یه پسته پیدا کردی!'
+            text = 'تبریک می‌گم! پسسسسستتتتتتتتتتتتتتههههههههههه طلایی رو یافتی!'
         else:
             text = 'متاسفم. کلنگ‌زنی ناموفق بود و پسته‌ای توی این جزیره پیدا نشد.'
         notif = notify.send(

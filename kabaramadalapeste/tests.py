@@ -15,7 +15,6 @@ from kabaramadalapeste.factory import (
 from kabaramadalapeste.conf import settings
 from accounts.factory import ParticipantFactory, MemberFactory
 from unittest import mock
-
 from django.utils import timezone
 from datetime import datetime, timedelta
 
@@ -164,7 +163,16 @@ class ModelsTest(TestCase):
 
 
 class ViewsTest(TestCase):
+
     def setUp(self):
+        class ThumbTest:
+            url = 'a.png'
+        thumbnailer_mock = {
+            'avatar': ThumbTest()
+        }
+        self.patcher = mock.patch('accounts.models.get_thumbnailer', lambda x: thumbnailer_mock)
+        self.mock_thumbnail = self.patcher.start()
+        self.addCleanup(self.patcher.stop)
         [ChallengeFactory(is_judgeable=(i > 5)) for i in range(10)]
         self.all_islands = [IslandFactory(__sequence=i) for i in range(settings.GAME_DEFAULT_ISLAND_COUNT)]
         [TreasureFactory(keys=2, rewards=3) for i in range(settings.GAME_DEFAULT_ISLAND_COUNT - 1)]
@@ -188,6 +196,7 @@ class ViewsTest(TestCase):
         peste_config = PesteConfiguration.get_solo()
         peste_config.is_peste_available = True
         peste_config.save()
+
 
     def test_settings_not_login(self):
         response = self.client.get(reverse('kabaramadalapeste:settings'))
