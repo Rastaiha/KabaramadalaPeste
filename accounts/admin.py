@@ -10,6 +10,8 @@ from nested_inline.admin import NestedStackedInline, NestedModelAdmin
 from import_export.admin import ExportActionMixin
 from import_export.fields import Field
 from import_export import resources
+from notifications.admin import NotificationAdmin
+from notifications.models import Notification
 
 
 class MemberResource(resources.ModelResource):
@@ -233,6 +235,7 @@ class PaymentAttemptAdmin(admin.ModelAdmin):
 
 @admin.register(NotificationData)
 class NotificationDataAdmin(admin.ModelAdmin):
+    filter_horizontal = ('recipients',)
     list_display = (
         'id', 'level', 'text', 'send_to_all_participants', 'get_recipients_count', 'status', 'sent_at', 'send_action'
     )
@@ -268,6 +271,18 @@ class NotificationDataAdmin(admin.ModelAdmin):
         return redirect('/admin/accounts/notificationdata/')
 
 
+class CustomNotificationAdmin(NotificationAdmin):
+    list_display = (
+        *NotificationAdmin.list_display, 'verb'
+    )
+    list_filter = (
+        'verb', *NotificationAdmin.list_filter
+    )
+    search_fields = ('recipient__username', 'description', 'data')
+
+
+admin.site.unregister(Notification)
+admin.site.register(Notification, CustomNotificationAdmin)
 admin.site.register(Member, MemberAdmin)
 # admin.site.register(Participant)
 admin.site.register(Judge)

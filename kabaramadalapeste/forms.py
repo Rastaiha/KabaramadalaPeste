@@ -19,3 +19,7 @@ class ShortFloatSubmitForm(forms.Form):
 
 class JudgeableFileSubmitForm(forms.Form):
     answer = forms.FileField(required=True)
+
+
+class ProfilePictureUploadForm(forms.Form):
+    picture = forms.FileField(required=True)

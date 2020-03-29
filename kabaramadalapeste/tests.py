@@ -15,7 +15,6 @@ from kabaramadalapeste.factory import (
 from kabaramadalapeste.conf import settings
 from accounts.factory import ParticipantFactory, MemberFactory
 from unittest import mock
-
 from django.utils import timezone
 from datetime import datetime, timedelta
 
@@ -164,7 +163,16 @@ class ModelsTest(TestCase):
 
 
 class ViewsTest(TestCase):
+
     def setUp(self):
+        class ThumbTest:
+            url = 'a.png'
+        thumbnailer_mock = {
+            'avatar': ThumbTest()
+        }
+        self.patcher = mock.patch('accounts.models.get_thumbnailer', lambda x: thumbnailer_mock)
+        self.mock_thumbnail = self.patcher.start()
+        self.addCleanup(self.patcher.stop)
         [ChallengeFactory(is_judgeable=(i > 5)) for i in range(10)]
         self.all_islands = [IslandFactory(__sequence=i) for i in range(settings.GAME_DEFAULT_ISLAND_COUNT)]
         [TreasureFactory(keys=2, rewards=3) for i in range(settings.GAME_DEFAULT_ISLAND_COUNT - 1)]
@@ -188,6 +196,7 @@ class ViewsTest(TestCase):
         peste_config = PesteConfiguration.get_solo()
         peste_config.is_peste_available = True
         peste_config.save()
+
 
     def test_settings_not_login(self):
         response = self.client.get(reverse('kabaramadalapeste:settings'))
@@ -359,10 +368,23 @@ class ViewsTest(TestCase):
         self.client.force_login(self.participant.member)
         response = self.client.get(reverse('kabaramadalapeste:participant_info'))
         self.assertEqual(response.json()['username'], self.participant.member.username)
+        self.assertEqual(response.json()['did_won_peste'], False)
         self.assertEqual(response.json()['current_island_id'], self.participant.currently_at_island.island_id)
         self.assertFalse(response.json()['currently_anchored'])
         for key, value in settings.GAME_PARTICIPANT_INITIAL_PROPERTIES.items():
             self.assertEqual(response.json()['properties'][key], value)
+
+    def test_participant_info_ok_won_peste(self):
+        self.participant.set_start_island(self.island)
+        self.client.force_login(self.participant.member)
+        Peste.objects.create(
+            island=self.island,
+            is_found=True,
+            found_by=self.participant
+        )
+        response = self.client.get(reverse('kabaramadalapeste:participant_info'))
+        self.assertEqual(response.json()['username'], self.participant.member.username)
+        self.assertEqual(response.json()['did_won_peste'], True)
 
     def test_participant_info_ok_anchored(self):
         self.participant.set_start_island(self.island)

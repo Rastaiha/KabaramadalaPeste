@@ -388,6 +388,19 @@ class BaseSubmit(models.Model):
         for reward in self.pis.question.challenge.rewards.all():
             self.pis.participant.add_property(reward.reward_type, reward.amount)
 
+    def get_rewards_persian(self):
+        n = self.pis.question.challenge.rewards.exclude(amount__exact=0).all().count()
+        s = ''
+        i = 0
+        for treasure_reward_item in self.pis.question.challenge.rewards.exclude(amount__exact=0).all():
+            s += '%d عدد %s' % (treasure_reward_item.amount, settings.GAME_TRANSLATION_DICT[treasure_reward_item.reward_type])
+            if i < n-2:
+                s += '، '
+            elif i == n-2:
+                s += ' و '
+            i += 1
+        return s
+
 
 class ShortAnswerSubmit(BaseSubmit):
 
@@ -469,13 +482,27 @@ class TradeOffer(models.Model):
     def to_dict(self):
         dic = {
             'pk': self.pk,
-            'creator_participant_username': self.creator_participant.member.username
+            'creator_participant_username': self.creator_participant.member.username,
+            'creator_participant_picture_url': self.creator_participant.picture_url
         }
         for offer_item in self.suggested_items.all():
             dic['suggested_' + offer_item.property_type] = offer_item.amount
         for offer_item in self.requested_items.all():
             dic['requested_' + offer_item.property_type] = offer_item.amount
         return dic
+
+    def get_requested_items_persian(self):
+        n = self.requested_items.exclude(amount__exact=0).all().count()
+        s = ''
+        i = 0
+        for requested_item in self.requested_items.exclude(amount__exact=0).all():
+            s += '%d عدد %s' % (requested_item.amount, settings.GAME_TRANSLATION_DICT[requested_item.property_type])
+            if i < n-2:
+                s += '، '
+            elif i == n-2:
+                s += ' و '
+            i += 1
+        return s
 
     class InvalidOfferSelected(Exception):
         pass

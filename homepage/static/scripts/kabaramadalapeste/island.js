@@ -285,6 +285,7 @@ get_player_info()
         data.treasure_keys = response.treasure_keys;
         data.treasure_keys_persian = response.treasure_keys_persian;
         data.did_open_treasure = response.did_open_treasure;
+        data.is_spade_available = response.is_spade_available;
         if (data.did_open_treasure) {
             data.e.ganj.src = "go2.png";
         }

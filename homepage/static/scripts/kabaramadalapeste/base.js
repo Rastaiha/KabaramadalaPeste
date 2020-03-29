@@ -155,6 +155,7 @@ $(".right-info-btn").click(function() {
     ) {
         get_player_info()
             .then(response => {
+                $(".player-info-image").attr("src", response.picture_url);
                 $(".player-info .right-info-details h3").text(
                     response.username
                 );
@@ -261,5 +262,22 @@ $("#prompt_modal_btn").click(function() {
                 );
             })
             .catch(default_fail);
+    }
+});
+
+$(".edit-player-image").click(function() {
+    $(".new-image-input").click();
+});
+
+$(".new-image-input").change(function() {
+    if (this.files[0].size > 5000000) {
+        this.setCustomValidity("Maximum limit is 4 MB.");
+        this.reportValidity();
+        this.value = "";
+        setTimeout(function() {
+            this.setCustomValidity("");
+        }, 1000);
+    } else {
+        $(".new-image-form").submit();
     }
 });

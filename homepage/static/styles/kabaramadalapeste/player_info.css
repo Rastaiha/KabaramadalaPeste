@@ -15,6 +15,31 @@
     z-index: 3;
 }
 
+.player-info h3 {
+    margin: auto;
+    display: block;
+    text-align: center;
+}
+
+.player-info .player-info-image {
+    display: block;
+    margin: 0 auto 5px;
+}
+
+.player-info .edit-player-image {
+    width: 18px;
+    position: absolute;
+    bottom: 0;
+    left: 34%;
+    transition: 0.2s;
+}
+
+.player-info .edit-player-image:hover,
+.player-info .edit-player-image:focus {
+    cursor: pointer;
+    filter: drop-shadow(0.1rem 0.1rem 0.1rem black);
+}
+
 .exchange-info {
     top: 210px;
     z-index: 4;
@@ -98,12 +123,20 @@
     direction: ltr;
 }
 
+.player-info-image {
+    background-color: white;
+    width: 50px;
+    margin-bottom: 5px;
+    border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15), 0 1px 3px rgba(0, 0, 0, 0.25);
+}
+
 
 .player-proprty span {
     color: white;
-    font-size: 30px;
+    font-size: 28px;
     font-weight: 400;
-    height: 33px;
+    height: 28px;
 }
 
 

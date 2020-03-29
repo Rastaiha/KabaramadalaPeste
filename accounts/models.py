@@ -11,12 +11,14 @@ from django.utils.html import strip_tags, strip_spaces_between_tags
 from notifications.models import Notification
 from enum import Enum
 from notifications.signals import notify
+from easy_thumbnails.files import get_thumbnailer
 
 from collections import defaultdict
 
 import logging
 import random
 import re
+from easy_thumbnails.fields import ThumbnailerImageField
 logger = logging.getLogger(__file__)
 
 # Create your models here.
@@ -84,6 +86,7 @@ class Participant(models.Model):
         pass
 
     member = models.OneToOneField(Member, related_name='participant', on_delete=models.CASCADE)
+    picture = ThumbnailerImageField(upload_to='picture', default="picture/user_default.png")
     school = models.CharField(max_length=200)
     city = models.CharField(max_length=40)
     document = models.ImageField(upload_to='documents/')
@@ -101,6 +104,14 @@ class Participant(models.Model):
 
     def __str__(self):
         return str(self.member)
+
+    @property
+    def picture_url(self):
+        try:
+            pic = self.picture if self.picture else 'picture/user_default.png'
+            return get_thumbnailer(pic)['avatar'].url
+        except Exception:
+            return ''
 
     def get_property(self, property_type):
         if self.properties.filter(property_type__exact=property_type).count() == 0:
@@ -161,6 +172,11 @@ class Participant(models.Model):
 
     def get_safe_sekke(self):
         return self.get_safe_property(game_settings.GAME_SEKKE)
+
+    def did_won_peste(self):
+        if self.peste_set.count():
+            return True
+        return False
 
     def today_challenges_opened_count(self):
         today_begin = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
@@ -397,7 +413,8 @@ class Participant(models.Model):
         )
 
     def send_msg_offer_accepted(self, trade_offer):
-        text = 'پیشنهاد مبادله‌ات توسط %s قبول شد.' % (trade_offer.accepted_participant, )
+        text = 'پیشنهاد مبادله‌ات توسط %s قبول شد. %s گرفتی.' % \
+               (trade_offer.accepted_participant, trade_offer.get_requested_items_persian())
         notify.send(
             sender=Member.objects.filter(is_superuser=True).all()[0],
             recipient=self.member,
@@ -452,8 +469,8 @@ class Participant(models.Model):
         )
 
     def send_msg_correct_judged_answer(self, judgeablesubmit):
-        text = 'پاسخی که قبلا به چالش‌ جزیره‌ی %s داده بودی توسط داوران ارزیابی شد و درست بود.' % \
-               (judgeablesubmit.pis.island.name, )
+        text = 'پاسخی که قبلا به چالش‌ جزیره‌ی %s داده بودی توسط داوران ارزیابی شد و درست بود. %s دریافت کردی.' % \
+               (judgeablesubmit.pis.island.name, judgeablesubmit.get_rewards_persian())
         notify.send(
             sender=Member.objects.filter(is_superuser=True).all()[0],
             recipient=self.member,
@@ -474,8 +491,8 @@ class Participant(models.Model):
         )
 
     def send_msg_correct_short_answer(self, shortanswersubmit):
-        text = 'پاسخی که به چالش‌ جزیره‌ی %s دادی صحیح بود.' % \
-               (shortanswersubmit.pis.island.name, )
+        text = 'پاسخی که به چالش‌ جزیره‌ی %s دادی صحیح بود. %s دریافت کردی.' % \
+               (shortanswersubmit.pis.island.name, shortanswersubmit.get_rewards_persian())
         notify.send(
             sender=Member.objects.filter(is_superuser=True).all()[0],
             recipient=self.member,
