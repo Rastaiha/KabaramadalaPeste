@@ -308,20 +308,20 @@ function get_position_other_player(island_id) {
     let w = (data.ship.width * data.back.width) / 4;
     let h = (data.ship.height * data.back.height) / 4;
     if (direction === 0) {
-        x += Math.floor(Math.random() * island.elem.width());
-        y += 7;
+        x += Math.floor(Math.random() * (island.elem.width() - 2 * w) + w);
+        y += 3;
     }
     if (direction === 1) {
-        y += Math.floor(Math.random() * island.elem.height());
-        x += 7;
+        y += Math.floor(Math.random() * (island.elem.height() - 2 * h) + h);
+        x += 3;
     }
     if (direction === 2) {
-        x += island.elem.width() - 7 - w;
-        y += Math.floor(Math.random() * island.elem.height());
+        x += island.elem.width() - 3 - w;
+        y += Math.floor(Math.random() * (island.elem.height() - 2 * h) + h);
     }
     if (direction === 3) {
-        y += island.elem.height() - 7 - h;
-        x += Math.floor(Math.random() * island.elem.width());
+        y += island.elem.height() - 3 - h;
+        x += Math.floor(Math.random() * (island.elem.width() - 2 * w) + w);
     }
     return { x: x, y: y };
 }
