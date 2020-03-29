@@ -144,6 +144,15 @@
     display: none;
 }
 
+.offer-user-img {
+    display: block;
+    margin: 0 auto 10px;
+    background-color: white;
+    width: 60px;
+    border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15), 0 1px 3px rgba(0, 0, 0, 0.25);
+}
+
 .acc-offer .delete-offer {
     display: none;
 }

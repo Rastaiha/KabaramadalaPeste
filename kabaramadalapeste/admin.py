@@ -7,7 +7,8 @@ from kabaramadalapeste.models import (
     Island, Challenge, ChallengeRewardItem, ShortAnswerQuestion, JudgeableQuestion,
     TreasureRewardItem, TreasureKeyItem, Treasure, Way, JudgeableSubmit,
     BaseSubmit, TradeOffer, TradeOfferRequestedItem, TradeOfferSuggestedItem,
-    AbilityUsage, BandargahConfiguration, BandargahInvestment, Bully, ParticipantIslandStatus
+    AbilityUsage, BandargahConfiguration, BandargahInvestment, Bully, ParticipantIslandStatus,
+    PesteConfiguration
 )
 from kabaramadalapeste.conf import settings
 from django.utils import timezone
@@ -239,6 +240,11 @@ class BandargahInvestmentAdmin(admin.ModelAdmin):
     list_display = ('participant', 'amount', 'datetime', 'is_applied')
     list_filter = ('is_applied',)
     search_fields = ('participant__member__username',)
+
+
+@admin.register(PesteConfiguration)
+class PesteConfigurationAdmin(SingletonModelAdmin):
+    pass
 
 
 admin.site.register(Island)
