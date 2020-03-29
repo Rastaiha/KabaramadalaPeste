@@ -4,7 +4,7 @@ from django.db import transaction
 
 
 class Command(BaseCommand):
-    help = 'Displays current time'
+    help = 'init ParticipantIslandStatus objects'
 
     @transaction.atomic
     def handle(self, *args, **kwargs):
