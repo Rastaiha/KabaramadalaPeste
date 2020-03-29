@@ -46,7 +46,7 @@ def login_activated_participant_required(view_func):
 
 
 def check_game_is_running(user):
-    return SiteConfiguration.get_solo().is_game_running
+    return SiteConfiguration.get_solo().is_game_running or user.is_superuser
 
 
 game_running_required = user_passes_test(
