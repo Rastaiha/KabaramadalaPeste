@@ -523,7 +523,7 @@ class Participant(models.Model):
 
     def send_msg_correct_judged_answer(self, judgeablesubmit):
         if judgeablesubmit.judge_note:
-            text = 'پاسخی که قبلا به چالش‌ جزیره‌ی %s داده بودی توسط داوران ارزیابی شد و درست بود. %s دریافت کردی. مصحح بهت گفته: %s' % \
+            text = 'پاسخی که قبلا به چالش‌ جزیره‌ی %s داده بودی توسط داوران ارزیابی شد و درست بود. %s دریافت کردی. داور بهت گفته: %s' % \
                 (judgeablesubmit.pis.island.name, judgeablesubmit.get_rewards_persian(), judgeablesubmit.judge_note)
         else:
             text = 'پاسخی که قبلا به چالش‌ جزیره‌ی %s داده بودی توسط داوران ارزیابی شد و درست بود. %s دریافت کردی.' % \
@@ -538,7 +538,7 @@ class Participant(models.Model):
 
     def send_msg_wrong_judged_answer(self, judgeablesubmit):
         if judgeablesubmit.judge_note:
-            text = 'پاسخی که قبلا به چالش‌ جزیره‌ی %s داده بودی توسط داوران ارزیابی شد و اشتباه بود. مصحح بهت گفته:' % \
+            text = 'پاسخی که قبلا به چالش‌ جزیره‌ی %s داده بودی توسط داوران ارزیابی شد و اشتباه بود. داور بهت گفته:' % \
                 (judgeablesubmit.pis.island.name, judgeablesubmit.judge_note)
         else:
             text = 'پاسخی که قبلا به چالش‌ جزیره‌ی %s داده بودی توسط داوران ارزیابی شد و اشتباه بود.' % \
