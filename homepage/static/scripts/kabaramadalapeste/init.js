@@ -183,7 +183,7 @@ function init_islands() {
                 document.body.style.cursor = "pointer";
                 if (typeof data.ship === "undefined") {
                     set_start_island(island.id)
-                        .then(() => init_ship_data(island.id))
+                        .then(() => set_ship_position(island.id))
                         .then(init_ship)
                         .catch(default_fail);
                 } else if (data.target !== island) {
@@ -274,16 +274,31 @@ function init_ship() {
     animate();
 }
 
-function init_ship_data(island_id) {
+function set_ship_position(island_id) {
     let island = get_island(island_id);
-    data.ship = {
-        x: island.elem.x() - 15,
-        y: island.elem.y() - 15,
-        src: "ship.png",
-        width: 0.06,
-        height: 0.065,
-        island_id: island_id
-    };
+    data.ship.x = island.elem.x() - 15;
+    data.ship.y = island.elem.y() - 15;
+    data.ship.island_id = island_id;
+}
+
+function init_other_animation() {
+    let start = new Date();
+    function animate() {
+        let delta = new Date() - start;
+        for (const key in data.op) {
+            if (data.op.hasOwnProperty(key)) {
+                const element = data.op[key];
+                if (typeof element.elem !== "undefined") {
+                    element.elem.offsetX(Math.sin(delta / element.ox));
+                    element.elem.offsetY(Math.sin(delta / element.oy));
+                    element.elem.rotate(Math.sin(delta / element.or) / 10);
+                }
+            }
+        }
+        data.layer2.batchDraw();
+        requestAnimationFrame(animate);
+    }
+    animate();
 }
 
 function init_game() {
@@ -299,8 +314,9 @@ function init_game() {
     get_player_info()
         .then(response => {
             if (response.current_island_id) {
-                init_ship_data(response.current_island_id);
+                set_ship_position(response.current_island_id);
                 init_ship();
+                data.ship.elem.moveToTop();
             } else {
                 my_alert(
                     "در ابتدای بازی شما باید جزیره‌ای را برای شروع انتخاب کنید.",
@@ -313,7 +329,11 @@ function init_game() {
     init_islands();
     init_ways();
 
-    if (typeof data.ship !== "undefined") {
+    data.op = {};
+    get_other_players();
+    init_other_animation();
+
+    if (typeof data.ship.elem !== "undefined") {
         data.ship.elem.moveToTop();
     }
 

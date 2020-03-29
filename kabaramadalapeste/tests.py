@@ -10,6 +10,7 @@ from kabaramadalapeste.models import (
     ShortAnswerSubmit, ShortAnswerQuestion, TradeOffer, BaseSubmit, BandargahInvestment,
     GameEventLog
 )
+from kabaramadalapeste.cache import ParticipantsDataCache
 from kabaramadalapeste.factory import (
     ChallengeFactory, IslandFactory, ShortAnswerQuestionFactory, TreasureFactory, JudgeableQuestionFactory
 )
@@ -374,6 +375,36 @@ class ViewsTest(TestCase):
         self.assertFalse(response.json()['currently_anchored'])
         for key, value in settings.GAME_PARTICIPANT_INITIAL_PROPERTIES.items():
             self.assertEqual(response.json()['properties'][key], value)
+
+    def test_all_participants_info_not_login(self):
+        response = self.client.get(reverse('kabaramadalapeste:all_participants_info'))
+        self.assertEqual(response.status_code, 302)
+
+    def test_all_participants_info_ok(self):
+        ParticipantsDataCache.clear()
+        for participant in self.all_participants:
+            participant.set_start_island(self.island)
+        self.client.force_login(self.participant.member)
+        response = self.client.get(reverse('kabaramadalapeste:all_participants_info'))
+        self.assertEqual(len(response.json()), 9)
+
+    def test_all_participants_info_ok_twice(self):
+        ParticipantsDataCache.clear()
+        for participant in self.all_participants:
+            participant.set_start_island(self.island)
+        self.client.force_login(self.participant.member)
+        self.client.get(reverse('kabaramadalapeste:all_participants_info'))
+        response = self.client.get(reverse('kabaramadalapeste:all_participants_info'))
+        self.assertEqual(len(response.json()), 9)
+
+    def test_all_participants_info_ok_one_null(self):
+        ParticipantsDataCache.clear()
+        for i, participant in enumerate(self.all_participants):
+            if i < 8:
+                participant.set_start_island(self.island)
+        self.client.force_login(self.participant.member)
+        response = self.client.get(reverse('kabaramadalapeste:all_participants_info'))
+        self.assertEqual(len(response.json()), 7)
 
     def test_participant_info_ok_won_peste(self):
         self.participant.set_start_island(self.island)
