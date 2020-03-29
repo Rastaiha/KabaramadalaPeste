@@ -15,7 +15,10 @@ function settings() {
 }
 
 function get_player_info() {
-    return $.ajax("/game/participant_info/");
+    return $.ajax("/game/participant_info/").then(response => {
+        if (typeof response === "string") window.location.href = "/";
+        return response;
+    });
 }
 
 function all_players_info() {
