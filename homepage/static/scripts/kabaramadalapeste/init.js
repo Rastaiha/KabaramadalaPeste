@@ -293,9 +293,11 @@ function init_other_animation() {
         for (const key in data.op) {
             if (data.op.hasOwnProperty(key)) {
                 const element = data.op[key];
-                element.elem.offsetX(Math.sin(delta / element.ox));
-                element.elem.offsetY(Math.sin(delta / element.oy));
-                element.elem.rotate(Math.sin(delta / element.or) / 10);
+                if (typeof element.elem !== "undefined") {
+                    element.elem.offsetX(Math.sin(delta / element.ox));
+                    element.elem.offsetY(Math.sin(delta / element.oy));
+                    element.elem.rotate(Math.sin(delta / element.or) / 10);
+                }
             }
         }
         data.layer2.batchDraw();
