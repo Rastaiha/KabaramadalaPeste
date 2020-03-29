@@ -388,6 +388,15 @@ class ViewsTest(TestCase):
         response = self.client.get(reverse('kabaramadalapeste:all_participants_info'))
         self.assertEqual(len(response.json()), 9)
 
+    def test_all_participants_info_not_started(self):
+        ParticipantsDataCache.clear()
+        for i, participant in enumerate(self.all_participants):
+            if i != 0:
+                participant.set_start_island(self.island)
+        self.client.force_login(self.participant.member)
+        response = self.client.get(reverse('kabaramadalapeste:all_participants_info'))
+        self.assertEqual(len(response.json()), 9)
+
     def test_all_participants_info_ok_twice(self):
         ParticipantsDataCache.clear()
         for participant in self.all_participants:
