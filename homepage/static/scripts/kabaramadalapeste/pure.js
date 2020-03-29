@@ -305,19 +305,23 @@ function get_position_other_player(island_id) {
     let direction = Math.floor(Math.random() * 4);
     let x = island.elem.x();
     let y = island.elem.y();
+    let w = (data.ship.width * data.back.width) / 4;
+    let h = (data.ship.height * data.back.height) / 4;
     if (direction === 0) {
         x += Math.floor(Math.random() * island.elem.width());
+        y += 10;
     }
     if (direction === 1) {
         y += Math.floor(Math.random() * island.elem.height());
+        x += 10;
     }
     if (direction === 2) {
-        x += island.elem.width();
-        y += Math.floor(Math.random() * island.elem.height());
+        x += island.elem.width() - 10;
+        y += Math.floor(Math.random() * island.elem.height()) - h;
     }
     if (direction === 3) {
-        y += island.elem.height();
-        x += Math.floor(Math.random() * island.elem.width());
+        y += island.elem.height() - 10;
+        x += Math.floor(Math.random() * island.elem.width()) - w;
     }
     return { x: x, y: y };
 }
