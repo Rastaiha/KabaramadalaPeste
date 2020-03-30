@@ -5,6 +5,7 @@ $(".show-stat").click(function() {
     } else {
         $(".stat-img-container").removeClass("hide");
         $(".stat-img-container").addClass("show");
+        $(".navbar-collapse").collapse("hide");
     }
 });
 
@@ -12,6 +13,8 @@ $(".close-stat").click(function() {
     $(".stat-img-container").addClass("hide");
     $(".stat-img-container").removeClass("show");
 });
+
+$(".download-stat").click(function() {});
 
 $(".share-stat").click(function() {
     text = $(".share-input").val();
