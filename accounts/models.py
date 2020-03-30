@@ -103,6 +103,9 @@ class Participant(models.Model):
                                             null=True)
 
     stat_image = models.ImageField(upload_to='stats/', null=True, default="stats/base_stat.png")
+    stat_image_with_background = models.ImageField(
+        upload_to='stats-back/', null=True, default="stats-back/base_stat_back.png"
+    )
 
     def __str__(self):
         return str(self.member)
