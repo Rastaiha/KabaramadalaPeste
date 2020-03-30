@@ -88,13 +88,13 @@
 {% block scripts %}
 <script>
     $('#telegram').click(function (e) {
-        text = $('#text').value;
+        text = $('#text').val();
         url = 'https://telegram.me/share/url?url={{ stat_image_url }}&text=' + text;
         window.open(url,'_blank');
     })
 
     $('#twitter').click(function (e) {
-        text = $('#text').value;
+        text = $('#text').val();
         url = 'https://twitter.com/intent/tweet?text=' + text + ' {{ stat_image_url }}';
         window.open(url,'_blank');
     })
