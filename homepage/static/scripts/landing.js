@@ -14,6 +14,8 @@ $(".close-stat").click(function() {
     $(".stat-img-container").removeClass("show");
 });
 
+$(".download-stat").click(function() {});
+
 $(".share-stat").click(function() {
     text = $(".share-input").val();
     img_url =
