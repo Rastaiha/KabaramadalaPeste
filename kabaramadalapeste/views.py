@@ -97,14 +97,12 @@ class IslandInfoView(View):
             estimated_judge_time = 15
             if not pis.island.challenge or not pis.island.challenge.is_judgeable:
                 estimated_judge_time = 0
-            submits = JudgeableSubmit.objects.exclude(submit_status='Pending').filter(pis__island__island_id=island_id).all()
+            submits = JudgeableSubmit.objects.exclude(submit_status='Pending').filter(pis__island__challenge=island.challenge).all()
             if submits.count() > 0:
-                s = 0
-                t = 0
+                s = []
                 for submit in submits:
-                    s += (submit.judged_at - submit.submitted_at).seconds//60
-                    t += 1
-                estimated_judge_time = 5 + s//t
+                    s.append((submit.judged_at - submit.submitted_at).seconds//60)
+                estimated_judge_time = sorted(s)[len(s)//2] + 5
             return JsonResponse({
                 'name': island.name,
                 'challenge_name': island.challenge.name if island.challenge else '',
