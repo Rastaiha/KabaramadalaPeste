@@ -1,0 +1,15 @@
+{% extends "admin/change_form.html" %}
+
+{% if save_on_top %}
+    {% block submit_buttons_top %}
+        {{ block.super }}
+    {% endblock %}
+{% endif %}
+
+{% block submit_buttons_bottom %}
+    <a class="button" href="{% url 'admin:download_scoreboard' %}">
+    دانلود اسکوربرد
+    </a>
+    <br><br><br>
+    {{ block.super }}
+{% endblock %}
