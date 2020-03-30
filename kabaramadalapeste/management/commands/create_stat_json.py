@@ -52,6 +52,7 @@ class Command(BaseCommand):
             stat_dict[participant.pk] = {
                 'username': participant.member.username,
                 'real_name': participant.member.first_name,
+                'gender': participant.member.gender,
                 'profile_picture_url': participant.picture_url,
                 'num_travels': num_logged_moves + heuristic_dict[participant.pk],
                 'num_sekke': participant.sekke.amount,
@@ -59,6 +60,7 @@ class Command(BaseCommand):
                 'num_fall_in_bully': num_fall_in_bully,
                 'num_accepted_challenges': num_accepted_judgeable_challenges + num_accepted_shortanswer_challenges,
                 'num_trades': num_created_trades + num_accepted_trades,
-                'num_opened_treasures': num_opened_treasures
+                'num_opened_treasures': num_opened_treasures,
+                'did_won_peste': participant.did_won_peste()
             }
         json.dump(stat_dict, open(kwargs['destination'], 'w', encoding='UTF-8'))
