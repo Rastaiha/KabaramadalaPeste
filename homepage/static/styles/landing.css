@@ -322,7 +322,7 @@ p {
 
 .stat-img-container.show {
     z-index: 1001;
-    background-color: #111111aa;
+    background-color: #111111dd;
 }
 
 .stat-img-container.hide {
@@ -333,7 +333,7 @@ p {
 @keyframes hide_stat_container {
     0% {
         z-index: 1001;
-        background-color: #111111aa;
+        background-color: #111111dd;
     }
 
     99.9% {
