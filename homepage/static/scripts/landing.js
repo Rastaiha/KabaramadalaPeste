@@ -19,7 +19,7 @@ $(".share-stat").click(function() {
         window.location.protocol +
         "//" +
         window.location.host +
-        $(".stat-img").attr("src");
+        $(".stat-img").data("back");
     switch ($(this).data("site")) {
         case "telegram":
             url =
