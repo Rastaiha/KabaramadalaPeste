@@ -766,7 +766,7 @@ def stat_page(request):
     return render(request, 'kabaramadalapeste/stat.html', {
         'stat_image_url': request.build_absolute_uri(request.user.participant.stat_image.url),
         'stat_image_with_backround_url': request.build_absolute_uri(
-            request.user.participant.stat_image_with_backround.url
+            request.user.participant.stat_image_with_background.url
         )
     })
 
