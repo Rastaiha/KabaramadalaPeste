@@ -16,6 +16,7 @@ class SiteConfiguration(SingletonModel):
     countdown_date = models.DateTimeField(default=datetime.datetime(2020, 3, 23, 8))
     is_signup_enabled = models.BooleanField(default=True)
     is_game_running = models.BooleanField(default=False)
+    is_game_over = models.BooleanField(default=False)
     upload_stats_enabled = models.BooleanField(default=False)
 
     @property

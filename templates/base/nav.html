@@ -24,9 +24,9 @@
             </ul>
             <ul class="navbar-nav mr-auto">
                 {% if request.path == '/' %}
-                    <li class="nav-item">
-                        <a class="nav-link hover-shadow" href="#faq-page">سوالات متداول</a>
-                    </li>
+                <li class="nav-item">
+                    <a class="nav-link hover-shadow" href="#faq-page">سوالات متداول</a>
+                </li>
                 {% endif %}
                 <li class="nav-item">
                     <a class="nav-link hover-shadow"
@@ -37,41 +37,48 @@
                         href="/rules">قوانین</a>
                 </li>
                 {% if user.is_authenticated %}
-                    {% if site_config.is_game_running %}
-                        {% if user.is_participant %}
-                            {% if user.participant.is_activated and user.participant.document_status == 'Verified' %}
-                                <li class="nav-item">
-                                    <a class="nav-link hover-shadow"
-                                        href="{% url 'kabaramadalapeste:game' %}">بازی</a>
-                                </li>
-                            {% endif %}
-                        {% endif %}
-                    {% endif %}
-                    <li class="nav-item">
-                        <a class="nav-link hover-shadow {% if request.path == '/accounts/logout/' %} activate {% endif %}"
-                            href="{% url 'accounts:logout' %}">خروج</a>
-                    </li>
-                    {% if site_config.is_signup_enabled %}
-                        {% if user.is_participant %}
-                            {% if not user.participant.is_activated %}
-                                <li class="nav-item">
-                                    <a class="nav-link hover-shadow {% if request.path == '/accounts/request/' %} activate {% endif %}"
-                                        href="{% url 'accounts:request' %}">پرداخت</a>
-                                </li>
-                            {% endif %}
-                        {% endif %}
-                    {% endif %}
+                {% if site_config.is_game_running %}
+                {% if user.is_participant %}
+                {% if user.participant.is_activated and user.participant.document_status == 'Verified' %}
+                <li class="nav-item">
+                    <a class="nav-link hover-shadow" href="{% url 'kabaramadalapeste:game' %}">بازی</a>
+                </li>
+                {% endif %}
+                {% endif %}
+                {% elif site_config.is_game_over %}
+                {% if user.is_participant %}
+                {% if user.participant.is_activated and user.participant.document_status == 'Verified' %}
+                <li class="nav-item">
+                    <a href="#" class="nav-link hover-shadow show-stat">مشاهده کارنامه</a>
+                </li>
+                {% endif %}
+                {% endif %}
+                {% endif %}
+                <li class="nav-item">
+                    <a class="nav-link hover-shadow {% if request.path == '/accounts/logout/' %} activate {% endif %}"
+                        href="{% url 'accounts:logout' %}">خروج</a>
+                </li>
+                {% if site_config.is_signup_enabled %}
+                {% if user.is_participant %}
+                {% if not user.participant.is_activated %}
+                <li class="nav-item">
+                    <a class="nav-link hover-shadow {% if request.path == '/accounts/request/' %} activate {% endif %}"
+                        href="{% url 'accounts:request' %}">پرداخت</a>
+                </li>
+                {% endif %}
+                {% endif %}
+                {% endif %}
                 {% else %}
-                    {% if site_config.is_signup_enabled %}
-                        <li class="nav-item">
-                            <a class="nav-link hover-shadow signup-link {% if request.path == '/accounts/signup/' %} activate {% endif %}"
-                                href="{% url 'accounts:signup' %}">ثبت‌نام</a>
-                        </li>
-                    {% endif %}
-                    <li class="nav-item">
-                        <a class="nav-link hover-shadow {% if request.path == '/accounts/login/' %} activate {% endif %}"
-                            href="{% url 'accounts:login' %}">ورود</a>
-                    </li>
+                {% if site_config.is_signup_enabled %}
+                <li class="nav-item">
+                    <a class="nav-link hover-shadow signup-link {% if request.path == '/accounts/signup/' %} activate {% endif %}"
+                        href="{% url 'accounts:signup' %}">ثبت‌نام</a>
+                </li>
+                {% endif %}
+                <li class="nav-item">
+                    <a class="nav-link hover-shadow {% if request.path == '/accounts/login/' %} activate {% endif %}"
+                        href="{% url 'accounts:login' %}">ورود</a>
+                </li>
                 {% endif %}
                 {% comment %} <li class="nav-item">
                     <a class="nav-link hover-shadow" href="/logout/" style="background: #d3c096;">

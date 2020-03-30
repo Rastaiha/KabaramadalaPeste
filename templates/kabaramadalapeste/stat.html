@@ -1,0 +1,102 @@
+{% extends 'base/base.html' %}
+{% load static %}
+{% block styles %}
+<style>
+    h1 {
+        font-weight: 900
+    }
+
+    h3 {
+        font-weight: 700
+    }
+
+    .share {
+        background: #d1d1d1;
+        padding: 20px;
+        border-radius: 10px;
+        margin: 0 0 80px
+    }
+
+    .stats > img {
+        border: none;
+        border-radius: 10px;
+        width: 100%;
+        max-height: 70vh;
+    }
+
+    .stats {
+        position: relative;
+        margin: 10px 0
+    }
+
+    .download_btn {
+        position: absolute;
+        left: 0;
+        top: 0;
+        background: #17ac3a;
+        border: 1px solid green;
+        border-radius: 3px;
+        padding: 10px;
+        border-radius;
+        text-align: center;
+        color: white;
+        font-weight: 900;
+        transition: 0.3s
+    }
+
+    .download_btn:hover,
+    .download_btn:focus {
+        cursor: pointer;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15), 0 1px 3px rgba(0, 0, 0, 0.25);
+        text-decoration: none;
+    }
+
+</style>
+{% endblock styles %}
+{% block base_content %}
+<div class="container">
+    <h1 class="text-center my-2" style="color: #d1d1d1">{{ question_title }}</h1>
+    <div class="stats">
+        <a href="{{ stat_image_url }}" class="download_btn" download="stat.jpg">
+            دانلود عکس
+            <i class="fas fa-file-download"></i>
+        </a>
+        <img src="{{ stat_image_url }}">
+    </div>
+
+    <div class="share">
+        <h3 class="text-center mb-4">به اشتراک‌گذاری</h3>
+        <form id="form" method="post" enctype="multipart/form-data">
+            <div class="row">
+                <div class="mx-auto col-7 col-sm-10 col-md-9 my-3">
+                    <input id="text" name="text" type="text" class="w-100" placeholder="متن پیام"
+                        style="direction: rtl; text-align: right" required>
+                </div>
+            </div>
+            <div class="row justify-content-md-center">
+                <div id="twitter" class="col-5 col-sm-3 col-md-2">
+                    <a class="submit-form my-btn w-100">توئیتر <i class="fab fa-twitter"></i></a>
+                </div>
+                <div id="telegram" class="col-5 col-sm-3 col-md-2">
+                    <a  class="submit-form my-btn w-100">تلگرام <i class="fab fa-telegram"></i></a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock base_content %}
+{% block scripts %}
+<script>
+    $('#telegram').click(function (e) {
+        text = $('#text').val();
+        url = 'https://telegram.me/share/url?url={{ stat_image_url }}&text=' + text;
+        window.open(url,'_blank');
+    })
+
+    $('#twitter').click(function (e) {
+        text = $('#text').val();
+        url = 'https://twitter.com/intent/tweet?text=' + text + ' {{ stat_image_url }}';
+        window.open(url,'_blank');
+    })
+</script>
+{% endblock scripts %}
