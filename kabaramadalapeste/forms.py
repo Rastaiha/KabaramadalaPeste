@@ -23,3 +23,7 @@ class JudgeableFileSubmitForm(forms.Form):
 
 class ProfilePictureUploadForm(forms.Form):
     picture = forms.FileField(required=True)
+
+
+class StatUploadForm(forms.Form):
+    stat = forms.FileField(required=True)

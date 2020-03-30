@@ -15,10 +15,11 @@ from kabaramadalapeste.models import (
     TradeOfferSuggestedItem, AbilityUsage, BandargahInvestment, BandargahConfiguration, Bully,
     ShortAnswerQuestion, JudgeableSubmit, ShortAnswerSubmit, BaseSubmit, Peste, GameEventLog
 )
+from django.views.decorators.csrf import csrf_exempt
 from kabaramadalapeste.conf import settings
 from kabaramadalapeste.forms import (
     EmptySubmitForm, ShortStringSubmitForm, ShortIntSubmitForm,
-    ShortFloatSubmitForm, JudgeableFileSubmitForm, ProfilePictureUploadForm
+    ShortFloatSubmitForm, JudgeableFileSubmitForm, ProfilePictureUploadForm, StatUploadForm
 )
 
 from homepage.models import SiteConfiguration
@@ -789,6 +790,25 @@ def set_picture(request):
             return redirect('kabaramadalapeste:game')
         request.user.participant.picture = form.cleaned_data['picture']
         request.user.participant.save()
+    return redirect('kabaramadalapeste:game')
+
+
+@csrf_exempt
+def set_stat(request, pk):
+    if request.method == 'POST' and SiteConfiguration.get_solo().upload_stats_enabled:
+        form = StatUploadForm(request.POST, request.FILES)
+        if not form.is_valid():
+            return redirect('kabaramadalapeste:game')
+        participant = Participant.objects.get(pk=pk)
+        participant.stat_image = form.cleaned_data['stat']
+        participant.save()
+    return redirect('kabaramadalapeste:game')
+
+
+@login_activated_participant_required
+def get_stat_image_url(request):
+    if request.method == 'GET':
+        return JsonResponse({'url': request.user.participant.stat_image.url})
     return redirect('kabaramadalapeste:game')
 
 

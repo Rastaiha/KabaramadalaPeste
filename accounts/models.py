@@ -102,6 +102,8 @@ class Participant(models.Model):
                                             related_name="current_participants",
                                             null=True)
 
+    stat_image = models.ImageField(upload_to='stats/', null=True, default="stats/base_stat.png")
+
     def __str__(self):
         return str(self.member)
 
