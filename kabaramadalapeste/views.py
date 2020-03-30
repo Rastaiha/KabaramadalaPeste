@@ -15,6 +15,7 @@ from kabaramadalapeste.models import (
     TradeOfferSuggestedItem, AbilityUsage, BandargahInvestment, BandargahConfiguration, Bully,
     ShortAnswerQuestion, JudgeableSubmit, ShortAnswerSubmit, BaseSubmit, Peste, GameEventLog
 )
+from django.views.decorators.csrf import csrf_exempt
 from kabaramadalapeste.conf import settings
 from kabaramadalapeste.forms import (
     EmptySubmitForm, ShortStringSubmitForm, ShortIntSubmitForm,
@@ -781,6 +782,7 @@ def island(request):
         return redirect('kabaramadalapeste:game')
 
 
+@csrf_exempt
 @login_activated_participant_required
 def set_picture(request):
     if request.method == 'POST':
