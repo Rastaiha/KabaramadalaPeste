@@ -13,7 +13,9 @@
         <div class="kabar-logo">
             <img src="{% static 'images/searching.png' %}" />
         </div>
-        {% if site_config.is_past %}
+        {% if site_config.is_game_over %}
+            <h1 class="text-center mb-5 transparent-text" style="direction: rtl">بازی تموم شد:(</h1>
+        {% elif site_config.is_past %}
             <h1 class="text-center mb-5 transparent-text" style="direction: rtl">بازی شروع شد!!!</h1>
         {% else %}
             <h1 class="text-center mb-5 transparent-text" style="direction: rtl">منتظر ما باشید!!!</h1>

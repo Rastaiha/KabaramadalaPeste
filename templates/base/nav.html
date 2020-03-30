@@ -42,6 +42,15 @@
                                 </li>
                             {% endif %}
                         {% endif %}
+                    {% elif site_config.is_game_over %}
+                        {% if user.is_participant %}
+                            {% if user.participant.is_activated and user.participant.document_status == 'Verified' %}
+                                <li class="nav-item">
+                                    <a class="nav-link hover-shadow"
+                                        href="{% url 'kabaramadalapeste:stat' %}">آمار</a>
+                                </li>
+                            {% endif %}
+                        {% endif %}
                     {% endif %}
                     <li class="nav-item">
                         <a class="nav-link hover-shadow {% if request.path == '/accounts/logout/' %} activate {% endif %}"
