@@ -4,7 +4,7 @@ from .views import (
     game, game2, exchange, island, ChallengeView, IslandInfoView, MoveToIslandView,
     SetStartIslandView, PutAnchorView, OpenTreasureView,
     ParticipantInfoView, create_offer, get_all_offers,
-    get_my_offers, delete_offer, accept_offer, AllParticipantsInfoView,
+    get_my_offers, delete_offer, accept_offer, AllParticipantsInfoView, stat_page,
     AcceptChallengeView, use_ability, SettingsView, SpadeView, invest, set_picture, set_stat, get_stat_image_url
 )
 
@@ -47,4 +47,5 @@ urlpatterns = [
     path('set_picture/', set_picture, name="set_picture"),
     path('set_stat/<int:pk>/', set_stat, name="set_stat"),
     path('get_stat_image_url/', get_stat_image_url, name="get_stat_image_url"),
+    path('stat/', stat_page, name="stat"),
 ]
