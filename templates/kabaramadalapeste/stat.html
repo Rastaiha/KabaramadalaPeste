@@ -1,6 +1,6 @@
-{% extends 'kabaramadalapeste/base.html' %}
+{% extends 'base/base.html' %}
 {% load static %}
-{% block game_base_styles %}
+{% block styles %}
 <style>
     h1 {
         font-weight: 900
@@ -52,8 +52,8 @@
     }
 
 </style>
-{% endblock game_base_styles %}
-{% block game_base_content %}
+{% endblock styles %}
+{% block base_content %}
 <div class="container">
     <h1 class="text-center my-2" style="color: #d1d1d1">{{ question_title }}</h1>
     <div class="stats">
@@ -84,10 +84,9 @@
         </form>
     </div>
 </div>
-{% endblock game_base_content %}
-{% block game_base_scripts %}
+{% endblock base_content %}
+{% block scripts %}
 <script>
-    
     $('#telegram').click(function (e) {
         text = $('#text').value;
         url = 'https://telegram.me/share/url?url={{ stat_image_url }}&text=' + text;
@@ -100,4 +99,4 @@
         window.open(url,'_blank');
     })
 </script>
-{% endblock game_base_scripts %}
+{% endblock scripts %}
