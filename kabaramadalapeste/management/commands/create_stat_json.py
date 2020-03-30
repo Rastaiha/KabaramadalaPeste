@@ -52,7 +52,7 @@ class Command(BaseCommand):
             stat_dict[participant.pk] = {
                 'username': participant.member.username,
                 'real_name': participant.member.first_name,
-                'gender': participant.member.gender,
+                'gender': participant.gender,
                 'profile_picture_url': participant.picture_url,
                 'num_travels': num_logged_moves + heuristic_dict[participant.pk],
                 'num_sekke': participant.sekke.amount,
