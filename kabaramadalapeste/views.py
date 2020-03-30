@@ -782,7 +782,6 @@ def island(request):
         return redirect('kabaramadalapeste:game')
 
 
-@csrf_exempt
 @login_activated_participant_required
 def set_picture(request):
     if request.method == 'POST':
@@ -794,6 +793,7 @@ def set_picture(request):
     return redirect('kabaramadalapeste:game')
 
 
+@csrf_exempt
 def set_stat(request, pk):
     if request.method == 'POST' and SiteConfiguration.get_solo().upload_stats_enabled:
         form = StatUploadForm(request.POST, request.FILES)
