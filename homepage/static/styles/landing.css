@@ -309,11 +309,12 @@ p {
     display: flex;
     align-items: center;
     justify-content: center;
+    transition: 0.3s;
 }
 
 
 .stat-img {
-    width: 600px;
+    width: 800px;
     max-width: 90%;
     transform: scale(0);
     opacity: 0;
@@ -321,6 +322,7 @@ p {
 
 .stat-img-container.show {
     z-index: 1001;
+    background-color: #111111dd;
 }
 
 .stat-img-container.hide {
@@ -331,20 +333,24 @@ p {
 @keyframes hide_stat_container {
     0% {
         z-index: 1001;
+        background-color: #111111dd;
     }
 
     99.9% {
         z-index: 1001;
+        background-color: transparent;
     }
 
     100% {
         z-index: -100;
+        background-color: transparent;
     }
 }
 
 .stat-img-container .stat-img {
     margin: auto;
     display: block;
+    border-radius: 42px;
 }
 
 .stat-img-container.show .stat-img {
@@ -405,7 +411,6 @@ p {
     z-index: 100;
     top: -20px;
     right: 0;
-
     text-align: center;
     width: 50px;
     height: 50px;
