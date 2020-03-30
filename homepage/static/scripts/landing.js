@@ -5,6 +5,7 @@ $(".show-stat").click(function() {
     } else {
         $(".stat-img-container").removeClass("hide");
         $(".stat-img-container").addClass("show");
+        $(".navbar-collapse").collapse("hide");
     }
 });
 
