@@ -12,6 +12,8 @@ class Command(BaseCommand):
     @transaction.atomic
     def handle(self, *args, **kwargs):
         for island in Island.objects.all():
+            if island.island_id == settings.GAME_BANDARGAH_ISLAND_ID:
+                continue
             base_dir = os.path.join(settings.BASE_DIR, 'kabaramadalapeste/initial_data')
             clue_file = os.path.join(base_dir, 'clues2/%s.txt' % island.island_id)
             island.peste_guidance = open(clue_file).read()
@@ -20,3 +22,4 @@ class Command(BaseCommand):
                 peste = Peste.objects.create(island=island)
                 peste.save()
         ParticipantIslandStatus.objects.update(did_spade=False)
+        ParticipantIslandStatus.objects.update(spaded_at=None)
