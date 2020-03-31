@@ -18,6 +18,7 @@ $(".download-stat").click(function() {});
 
 $(".share-stat").click(function() {
     text = $(".share-input").val();
+    text = text.replace('\n', ' ');
     img_url =
         window.location.protocol +
         "//" +
