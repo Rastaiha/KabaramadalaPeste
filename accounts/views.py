@@ -245,3 +245,8 @@ def send_request(request):
         return redirect('https://www.zarinpal.com/pg/StartPay/' + str(result.Authority))
     else:
         return HttpResponse('Error code: ' + str(result.Status))
+
+
+@login_required
+def survey(request):
+    return redirect('https://docs.google.com/forms/d/e/1FAIpQLScxNEMOwHQQ7LBdcKQ_Y68EJWcOqdj8ysCjgjOK-VZgf_PQ_Q/viewform')
