@@ -34,7 +34,9 @@
                 </li>
                 <li class="nav-item">
                     <a class="nav-link hover-shadow"
-                        href="{% url 'accounts:survey' %}">نظرسنجی</a>
+                        href="{% url 'accounts:survey' %}" {% if user.is_authenticated %}
+                            target="_blank"
+                       {% endif %}>نظرسنجی</a>
                 </li>
                 {% if user.is_authenticated %}
                 {% if site_config.is_game_running %}
