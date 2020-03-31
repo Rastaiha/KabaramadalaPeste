@@ -32,10 +32,10 @@
                     <a class="nav-link hover-shadow"
                         href="{% if request.path == '/' %}#about-page{% else %}/about_us{% endif %}">درباره ما</a>
                 </li>
-                <li class="nav-item">
+                <!--li class="nav-item">
                     <a class="nav-link hover-shadow"
                         href="/rules">قوانین</a>
-                </li>
+                </li-->
                 {% if user.is_authenticated %}
                 {% if site_config.is_game_running %}
                 {% if user.is_participant %}
