@@ -41,7 +41,6 @@ INSTALLED_APPS = [
     'kabaramadalapeste',
     'accounts',
     'solo',
-    'nested_inline',
     'easy_thumbnails',
     'notifications'
 ]

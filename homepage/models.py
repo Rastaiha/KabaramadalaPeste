@@ -17,7 +17,6 @@ class SiteConfiguration(SingletonModel):
     is_signup_enabled = models.BooleanField(default=True)
     is_game_running = models.BooleanField(default=False)
     is_game_over = models.BooleanField(default=False)
-    upload_stats_enabled = models.BooleanField(default=False)
 
     @property
     def is_past(self):
