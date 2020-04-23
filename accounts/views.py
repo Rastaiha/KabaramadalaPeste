@@ -140,7 +140,7 @@ def activate(request, uidb64, token):
 
 def login(request):
     if request.user.is_authenticated:
-        raise Http404
+        return redirect('kabaramadalapeste:game')
     if request.method == "POST":
         members = Member.objects.filter(email__exact=request.POST.get('email'))
         if members.count() == 0:
