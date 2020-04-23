@@ -1,8 +1,10 @@
 from django.core.management.base import BaseCommand
 from django.db import transaction
+from accounts.factory import MemberFactory, ParticipantFactory
+from accounts.models import Participant
 from kabaramadalapeste.conf import settings
 from kabaramadalapeste.models import (
-    Challenge, Island, Way, Treasure,
+    Challenge, Island, Way, Treasure, Bully,
     TreasureKeyItem, TreasureRewardItem, Peste, ChallengeRewardItem
 )
 import os
@@ -39,12 +41,15 @@ def import_island_row(row):
             name=row[1],
             challenge=Challenge.objects.get(challenge_id=row[2])
         )
-        base_dir = os.path.join(settings.BASE_DIR, 'kabaramadalapeste/initial_data')
-        clue_file = os.path.join(base_dir, 'clues/%s.txt' % row[0])
-        island.peste_guidance = open(clue_file).read()
         island.save()
     if int(row[3]):
         Peste.objects.create(
+            island=island
+        )
+    if int(row[4]):
+        bullier_member = Participant.objects.get(member__username=settings.GAME_BULLYMAN_USERNAME)
+        Bully.objects.create(
+            owner=bullier_member,
             island=island
         )
 
@@ -77,6 +82,9 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         with transaction.atomic():
+            if not Participant.objects.filter(member__username=settings.GAME_BULLYMAN_USERNAME):
+                bullier_member = MemberFactory(username=settings.GAME_BULLYMAN_USERNAME)
+                ParticipantFactory(member=bullier_member)
             self.import_objects(self.challenges_file, Challenge,
                                 import_challenge_row)
             self.import_objects(self.islands_file, Island,

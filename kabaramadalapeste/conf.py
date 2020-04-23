@@ -75,5 +75,7 @@ class GameConf(AppConf):
     MAXIMUM_ACTIVE_OFFERS = 4
     BASE_CHALLENGE_PER_DAY = 4
 
+    BULLYMAN_USERNAME = 'bullier'
+
     class Meta:
         prefix = 'game'
