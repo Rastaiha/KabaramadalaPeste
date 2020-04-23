@@ -32,18 +32,7 @@ function update_sttings(response) {
 }
 
 function update_island_info(response) {
-    if (response.island_id === 20 && data.ship.island_id === 20) {
-        island_info.addClass("in_bandargah");
-    } else {
-        island_info.removeClass("in_bandargah");
-    }
-    if (response.island_id === 20) {
-        island_info.addClass("bandargah");
-        island_info.find(".island-name span").text("بندرگاه");
-    } else {
-        island_info.removeClass("bandargah");
-        island_info.find(".island-name span").text("جزیره " + response.name);
-    }
+    island_info.find(".island-name span").text("جزیره " + response.name);
     island_info.find(".island_kind span").text(response.challenge_name);
     island_info.find(".island_persons span").text(response.participants_inside);
     switch (response.submit_status) {
@@ -107,9 +96,6 @@ function update_island_info_btn(island_id) {
             action = "langar";
             if (player_info.currently_anchored) {
                 btn_text = "بازگشت به جزیره";
-            } else if (island_id === 20) {
-                action = "invest";
-                btn_text = "سرمایه‌گذاری";
             } else {
                 btn_text = "لنگر انداختن";
             }
