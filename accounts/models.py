@@ -330,8 +330,8 @@ class Participant(models.Model):
             current_pis.last_anchored_at = timezone.now()
             current_pis.save()
 
-            if game_models.PesteConfiguration.get_solo().is_peste_available:
-                self.send_msg_peste_guidance()
+#            if game_models.PesteConfiguration.get_solo().is_peste_available:
+#                self.send_msg_peste_guidance()
 
             active_bullies = self.get_current_island().bullies.all().filter(is_expired=False)
             if active_bullies.count() > 0:
