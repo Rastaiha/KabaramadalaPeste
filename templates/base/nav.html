@@ -24,14 +24,17 @@
             </ul>
             <ul class="navbar-nav mr-auto">
                 {% if request.path == '/' %}
+                {% comment %}
                 <li class="nav-item">
                     <a class="nav-link hover-shadow" href="#faq-page">سوالات متداول</a>
                 </li>
+                {% endcomment %}
                 {% endif %}
+                {% comment %}
                 <li class="nav-item">
                     <a class="nav-link hover-shadow"
                         href="{% if request.path == '/' %}#about-page{% else %}/about_us{% endif %}">درباره ما</a>
-                </li>
+                </li> {% endcomment %}
                 {% if user.is_authenticated %}
                 {% if site_config.is_game_running %}
                 {% if user.is_participant %}
@@ -65,10 +68,10 @@
                 {% endif %}
                 {% endif %}
                 {% else %}
-                <li class="nav-item">
+                {% comment %} <li class="nav-item">
                     <a class="nav-link hover-shadow {% if request.path == '/accounts/login/' %} activate {% endif %}"
                         href="{% url 'accounts:login' %}">ورود</a>
-                </li>
+                </li>{% endcomment %}
                 {% endif %}
                 {% comment %} <li class="nav-item">
                     <a class="nav-link hover-shadow" href="/logout/" style="background: #d3c096;">
