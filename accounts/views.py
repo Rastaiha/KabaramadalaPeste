@@ -139,7 +139,7 @@ def activate(request, uidb64, token):
 
 
 def login(request):
-    if request.user.is_authenticated:
+    if request.user.is_authenticated and SiteConfiguration.get_solo().is_game_running:
         return redirect('kabaramadalapeste:game')
     if request.method == "POST":
         members = Member.objects.filter(email__exact=request.POST.get('email'))

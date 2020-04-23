@@ -1,6 +1,7 @@
 {% extends 'auth/base.html' %}
 {% load static %}
 {% block auth_form %}
+{% if not user.is_authenticated %}
 <div class="row">
     <h2 class="text-center col-md-12 my-4" style="font-weight: 800">
         ورود به مسابقه
@@ -41,4 +42,11 @@
         ساختن حساب کاربری -
     </span>
 </div>
+{% else %}
+<div class="row">
+    <h2 class="text-center col-md-12 my-4" style="font-weight: 800">
+        الان وقت مسابقه نیست!
+    </h2>
+</div>
+{% endif %}
 {% endblock auth_form %}
