@@ -155,7 +155,7 @@ def login(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             auth_login(request, user)
-            return redirect('homepage:homepage')
+            return redirect('kabaramadalapeste:game')
         else:
             messages.error(request, 'ایمیل یا رمز عبور غلط است.')
             return render(request, 'auth/login.html')
