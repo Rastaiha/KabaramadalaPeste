@@ -165,7 +165,7 @@ def login(request):
 @login_required
 def logout(request):
     auth_logout(request)
-    return redirect('homepage:homepage')
+    return redirect('accounts:login')
 
 
 def verify(request):
