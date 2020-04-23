@@ -569,6 +569,7 @@ def accept_offer(request, pk):
 @game_running_required
 @login_activated_participant_required
 def use_ability(request):
+    raise Http404
     if request.method == 'POST':
         try:
             current_island = request.user.participant.get_current_island()

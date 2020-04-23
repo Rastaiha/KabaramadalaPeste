@@ -237,34 +237,6 @@ $(".right-info-btn").click(function() {
     }
 });
 
-$(".abilities-btns a").click(function() {
-    let ability_type = $(this).data("type");
-    my_prompt(
-        "آیا می‌خواهید از ویژگی " +
-            prop_details[ability_type].persian +
-            " استفاده کنید؟",
-        "استفاده از ویژگی",
-        { ability_type: ability_type }
-    );
-    $("#prompt_modal").modal("show");
-});
-
-$("#prompt_modal_btn").click(function() {
-    let ability_type = $(this).data("ability_type");
-    if (ability_type) {
-        use_ability(ability_type)
-            .then(() => {
-                my_alert(
-                    "ویژگی " +
-                        prop_details[ability_type].persian +
-                        " برای شما فعال شد.",
-                    "فعال شدن ویژگی"
-                );
-            })
-            .catch(default_fail);
-    }
-});
-
 $(".edit-player-image").click(function() {
     $(".new-image-input").click();
 });
