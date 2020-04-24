@@ -60,10 +60,10 @@
                 {% if site_config.is_signup_enabled %}
                 {% if user.is_participant %}
                 {% if not user.participant.is_activated %}
-                <li class="nav-item">
+                {% comment %}<li class="nav-item">
                     <a class="nav-link hover-shadow {% if request.path == '/accounts/request/' %} activate {% endif %}"
                         href="{% url 'accounts:request' %}">پرداخت</a>
-                </li>
+                </li>{% endcomment %}
                 {% endif %}
                 {% endif %}
                 {% endif %}
