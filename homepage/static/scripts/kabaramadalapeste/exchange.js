@@ -29,14 +29,26 @@ get_player_info()
             for (const key in offer) {
                 if (offer.hasOwnProperty(key)) {
                     let property, property_type;
-                    if (key.startsWith("suggested_")) {
-                        property_type = "suggested";
-                        property = key.replace("suggested_", "");
-                    } else if (key.startsWith("requested_")) {
-                        property_type = "requested";
-                        property = key.replace("requested_", "");
+                    if (data.username !== offer.creator_participant_username) {
+                        if (key.startsWith("suggested_")) {
+                            property_type = "suggested";
+                            property = key.replace("suggested_", "");
+                        } else if (key.startsWith("requested_")) {
+                            property_type = "requested";
+                            property = key.replace("requested_", "");
+                        } else {
+                            continue;
+                        }
                     } else {
-                        continue;
+                        if (key.startsWith("suggested_")) {
+                            property_type = "requested";
+                            property = key.replace("suggested_", "");
+                        } else if (key.startsWith("requested_")) {
+                            property_type = "suggested";
+                            property = key.replace("requested_", "");
+                        } else {
+                            continue;
+                        }
                     }
                     if (offer[key]) {
                         offer_item_template
