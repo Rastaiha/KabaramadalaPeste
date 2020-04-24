@@ -43,5 +43,8 @@ COPY . /usr/src/app/
 RUN adduser -D hemmat
 USER hemmat
 
+RUN mkdir -p /usr/src/app/logging
+RUN chown hemmat /usr/src/app/logging
+
 # run entrypoint.prod.sh
 ENTRYPOINT ["/usr/src/app/entrypoint.prod.sh"]
