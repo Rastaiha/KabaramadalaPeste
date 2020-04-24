@@ -452,8 +452,8 @@ class Participant(models.Model):
                 event_log.related = self.currently_at_island.peste
                 event_log.save()
                 self.send_msg_spade_result(True)
-                for p in Participant.objects.all():
-                    p.send_msg_peste_news(self)
+                # for p in Participant.objects.all():
+                #     p.send_msg_peste_news(self)
                 return True
             except game_models.Island.peste.RelatedObjectDoesNotExist:
                 self.send_msg_spade_result(False)
