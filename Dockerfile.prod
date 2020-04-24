@@ -37,11 +37,11 @@ COPY requirements.txt /usr/src/requirements.txt
 
 RUN pip install -r /usr/src/requirements.txt
 
-# copy project
-COPY . /usr/src/app/
-
 RUN adduser -D hemmat
 USER hemmat
+
+# copy project
+COPY . /usr/src/app/
 
 RUN mkdir -p /usr/src/app/logging
 RUN chown hemmat /usr/src/app/logging
