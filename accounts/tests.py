@@ -26,7 +26,7 @@ class ParticipantTest(TestCase):
         self.super_member = MemberFactory(is_superuser=True)
         self.participant = ParticipantFactory()
         self.all_islands = [IslandFactory(__sequence=i) for i in range(settings.GAME_DEFAULT_ISLAND_COUNT)]
-        [TreasureFactory(keys=2, rewards=4) for i in range(settings.GAME_DEFAULT_ISLAND_COUNT - 1)]
+        [TreasureFactory(keys=2, rewards=4) for i in range(settings.GAME_DEFAULT_ISLAND_COUNT)]
         self.island = self.all_islands[0]
         for i in range(3, 7):
             Way.objects.create(
@@ -47,12 +47,9 @@ class ParticipantTest(TestCase):
                 participant=self.participant,
                 island_id=i
             )
-            if i != settings.GAME_BANDARGAH_ISLAND_ID:
-                self.assertIsNotNone(pis.treasure)
-                treasure_ids.add(pis.treasure.id)
-                question_ids.add(pis.question.id)
-            else:
-                self.assertIsNone(pis.treasure)
+            self.assertIsNotNone(pis.treasure)
+            treasure_ids.add(pis.treasure.id)
+            question_ids.add(pis.question.id)
         self.assertEqual(len(treasure_ids), settings.GAME_DEFAULT_ISLAND_COUNT - 1)
         self.assertEqual(len(question_ids), settings.GAME_DEFAULT_ISLAND_COUNT - 1)
 

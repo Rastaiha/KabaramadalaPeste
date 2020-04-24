@@ -33,7 +33,7 @@ class ModelsTest(TestCase):
     def setUp(self):
         [ChallengeFactory() for i in range(10)]
         [IslandFactory(__sequence=i) for i in range(settings.GAME_DEFAULT_ISLAND_COUNT)]
-        [TreasureFactory(keys=2, rewards=3) for i in range(settings.GAME_DEFAULT_ISLAND_COUNT - 1)]
+        [TreasureFactory(keys=2, rewards=3) for i in range(settings.GAME_DEFAULT_ISLAND_COUNT)]
         [ShortAnswerQuestionFactory() for i in range(60)]
         self.participant = ParticipantFactory()
         self.island = Island.objects.first()
@@ -177,7 +177,7 @@ class ViewsTest(TestCase):
         self.addCleanup(self.patcher.stop)
         [ChallengeFactory(is_judgeable=(i > 5)) for i in range(10)]
         self.all_islands = [IslandFactory(__sequence=i) for i in range(settings.GAME_DEFAULT_ISLAND_COUNT)]
-        [TreasureFactory(keys=2, rewards=3) for i in range(settings.GAME_DEFAULT_ISLAND_COUNT - 1)]
+        [TreasureFactory(keys=2, rewards=3) for i in range(settings.GAME_DEFAULT_ISLAND_COUNT)]
         self.island = self.all_islands[0]
         for i in range(3, 7):
             Way.objects.create(
@@ -318,19 +318,19 @@ class ViewsTest(TestCase):
             {key.key_type: key.amount for key in pis.treasure.keys.all()}
         )
 
-    def test_island_info_bandargah(self):
-        self.participant.set_start_island(self.all_islands[settings.GAME_BANDARGAH_ISLAND_ID - 1])
-        self.participant.put_anchor_on_current_island()
-        self.client.force_login(self.participant.member)
-        response = self.client.get(reverse('kabaramadalapeste:island_info', kwargs={
-            'island_id': settings.GAME_BANDARGAH_ISLAND_ID
-        }))
-        self.assertIsNotNone(response.json()['name'])
-        self.assertEqual(response.json()['participants_inside'], 1)
-        self.assertEqual(
-            response.json()['treasure_keys'],
-            'unknown'
-        )
+    # def test_island_info_bandargah(self):
+    #     self.participant.set_start_island(self.all_islands[settings.GAME_BANDARGAH_ISLAND_ID - 1])
+    #     self.participant.put_anchor_on_current_island()
+    #     self.client.force_login(self.participant.member)
+    #     response = self.client.get(reverse('kabaramadalapeste:island_info', kwargs={
+    #         'island_id': settings.GAME_BANDARGAH_ISLAND_ID
+    #     }))
+    #     self.assertIsNotNone(response.json()['name'])
+    #     self.assertEqual(response.json()['participants_inside'], 1)
+    #     self.assertEqual(
+    #         response.json()['treasure_keys'],
+    #         'unknown'
+    #     )
 
     def test_island_info_treasure_opened(self):
         self.participant.set_start_island(self.island)
