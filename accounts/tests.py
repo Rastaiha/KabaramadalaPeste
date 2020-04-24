@@ -50,8 +50,8 @@ class ParticipantTest(TestCase):
             self.assertIsNotNone(pis.treasure)
             treasure_ids.add(pis.treasure.id)
             question_ids.add(pis.question.id)
-        self.assertEqual(len(treasure_ids), settings.GAME_DEFAULT_ISLAND_COUNT - 1)
-        self.assertEqual(len(question_ids), settings.GAME_DEFAULT_ISLAND_COUNT - 1)
+        self.assertEqual(len(treasure_ids), settings.GAME_DEFAULT_ISLAND_COUNT)
+        self.assertEqual(len(question_ids), settings.GAME_DEFAULT_ISLAND_COUNT)
 
     def test_init_pis_atomic(self):
         for i, question in enumerate(ShortAnswerQuestion.objects.all()):
