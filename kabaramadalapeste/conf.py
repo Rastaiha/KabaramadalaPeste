@@ -51,7 +51,7 @@ class GameConf(AppConf):
     }
 
     PARTICIPANT_INITIAL_PROPERTIES = {
-        SEKKE: 1500
+        SEKKE: 2000
     }
 
     MOVE_PRICE = 100
