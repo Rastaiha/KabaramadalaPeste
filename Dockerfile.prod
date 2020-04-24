@@ -42,11 +42,9 @@ COPY . /usr/src/app/
 
 RUN adduser -D hemmat
 
-RUN mkdir -p /usr/src/app/logging && chown hemmat /usr/src/app/logging
-
-RUN mkdir -p /usr/src/app/staticfiles && chown hemmat /usr/src/app/staticfiles
-
-RUN mkdir -p /usr/src/app/media && chown -R hemmat /usr/src/app/media
+RUN mkdir -p /usr/src/app/logging && chown hemmat /usr/src/app/logging \
+	&& mkdir -p /usr/src/app/staticfiles && chown hemmat /usr/src/app/staticfiles \
+	&& mkdir -p /usr/src/app/media && chown -R hemmat /usr/src/app/media
 
 USER hemmat
 
