@@ -700,7 +700,7 @@ class ViewsTest(TestCase):
         participant1 = self.all_participants[1]
         self.client.force_login(self.participant.member)
         data = {
-            'requested_' + settings.GAME_VISION: str(participant1.get_property(settings.GAME_VISION).amount + 1),
+            'requested_' + settings.GAME_KEY1: str(participant1.get_property(settings.GAME_KEY1).amount + 1),
             'suggested_' + settings.GAME_SEKKE: '1',
         }
         response = self.client.post(reverse('kabaramadalapeste:create_offer'), data=data)
@@ -716,13 +716,13 @@ class ViewsTest(TestCase):
     def test_accept_offer(self):
         participant1 = self.all_participants[1]
         self.client.force_login(self.participant.member)
-        participant1.add_property(settings.GAME_VISION, 1)
+        participant1.add_property(settings.GAME_KEY1, 1)
         old_sekke = self.participant.sekke.amount
         old_sekke1 = participant1.sekke.amount
-        old_vision = self.participant.get_property(settings.GAME_VISION).amount
-        old_vision1 = participant1.get_property(settings.GAME_VISION).amount
+        old_key = self.participant.get_property(settings.GAME_KEY1).amount
+        old_key1 = participant1.get_property(settings.GAME_KEY1).amount
         data = {
-            'requested_' + settings.GAME_VISION: '1',
+            'requested_' + settings.GAME_KEY1: '1',
             'suggested_' + settings.GAME_SEKKE: '1',
         }
         response = self.client.post(reverse('kabaramadalapeste:create_offer'), data=data)
@@ -739,137 +739,137 @@ class ViewsTest(TestCase):
         self.assertEqual(len(response.json()['offers']), 0)
         sekke = self.participant.sekke.amount
         sekke1 = participant1.sekke.amount
-        vision = self.participant.get_property(settings.GAME_VISION).amount
-        vision1 = participant1.get_property(settings.GAME_VISION).amount
+        key = self.participant.get_property(settings.GAME_KEY1).amount
+        key1 = participant1.get_property(settings.GAME_KEY1).amount
         self.assertEqual(sekke + 1, old_sekke)
         self.assertEqual(sekke1, old_sekke1 + 1)
-        self.assertEqual(vision, old_vision + 1)
-        self.assertEqual(vision1 + 1, old_vision1)
+        self.assertEqual(key, old_key + 1)
+        self.assertEqual(key1 + 1, old_key1)
 
-    def test_not_enough_abilities(self):
-        vision = self.participant.get_safe_property(settings.GAME_VISION)
-        vision.amount = 0
-        vision.save()
-        self.client.force_login(self.participant.member)
-        data = {
-            'ability_type': settings.GAME_VISION
-        }
-        response = self.client.post(reverse('kabaramadalapeste:use_ability'), data=data)
-        self.assertEqual(response.json()['status'], settings.ERROR_STATUS)
+    # def test_not_enough_abilities(self):
+    #     vision = self.participant.get_safe_property(settings.GAME_VISION)
+    #     vision.amount = 0
+    #     vision.save()
+    #     self.client.force_login(self.participant.member)
+    #     data = {
+    #         'ability_type': settings.GAME_VISION
+    #     }
+    #     response = self.client.post(reverse('kabaramadalapeste:use_ability'), data=data)
+    #     self.assertEqual(response.json()['status'], settings.ERROR_STATUS)
 
-    def test_travel_express_ok(self):
-        self.participant.add_property(settings.GAME_TRAVEL_EXPRESS, 1)
-        self.participant.set_start_island(self.all_islands[4])
-        self.client.force_login(self.participant.member)
-        data = {
-            'ability_type': settings.GAME_TRAVEL_EXPRESS
-        }
-        response = self.client.post(reverse('kabaramadalapeste:use_ability'), data=data)
-        self.assertEqual(GameEventLog.objects.count(), 2)
-        self.assertEqual(response.json()['status'], settings.OK_STATUS)
-        old_sekke = self.participant.sekke.amount
-        self.client.force_login(self.participant.member)
-        response = self.client.post(reverse('kabaramadalapeste:move_to', kwargs={
-            'dest_island_id': self.island.island_id
-        }))
-        self.assertEqual(response.json()['status'], settings.OK_STATUS)
-        self.assertEqual(old_sekke, self.participant.sekke.amount)
-        response = self.client.post(reverse('kabaramadalapeste:move_to', kwargs={
-            'dest_island_id': self.all_islands[4].island_id
-        }))
-        self.assertEqual(response.json()['status'], settings.OK_STATUS)
-        self.assertNotEqual(old_sekke, self.participant.sekke.amount)
+    # def test_travel_express_ok(self):
+    #     self.participant.add_property(settings.GAME_TRAVEL_EXPRESS, 1)
+    #     self.participant.set_start_island(self.all_islands[4])
+    #     self.client.force_login(self.participant.member)
+    #     data = {
+    #         'ability_type': settings.GAME_TRAVEL_EXPRESS
+    #     }
+    #     response = self.client.post(reverse('kabaramadalapeste:use_ability'), data=data)
+    #     self.assertEqual(GameEventLog.objects.count(), 2)
+    #     self.assertEqual(response.json()['status'], settings.OK_STATUS)
+    #     old_sekke = self.participant.sekke.amount
+    #     self.client.force_login(self.participant.member)
+    #     response = self.client.post(reverse('kabaramadalapeste:move_to', kwargs={
+    #         'dest_island_id': self.island.island_id
+    #     }))
+    #     self.assertEqual(response.json()['status'], settings.OK_STATUS)
+    #     self.assertEqual(old_sekke, self.participant.sekke.amount)
+    #     response = self.client.post(reverse('kabaramadalapeste:move_to', kwargs={
+    #         'dest_island_id': self.all_islands[4].island_id
+    #     }))
+    #     self.assertEqual(response.json()['status'], settings.OK_STATUS)
+    #     self.assertNotEqual(old_sekke, self.participant.sekke.amount)
 
-    def test_vision_ok(self):
-        self.participant.add_property(settings.GAME_VISION, 1)
-        self.participant.set_start_island(self.island)
-        pis = ParticipantIslandStatus.objects.get(
-            participant=self.participant,
-            island=self.all_islands[1]
-        )
-        pis.is_treasure_visible = False
-        pis.save()
-        self.client.force_login(self.participant.member)
-        data = {
-            'ability_type': settings.GAME_VISION
-        }
-        response = self.client.post(reverse('kabaramadalapeste:use_ability'), data=data)
-        self.assertEqual(GameEventLog.objects.count(), 2)
-        self.assertEqual(response.json()['status'], settings.OK_STATUS)
-        pis = ParticipantIslandStatus.objects.get(
-            participant=self.participant,
-            island=self.island
-        )
-        self.assertTrue(pis.is_treasure_visible)
-        pis = ParticipantIslandStatus.objects.get(
-            participant=self.participant,
-            island=self.all_islands[4]
-        )
-        self.assertTrue(pis.is_treasure_visible)
-        pis = ParticipantIslandStatus.objects.get(
-            participant=self.participant,
-            island=self.all_islands[1]
-        )
-        self.assertFalse(pis.is_treasure_visible)
+    # def test_vision_ok(self):
+    #     self.participant.add_property(settings.GAME_VISION, 1)
+    #     self.participant.set_start_island(self.island)
+    #     pis = ParticipantIslandStatus.objects.get(
+    #         participant=self.participant,
+    #         island=self.all_islands[1]
+    #     )
+    #     pis.is_treasure_visible = False
+    #     pis.save()
+    #     self.client.force_login(self.participant.member)
+    #     data = {
+    #         'ability_type': settings.GAME_VISION
+    #     }
+    #     response = self.client.post(reverse('kabaramadalapeste:use_ability'), data=data)
+    #     self.assertEqual(GameEventLog.objects.count(), 2)
+    #     self.assertEqual(response.json()['status'], settings.OK_STATUS)
+    #     pis = ParticipantIslandStatus.objects.get(
+    #         participant=self.participant,
+    #         island=self.island
+    #     )
+    #     self.assertTrue(pis.is_treasure_visible)
+    #     pis = ParticipantIslandStatus.objects.get(
+    #         participant=self.participant,
+    #         island=self.all_islands[4]
+    #     )
+    #     self.assertTrue(pis.is_treasure_visible)
+    #     pis = ParticipantIslandStatus.objects.get(
+    #         participant=self.participant,
+    #         island=self.all_islands[1]
+    #     )
+    #     self.assertFalse(pis.is_treasure_visible)
 
-    def test_challenge_plus_ok(self):
-        self.participant.add_property(settings.GAME_CHALLENGE_PLUS, 1)
-        self.participant.set_start_island(self.island)
-        self.participant.put_anchor_on_current_island()
-        self.client.force_login(self.participant.member)
-        data = {
-            'ability_type': settings.GAME_CHALLENGE_PLUS
-        }
-        response = self.client.post(reverse('kabaramadalapeste:use_ability'), data=data)
-        self.assertEqual(response.json()['status'], settings.OK_STATUS)
+    # def test_challenge_plus_ok(self):
+    #     self.participant.add_property(settings.GAME_CHALLENGE_PLUS, 1)
+    #     self.participant.set_start_island(self.island)
+    #     self.participant.put_anchor_on_current_island()
+    #     self.client.force_login(self.participant.member)
+    #     data = {
+    #         'ability_type': settings.GAME_CHALLENGE_PLUS
+    #     }
+    #     response = self.client.post(reverse('kabaramadalapeste:use_ability'), data=data)
+    #     self.assertEqual(response.json()['status'], settings.OK_STATUS)
 
-        for i, island in enumerate(self.all_islands[5:5 + settings.GAME_BASE_CHALLENGE_PER_DAY + 1]):
-            pis = ParticipantIslandStatus.objects.get(
-                participant=self.participant,
-                island=island
-            )
-            pis.did_accept_challenge = True
-            pis.challenge_accepted_at = timezone.now()
-            pis.save()
+    #     for i, island in enumerate(self.all_islands[5:5 + settings.GAME_BASE_CHALLENGE_PER_DAY + 1]):
+    #         pis = ParticipantIslandStatus.objects.get(
+    #             participant=self.participant,
+    #             island=island
+    #         )
+    #         pis.did_accept_challenge = True
+    #         pis.challenge_accepted_at = timezone.now()
+    #         pis.save()
 
-        with self.assertRaises(Participant.MaximumChallengePerDayExceeded):
-            self.participant.accept_challenge_on_current_island()
+    #     with self.assertRaises(Participant.MaximumChallengePerDayExceeded):
+    #         self.participant.accept_challenge_on_current_island()
 
-    def test_bully_ok(self):
-        self.participant.add_property(settings.GAME_BULLY, 1)
-        self.participant.set_start_island(self.island)
-        self.participant.put_anchor_on_current_island()
-        self.client.force_login(self.participant.member)
-        data = {
-            'ability_type': settings.GAME_BULLY
-        }
-        self.assertEqual(GameEventLog.objects.count(), 2)
-        response = self.client.post(reverse('kabaramadalapeste:use_ability'), data=data)
-        self.assertEqual(GameEventLog.objects.count(), 3)
-        self.assertEqual(response.json()['status'], settings.OK_STATUS)
-        participant1 = self.all_participants[1]
-        participant1.set_start_island(self.island)
-        participant1.add_property(settings.GAME_SEKKE, settings.GAME_BULLY_DAMAGE)
-        old_sekke = self.participant.sekke.amount
-        old_sekke1 = participant1.sekke.amount
-        participant1.add_property(settings.GAME_SEKKE, settings.GAME_PUT_ANCHOR_PRICE)
-        self.assertEqual(GameEventLog.objects.count(), 4)
-        participant1.put_anchor_on_current_island()
-        self.assertEqual(GameEventLog.objects.count(), 6)
-        sekke = self.participant.sekke.amount
-        sekke1 = participant1.sekke.amount
-        self.assertEqual(old_sekke + settings.GAME_BULLY_DAMAGE, sekke)
-        self.assertEqual(old_sekke1, sekke1 + settings.GAME_BULLY_DAMAGE)
+    # def test_bully_ok(self):
+    #     self.participant.add_property(settings.GAME_BULLY, 1)
+    #     self.participant.set_start_island(self.island)
+    #     self.participant.put_anchor_on_current_island()
+    #     self.client.force_login(self.participant.member)
+    #     data = {
+    #         'ability_type': settings.GAME_BULLY
+    #     }
+    #     self.assertEqual(GameEventLog.objects.count(), 2)
+    #     response = self.client.post(reverse('kabaramadalapeste:use_ability'), data=data)
+    #     self.assertEqual(GameEventLog.objects.count(), 3)
+    #     self.assertEqual(response.json()['status'], settings.OK_STATUS)
+    #     participant1 = self.all_participants[1]
+    #     participant1.set_start_island(self.island)
+    #     participant1.add_property(settings.GAME_SEKKE, settings.GAME_BULLY_DAMAGE)
+    #     old_sekke = self.participant.sekke.amount
+    #     old_sekke1 = participant1.sekke.amount
+    #     participant1.add_property(settings.GAME_SEKKE, settings.GAME_PUT_ANCHOR_PRICE)
+    #     self.assertEqual(GameEventLog.objects.count(), 4)
+    #     participant1.put_anchor_on_current_island()
+    #     self.assertEqual(GameEventLog.objects.count(), 6)
+    #     sekke = self.participant.sekke.amount
+    #     sekke1 = participant1.sekke.amount
+    #     self.assertEqual(old_sekke + settings.GAME_BULLY_DAMAGE, sekke)
+    #     self.assertEqual(old_sekke1, sekke1 + settings.GAME_BULLY_DAMAGE)
 
-    def test_bully_not_anchored(self):
-        self.participant.add_property(settings.GAME_BULLY, 1)
-        self.participant.set_start_island(self.island)
-        self.client.force_login(self.participant.member)
-        data = {
-            'ability_type': settings.GAME_BULLY
-        }
-        response = self.client.post(reverse('kabaramadalapeste:use_ability'), data=data)
-        self.assertEqual(response.json()['status'], settings.ERROR_STATUS)
+    # def test_bully_not_anchored(self):
+    #     self.participant.add_property(settings.GAME_BULLY, 1)
+    #     self.participant.set_start_island(self.island)
+    #     self.client.force_login(self.participant.member)
+    #     data = {
+    #         'ability_type': settings.GAME_BULLY
+    #     }
+    #     response = self.client.post(reverse('kabaramadalapeste:use_ability'), data=data)
+    #     self.assertEqual(response.json()['status'], settings.ERROR_STATUS)
 
     def test_spade_not_login(self):
         self.participant.set_start_island(self.island)
