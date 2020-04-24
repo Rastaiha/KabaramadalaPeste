@@ -481,7 +481,7 @@ class Participant(models.Model):
         )
 
     def send_msg_fall_in_bully(self, bully, amount):
-        text = 'توی تله‌ی جاسازی شده توسط %s افتادی' % (bully.owner, )
+        text = 'توی تله‌ی جاسازی شده توسط دزد دریایی افتادی'
         if amount < game_settings.GAME_BULLY_DAMAGE:
             text += ' و چون پول کافی نداشتی ازت %d سکه کم شد.' % (amount, )
         else:
