@@ -958,21 +958,21 @@ class ViewsTest(TestCase):
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json()['status'], settings.ERROR_STATUS)
 
-    def test_bandargah_ok(self):
-        bandar = Island.objects.get(island_id=settings.GAME_BANDARGAH_ISLAND_ID)
-        self.participant.add_property(settings.GAME_SEKKE, 3000)
-        old_sekke = self.participant.sekke.amount
-        self.participant.set_start_island(bandar)
-        self.client.force_login(self.participant.member)
-        data = {
-            'amount': '3000'
-        }
-        response = self.client.post(reverse('kabaramadalapeste:invest_bandargah'), data=data)
-        self.assertEqual(response.json()['status'], settings.OK_STATUS)
-        self.assertEqual(1, BandargahInvestment.objects.all().count())
-        self.assertEqual(old_sekke, self.participant.sekke.amount + 3000)
-        self.assertEqual(GameEventLog.objects.count(), 2)
-        BandargahInvestment.objects.all().delete()
+    # def test_bandargah_ok(self):
+    #     bandar = Island.objects.get(island_id=settings.GAME_BANDARGAH_ISLAND_ID)
+    #     self.participant.add_property(settings.GAME_SEKKE, 3000)
+    #     old_sekke = self.participant.sekke.amount
+    #     self.participant.set_start_island(bandar)
+    #     self.client.force_login(self.participant.member)
+    #     data = {
+    #         'amount': '3000'
+    #     }
+    #     response = self.client.post(reverse('kabaramadalapeste:invest_bandargah'), data=data)
+    #     self.assertEqual(response.json()['status'], settings.OK_STATUS)
+    #     self.assertEqual(1, BandargahInvestment.objects.all().count())
+    #     self.assertEqual(old_sekke, self.participant.sekke.amount + 3000)
+    #     self.assertEqual(GameEventLog.objects.count(), 2)
+    #     BandargahInvestment.objects.all().delete()
 
     @mock.patch('kabaramadalapeste.views.render')
     def test_island_page_ok(self, render_mock):

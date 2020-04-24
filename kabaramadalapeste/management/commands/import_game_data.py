@@ -30,18 +30,12 @@ def import_treasure_row(row):
 
 
 def import_island_row(row):
-    if int(row[0]) == settings.GAME_BANDARGAH_ISLAND_ID:
-        island = Island.objects.create(
-            island_id=row[0],
-            name=row[1],
-        )
-    else:
-        island = Island.objects.create(
-            island_id=row[0],
-            name=row[1],
-            challenge=Challenge.objects.get(challenge_id=row[2])
-        )
-        island.save()
+    island = Island.objects.create(
+        island_id=row[0],
+        name=row[1],
+        challenge=Challenge.objects.get(challenge_id=row[2])
+    )
+    island.save()
     if int(row[3]):
         Peste.objects.create(
             island=island

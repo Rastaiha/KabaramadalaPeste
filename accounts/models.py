@@ -219,10 +219,9 @@ class Participant(models.Model):
                     participant=self,
                     island=island,
                 )
-                if island.island_id != game_settings.GAME_BANDARGAH_ISLAND_ID:
-                    pis.treasure = treasures_shuffled.pop()
-                    pis.save()
-                    pis.assign_question()
+                pis.treasure = treasures_shuffled.pop()
+                pis.save()
+                pis.assign_question()
 
     def init_properties(self):
         if self.properties.count():

@@ -37,7 +37,7 @@ urlpatterns = [
 
     path('use_ability/', use_ability, name="use_ability"),
 
-    path('invest/', invest, name="invest_bandargah"),
+    # path('invest/', invest, name="invest_bandargah"),
 
     path('', game, name="game"),
     path('low/', game2, name="game2"),
