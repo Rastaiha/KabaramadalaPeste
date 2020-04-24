@@ -40,5 +40,8 @@ RUN pip install -r /usr/src/requirements.txt
 # copy project
 COPY . /usr/src/app/
 
+RUN adduser -D hemmat
+USER hemmat
+
 # run entrypoint.prod.sh
 ENTRYPOINT ["/usr/src/app/entrypoint.prod.sh"]
