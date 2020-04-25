@@ -1111,7 +1111,7 @@ class ViewsTest(TestCase):
             'answer': '12'
         })
         pis.refresh_from_db()
-        self.assertEqual(GameEventLog.objects.count(), 4)
+        self.assertEqual(GameEventLog.objects.count(), 5)
         self.assertEqual(pis.submit.submit_status, BaseSubmit.SubmitStatus.Correct)
         self.assertIsNotNone(pis.submit.submitted_at)
         self.assertIsNotNone(pis.submit.judged_at)

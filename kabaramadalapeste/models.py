@@ -406,6 +406,7 @@ class ShortAnswerSubmit(BaseSubmit):
 
     submitted_answer = models.CharField(max_length=100)
 
+    @transaction.atomic
     def check_answer(self):
         question = self.pis.question
         is_correct = False
@@ -422,6 +423,22 @@ class ShortAnswerSubmit(BaseSubmit):
         self.submit_status = BaseSubmit.SubmitStatus.Correct if is_correct else BaseSubmit.SubmitStatus.Wrong
         self.judged_at = timezone.now()
         self.save()
+        if self.submit_status == BaseSubmit.SubmitStatus.Correct:
+            GameEventLog.objects.create(
+                who=self.pis.participant,
+                when=timezone.now(),
+                where=self.pis.island,
+                event_type=GameEventLog.EventTypes.JudgeCorrect,
+                related=self
+            )
+        else:
+            GameEventLog.objects.create(
+                who=self.pis.participant,
+                when=timezone.now(),
+                where=self.pis.island,
+                event_type=GameEventLog.EventTypes.JudgeWrong,
+                related=self
+            )
 
 
 class JudgeableSubmit(BaseSubmit):
@@ -595,6 +612,7 @@ class GameEventLog(models.Model):
         Anchor = 'Anchor'
         OpenTreasure = 'Open treasure'
         Spade = 'Spade'
+        FindPeste = 'Find peste'
         AcceptChallenge = 'Accept challenge'
         CreateOffer = 'Create offer'
         DeleteOffer = 'Delete offer'
@@ -602,6 +620,8 @@ class GameEventLog(models.Model):
         UseAbility = 'Use ability'
         Invest = 'Invest'
         Submit = 'Submit'
+        JudgeCorrect = 'Judge correct'
+        JudgeWrong = 'Judge wrong'
         BullyTarget = 'Bully target'
 
     who = models.ForeignKey(Participant, related_name='logs', on_delete=models.DO_NOTHING)

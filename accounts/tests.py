@@ -502,7 +502,7 @@ class ParticipantTest(TestCase):
         self.assertTrue(peste.is_found)
         self.assertIsNotNone(peste.found_by)
         self.assertIsNotNone(peste.found_at)
-        self.assertEqual(GameEventLog.objects.count(), 3)
+        self.assertEqual(GameEventLog.objects.count(), 4)
 
     def test_spade_ok_with_peste_found_before(self):
         other_participant = ParticipantFactory()

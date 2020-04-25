@@ -8,7 +8,7 @@ from kabaramadalapeste.models import (
     TreasureRewardItem, TreasureKeyItem, Treasure, Way, JudgeableSubmit,
     BaseSubmit, TradeOffer, TradeOfferRequestedItem, TradeOfferSuggestedItem,
     AbilityUsage, BandargahConfiguration, BandargahInvestment, Bully, ParticipantIslandStatus,
-    PesteConfiguration
+    PesteConfiguration, GameEventLog
 )
 from kabaramadalapeste.conf import settings
 from django.utils import timezone
@@ -156,9 +156,23 @@ class JudgeableSubmitAdmin(admin.ModelAdmin):
                     obj.submit_status == BaseSubmit.SubmitStatus.Correct):
                 obj.give_rewards_to_participant()
                 obj.pis.participant.send_msg_correct_judged_answer(obj)
+                GameEventLog.objects.create(
+                    who=obj.pis.participant,
+                    when=timezone.now(),
+                    where=obj.pis.island,
+                    event_type=GameEventLog.EventTypes.JudgeCorrect,
+                    related=obj
+                )
             elif (obj.initial_submit_status == BaseSubmit.SubmitStatus.Pending and
                     obj.submit_status == BaseSubmit.SubmitStatus.Wrong):
                 obj.pis.participant.send_msg_wrong_judged_answer(obj)
+                GameEventLog.objects.create(
+                    who=obj.pis.participant,
+                    when=timezone.now(),
+                    where=obj.pis.island,
+                    event_type=GameEventLog.EventTypes.JudgeWrong,
+                    related=obj
+                )
             if obj.submit_status != BaseSubmit.SubmitStatus.Pending:
                 obj.judged_at = timezone.now()
                 obj.judged_by = request.user

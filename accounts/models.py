@@ -452,6 +452,13 @@ class Participant(models.Model):
                 event_log.related = self.currently_at_island.peste
                 event_log.save()
                 self.send_msg_spade_result(True)
+                game_models.GameEventLog.objects.create(
+                    who=self,
+                    when=timezone.now(),
+                    where=current_pis.island,
+                    event_type=game_models.GameEventLog.EventTypes.FindPeste,
+                    related=self.currently_at_island.peste
+                )
                 # for p in Participant.objects.all():
                 #     p.send_msg_peste_news(self)
                 return True
