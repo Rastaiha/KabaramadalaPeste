@@ -209,8 +209,8 @@ class MemberAdmin(ExportActionMixin, admin.ModelAdmin):
         return Notification.objects.filter(
             unread=False,
             verb='inform',
-            timestamp__day=28,
-            timestamp__month=3,
+            timestamp__day=25,
+            timestamp__month=4,
             timestamp__year=2020,
             recipient=obj
         ).all().count() > 0
@@ -219,8 +219,8 @@ class MemberAdmin(ExportActionMixin, admin.ModelAdmin):
         return Notification.objects.filter(
             unread=False,
             verb='inform',
-            timestamp__day=29,
-            timestamp__month=3,
+            timestamp__day=26,
+            timestamp__month=4,
             timestamp__year=2020,
             recipient=obj
         ).all().count() > 0
