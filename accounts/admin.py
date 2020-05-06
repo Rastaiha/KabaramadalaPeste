@@ -250,6 +250,7 @@ class MemberAdmin(ExportActionMixin, admin.ModelAdmin):
     get_has_seen_day2.boolean = True
     get_has_seen_day2.short_description = 'SEEN DAY 2'
     get_submit_count.short_description = 'SUBMIT COUNT'
+    get_submit_count.admin_order_field = '_get_submit_count'
 
 
 class PaymentAttemptAdmin(admin.ModelAdmin):
