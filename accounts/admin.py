@@ -4,7 +4,7 @@ from django.urls import path, reverse
 from django.shortcuts import redirect
 
 from accounts.models import *
-from kabaramadalapeste.models import ParticipantPropertyItem
+from kabaramadalapeste.models import ParticipantPropertyItem, JudgeableSubmit, ShortAnswerSubmit
 
 from import_export.admin import ExportActionMixin
 from import_export.fields import Field
@@ -105,7 +105,7 @@ class MemberAdmin(ExportActionMixin, admin.ModelAdmin):
     resource_class = MemberResource
 
     list_display = ('username', 'real_name', 'get_city', 'get_school', 'is_active', 'get_is_paid', 'get_document_status',
-                    'get_document', 'account_actions', 'get_has_seen_day1', 'get_has_seen_day2')
+                    'get_document', 'account_actions', 'get_has_seen_day1', 'get_has_seen_day2', 'get_submit_count')
     list_filter = ('is_active', IsPaidFilter, IsVerifiedFilter)
     readonly_fields = ['username', 'email']
     fields = ['first_name', 'username', 'email', 'is_active', 'is_participant']
@@ -209,8 +209,8 @@ class MemberAdmin(ExportActionMixin, admin.ModelAdmin):
         return Notification.objects.filter(
             unread=False,
             verb='inform',
-            timestamp__day=25,
-            timestamp__month=4,
+            timestamp__day=7,
+            timestamp__month=5,
             timestamp__year=2020,
             recipient=obj
         ).all().count() > 0
@@ -219,11 +219,23 @@ class MemberAdmin(ExportActionMixin, admin.ModelAdmin):
         return Notification.objects.filter(
             unread=False,
             verb='inform',
-            timestamp__day=26,
-            timestamp__month=4,
+            timestamp__day=8,
+            timestamp__month=5,
             timestamp__year=2020,
             recipient=obj
         ).all().count() > 0
+
+    def get_submit_count(self, obj):
+        try:
+            return (
+                JudgeableSubmit.objects.filter(
+                    pis__participant=obj.participant
+                ).count() + ShortAnswerSubmit.objects.filter(
+                    pis__participant=obj.participant
+                ).count()
+            )
+        except Exception:
+            return None
 
     get_school.short_description = 'SCHOOL'
     get_city.short_description = 'CITY'
@@ -237,6 +249,7 @@ class MemberAdmin(ExportActionMixin, admin.ModelAdmin):
     get_has_seen_day1.short_description = 'SEEN DAY 1'
     get_has_seen_day2.boolean = True
     get_has_seen_day2.short_description = 'SEEN DAY 2'
+    get_submit_count.short_description = 'SUBMIT COUNT'
 
 
 class PaymentAttemptAdmin(admin.ModelAdmin):
