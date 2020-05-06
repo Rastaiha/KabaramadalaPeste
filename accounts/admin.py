@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.utils.safestring import mark_safe
 from django.urls import path, reverse
 from django.shortcuts import redirect
+from django.db.models import Count
 
 from accounts.models import *
 from kabaramadalapeste.models import ParticipantPropertyItem, JudgeableSubmit, ShortAnswerSubmit
@@ -110,6 +111,15 @@ class MemberAdmin(ExportActionMixin, admin.ModelAdmin):
     readonly_fields = ['username', 'email']
     fields = ['first_name', 'username', 'email', 'is_active', 'is_participant']
     inlines = [ParticipantInline]
+
+    def get_queryset(self, request):
+        queryset = super().get_queryset(request)
+        queryset = queryset.annotate(
+            _submit_count=Count(
+                'participant__participantislandstatus__judgeablesubmit', distinct=True
+            ) + Count('participant__participantislandstatus__shortanswersubmit', distinct=True)
+        )
+        return queryset
 
     def get_city(self, obj):
         try:
@@ -227,13 +237,7 @@ class MemberAdmin(ExportActionMixin, admin.ModelAdmin):
 
     def get_submit_count(self, obj):
         try:
-            return (
-                JudgeableSubmit.objects.filter(
-                    pis__participant=obj.participant
-                ).count() + ShortAnswerSubmit.objects.filter(
-                    pis__participant=obj.participant
-                ).count()
-            )
+            return obj._submit_count
         except Exception:
             return None
 
@@ -250,7 +254,7 @@ class MemberAdmin(ExportActionMixin, admin.ModelAdmin):
     get_has_seen_day2.boolean = True
     get_has_seen_day2.short_description = 'SEEN DAY 2'
     get_submit_count.short_description = 'SUBMIT COUNT'
-    get_submit_count.admin_order_field = '_get_submit_count'
+    get_submit_count.admin_order_field = '_submit_count'
 
 
 class PaymentAttemptAdmin(admin.ModelAdmin):
