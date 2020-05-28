@@ -219,7 +219,7 @@ class MemberAdmin(ExportActionMixin, admin.ModelAdmin):
         return Notification.objects.filter(
             unread=False,
             verb='inform',
-            timestamp__day=7,
+            timestamp__day=29,
             timestamp__month=5,
             timestamp__year=2020,
             recipient=obj
@@ -229,7 +229,7 @@ class MemberAdmin(ExportActionMixin, admin.ModelAdmin):
         return Notification.objects.filter(
             unread=False,
             verb='inform',
-            timestamp__day=8,
+            timestamp__day=30,
             timestamp__month=5,
             timestamp__year=2020,
             recipient=obj
