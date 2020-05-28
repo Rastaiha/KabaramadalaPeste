@@ -94,3 +94,4 @@ media/*
 *.sublime-project
 *.sublime-workspace
 .vscode/settings.json
+!homepage/static/**/build
