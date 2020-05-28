@@ -22,6 +22,7 @@ import notifications.urls
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('admin_tools_stats/', include('admin_tools_stats.urls')),
     path('game/', include(('kabaramadalapeste.urls',
                            'kabaramadalapeste'), namespace='kabaramadalapeste')),
     path('notifications/', include(notifications.urls, namespace='notifications')),
