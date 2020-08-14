@@ -28,7 +28,7 @@ def homepage(request):
     signup_status = request.GET.get('signup')
     if signup_status == settings.OK_STATUS:
         messages.success(request, 'ثبت نام با موفقیت انجام شد. برای فعال‌سازی حساب به ایمیلت مراجعه کن.')
-    return render(request, 'homepages/landing_page.html', {
+    return render(request, 'homepages/coming_soon.html', {
         'not_nav_padding': True
     })
 

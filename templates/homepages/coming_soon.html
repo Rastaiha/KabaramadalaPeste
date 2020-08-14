@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <!-- Meta, title, favicons, CSS, etc. -->
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="{% static 'favicon/apple-touch-icon.png' %}"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="{% static 'favicon/favicon-32x32.png' %}"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="{% static 'favicon/favicon-16x16.png' %}"
+    />
+    <link rel="manifest" href="{% static 'favicon/site.webmanifest' %}" />
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5" />
+    <meta name="msapplication-TileColor" content="#da532c" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self' 'unsafe-inline' 'unsafe-eval' data: *; style-src 'self' 'unsafe-inline' 'unsafe-eval' data: *; script-src 'self' 'unsafe-inline' 'unsafe-eval' data: *; img-src 'self' 'unsafe-inline' 'unsafe-eval' data: *; font-src 'self' 'unsafe-inline' 'unsafe-eval' data: * ; object-src 'self' 'unsafe-inline' 'unsafe-eval' data: *"
+    />
+    {% csrf_token %}
+
+    <title>
+      {% block title %}رستایی‌ها{% endblock title %}
+    </title>
+
+    <!-- Bootstrap -->
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    />
+
+    <!-- Iranyekan Font and Style -->
+    <link
+      rel="stylesheet"
+      href="{% static 'fonts/iranyekan/iranyekan.css' %}"
+    />
+
+    <!-- FontAwesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css"
+    />
+    <style>
+      .fab {
+        font-family: 'Font Awesome 5 Brands' !important;
+      }
+
+      .fas {
+        font-family: 'Font Awesome 5 Free' !important;
+      }
+    </style>
+  </head>
+
+  <style>
+    .comming_background {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      height: 100vh;
+      font-size: 80px;
+      font-weight: 900;
+      direction: rtl;
+    }
+  </style>
+  <body class="iranyekan">
+    <div class="comming_background">
+      به زودی...
+    </div>
+  </body>
+</html>
