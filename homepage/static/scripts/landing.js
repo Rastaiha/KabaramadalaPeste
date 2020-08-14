@@ -19,6 +19,8 @@ $(".download-stat").click(function() {});
 $(".share-stat").click(function() {
     text = $(".share-input").val();
     text = text.replace('\n', ' ');
+    text = text.replace('#', '%23');
+    text = text.replace('@', '%40');
     img_url =
         window.location.protocol +
         "//" +

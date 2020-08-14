@@ -14,7 +14,7 @@ RUN apk add --no-cache --virtual .build-deps gcc musl-dev
 RUN apk update \
     && apk add --virtual .build-deps gcc libc-dev libxslt-dev \
     && apk add --no-cache libxslt \
-    && pip install lxml==4.4.1
+    && pip install lxml==4.5.0
 
 # install psycopg2
 RUN apk update \

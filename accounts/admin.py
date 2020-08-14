@@ -5,7 +5,6 @@ from django.shortcuts import redirect
 
 from accounts.models import *
 from kabaramadalapeste.models import ParticipantPropertyItem
-from nested_inline.admin import NestedStackedInline, NestedModelAdmin
 
 from import_export.admin import ExportActionMixin
 from import_export.fields import Field
@@ -53,10 +52,6 @@ class MemberResource(resources.ModelResource):
             return member.participant.city
         except Exception:
             return ''
-
-
-class ParticipantPropertyItemInline(NestedStackedInline):
-    model = ParticipantPropertyItem
 
 
 class ParticipantInline(admin.StackedInline):

@@ -32,6 +32,12 @@
                     <a class="nav-link hover-shadow"
                         href="{% if request.path == '/' %}#about-page{% else %}/about_us{% endif %}">درباره ما</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link hover-shadow"
+                        href="{% url 'accounts:survey' %}" {% if user.is_authenticated %}
+                            target="_blank"
+                       {% endif %}>نظرسنجی</a>
+                </li>
                 {% if user.is_authenticated %}
                 {% if site_config.is_game_running %}
                 {% if user.is_participant %}

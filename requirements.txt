@@ -29,6 +29,5 @@ urllib3==1.25.8
 whitenoise==5.0.1
 zeep==3.4.0
 django-import-export==2.0.2
-django-nested-inline
 django-notifications-hq==1.6.0
 easy-thumbnails==2.7
