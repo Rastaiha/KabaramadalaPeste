@@ -86,13 +86,13 @@ class Participant(models.Model):
         pass
 
     member = models.OneToOneField(Member, related_name='participant', on_delete=models.CASCADE)
-    picture = ThumbnailerImageField(upload_to='picture', default="picture/user_default.png")
     school = models.CharField(max_length=200)
     city = models.CharField(max_length=40)
     document = models.ImageField(upload_to='documents/')
     gender = models.CharField(max_length=10, default=Gender.Man, choices=[(tag.value, tag.name) for tag in Gender])
     phone_number = models.CharField(max_length=12, blank=True, null=True)
     is_activated = models.BooleanField(default=False)
+    team = models.ForeignKey('Team', models.SET_NULL, blank=True, null=True)
     document_status = models.CharField(max_length=30,
                                        default='Pending',
                                        choices=[(tag.value, tag.name) for tag in ParticipantStatus])
@@ -113,7 +113,7 @@ class Participant(models.Model):
     @property
     def picture_url(self):
         try:
-            pic = self.picture if self.picture else 'picture/user_default.png'
+            pic = self.team.picture if self.team.picture else 'picture/user_default.png'
             return get_thumbnailer(pic)['avatar'].url
         except Exception:
             return ''
@@ -712,3 +712,23 @@ class NotificationData(models.Model):
         self.sent_by = sender_user
         self.sent_at = timezone.now()
         self.save()
+
+
+class Team(models.Model):
+    group_name = models.CharField(max_length=30, blank=True)
+    active = models.BooleanField(default=False)
+    picture = ThumbnailerImageField(upload_to='picture', default="picture/user_default.png")
+
+    def __str__(self):
+        s = str(self.id) + "-" +self.group_name + " ("
+
+        for p in self.participant_set.all():
+            s+= str(p) + ", "
+        s += ")"
+        return s
+
+    def is_team_active(self):
+        for p in self.participant_set.all():
+            if not p.is_activated:
+                return False
+        return True

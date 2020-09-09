@@ -5,7 +5,7 @@ from .views import (
     SetStartIslandView, PutAnchorView, OpenTreasureView,
     ParticipantInfoView, create_offer, get_all_offers,
     get_my_offers, delete_offer, accept_offer, AllParticipantsInfoView, stat_page,
-    AcceptChallengeView, use_ability, SettingsView, SpadeView, invest, set_picture,team
+    AcceptChallengeView, use_ability, SettingsView, SpadeView, invest, set_picture,team, set_team_name
 )
 
 
@@ -46,5 +46,6 @@ urlpatterns = [
     path('island/', island, name="island"),
     path('challenge/', ChallengeView.as_view(), name="challenge"),
     path('set_picture/', set_picture, name="set_picture"),
+    path('set_team_name/', set_team_name, name="set_team_name"),
     # path('stat/', stat_page, name="stat"),
 ]

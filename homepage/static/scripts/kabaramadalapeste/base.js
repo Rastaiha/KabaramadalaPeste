@@ -253,6 +253,10 @@ $("#prompt_modal_btn").click(function() {
     }
 });
 
+$(".edit-team-image").click(function() {
+    $(".new-image-input").click();
+});
+
 $(".edit-player-image").click(function() {
     $(".new-image-input").click();
 });
