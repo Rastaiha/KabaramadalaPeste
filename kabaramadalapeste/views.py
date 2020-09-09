@@ -783,6 +783,7 @@ def team(request):
         'without_footer': True,
         'team': {
             'name': request.user.participant.team.group_name,
+            'uuid': request.user.participant.team.uuid,
             'img': request.user.participant.picture_url,
             'members': names,
             'properties': properties_dict
