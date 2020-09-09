@@ -1,0 +1,8 @@
+{% extends "admin/change_list.html" %} {% load i18n %} 
+{% block object-tools-items %}
+    {{ block.super }}
+    <a style="background-color: orange" class="unset-all-current-states button" href="{% url 'admin:unset_all_current_states' %}">
+    Unset all current states
+    </a>
+    <br><br><br>
+{% endblock %}
