@@ -834,7 +834,7 @@ def set_picture(request):
         if request.user.participant.team:
             request.user.participant.team.picture = form.cleaned_data['picture']
             request.user.participant.team.save()
-    return redirect('kabaramadalapeste:game')
+    return redirect(request.path_info)
 
 
 @login_activated_participant_required
