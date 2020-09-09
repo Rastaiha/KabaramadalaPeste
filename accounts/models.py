@@ -268,17 +268,18 @@ class Participant(models.Model):
         return self.currently_at_island
 
     def move(self, dest_island):
+        active_expresses = game_models.AbilityUsage.objects.filter(
+            participant=self,
+            ability_type=game_settings.GAME_TRAVEL_EXPRESS,
+            is_active=True
+        ).all()
         if not self.currently_at_island:
             raise Participant.ParticipantIsNotOnIsland
-        if not self.currently_at_island.is_neighbor_with(dest_island):
-            raise game_models.Island.IslandsNotConnected
+        if active_expresses.count() == 0:
+            if not self.currently_at_island.is_neighbor_with(dest_island):
+                raise game_models.Island.IslandsNotConnected
 
         with transaction.atomic():
-            active_expresses = game_models.AbilityUsage.objects.filter(
-                participant=self,
-                ability_type=game_settings.GAME_TRAVEL_EXPRESS,
-                is_active=True
-            ).all()
             if active_expresses.count() == 0:
                 self.reduce_property(game_settings.GAME_SEKKE, game_settings.GAME_MOVE_PRICE)
             else:
