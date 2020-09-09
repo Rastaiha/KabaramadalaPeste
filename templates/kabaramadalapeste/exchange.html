@@ -7,7 +7,7 @@
 <div class="template offer-item-template">
     <div style="display: inline-block; align-items: center; justify-content: center;">
         <span>
-            <b class="offer-item-number"></b> ×
+            <b class="offer-item-number"></b><b> × </b>
         </span>
         <img class="offer-item-img" />
     </div>
@@ -18,10 +18,10 @@
             <img class="offer-user-img" />
             <h3 class="text-center offer-username mb-3"></h3>
             <div class="row">
-                <div class="col-6">
+                <div class="col-6 mob-no-pad">
                     <div class="exchange-section b-exchange offer-suggested-list"></div>
                 </div>
-                <div class="col-6">
+                <div class="col-6 mob-no-pad">
                     <div class="exchange-section s-exchange offer-requested-list">
                         <div class="exchange-type">-</div>
                     </div>
@@ -35,10 +35,14 @@
     </div>
 </div>
 <div class="container">
-    <div>
-        <a class="my-btn my-2" href="{% url 'kabaramadalapeste:game' %}">بازگشت به نقشه</a>
-        <a class="my-btn my-2 back-to-island" style="display: none" href="{% url 'kabaramadalapeste:island' %}">بازگشت
+    <div class="row">
+        
+        <a class="my-btn my-2 mx-1" href="{% url 'kabaramadalapeste:game' %}">بازگشت به نقشه</a>
+        <a class="my-btn my-2 mx-1 back-to-island" style="display: none" href="{% url 'kabaramadalapeste:island' %}">بازگشت
             به جزیره</a>
+            <a class="my-btn my-basic-btn my-2 ml-auto last-exchanges-btn"  data-toggle="modal" data-target="#last-exchanges-modal">
+            مبادلات اخیر</a>
+
     </div>
     <div class="exchange-wrapper all-offers my-3">
         <h2 class="text-center mb-4 mt-2">مبادلات موجود در بازار</h2>
@@ -53,6 +57,7 @@
     </div>
 </div>
 {% include 'modal/add_exchange.html' with modal_id="add_exchange_modal" modal_md="True" %}
+{% include 'modal/last_exchanges_modal.html' with modal_id="last-exchanges-modal" modal_md="True" %}
 {% endblock game_base_content %}
 {% block game_base_scripts %}
 <script src="{% static 'scripts/kabaramadalapeste/exchange.js' %}"></script>

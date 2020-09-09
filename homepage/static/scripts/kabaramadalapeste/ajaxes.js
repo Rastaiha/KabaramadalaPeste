@@ -109,6 +109,10 @@ function get_my_offers() {
     return $.ajax("/game/get_my_offers/");
 }
 
+function get_recent_transactions() {
+    return $.ajax("/game/get_recent_transactions/");
+}
+
 function delete_offer(pk) {
     return $.ajax({
         method: "POST",

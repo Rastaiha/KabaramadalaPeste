@@ -465,7 +465,7 @@ def get_all_offers(request):
 def get_recent_transactions(request):
     try:
         data = {'offers': []}
-        for trade_offer in TradeOffer.objects.filter(status__exact=settings.GAME_OFFER_ACCEPTED).order_by('close_datetime').all()[0:20]:
+        for trade_offer in TradeOffer.objects.filter(status__exact=settings.GAME_OFFER_ACCEPTED).order_by('-close_datetime').all()[0:20]:
             data['offers'].append(trade_offer.to_dict())
         return JsonResponse(data)
     except Exception as e:

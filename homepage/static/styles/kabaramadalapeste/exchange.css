@@ -1,8 +1,10 @@
 .exchange-wrapper {
   width: 100%;
   background: #ddd;
-  border-radius: 20px;
+  border-radius: 15px;
   padding: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15), 0 1px 3px rgba(0, 0, 0, 0.25);
+  border: 2px solid #666;
 }
 
 .exchange-wrapper h2 {
@@ -30,6 +32,7 @@
   padding: 15px 10px;
   border-radius: 10px;
   margin-bottom: 10px;
+  display: grid;
 }
 
 .exchange-section span {
@@ -145,15 +148,41 @@
   display: none;
 }
 
+.last-exchanges-item-img,
 .offer-user-img {
   display: block;
   margin: 0 auto 10px;
   background-color: white;
   width: 60px;
   border-radius: 50%;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15), 0 1px 3px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15), 0 1px 3px rgba(0, 0, 0, 0.25), inset 0px 0px 5px rgba(0,0,0,.5);
+  border: 3px solid #ccc;
 }
 
 .acc-offer .delete-offer {
   display: none;
+}
+
+.last-exchanges-list {
+  padding: 0;
+  list-style: none;
+}
+
+.last-exchanges-list li {
+  padding: 10px;
+  border: 1px solid #aaa;
+  border-radius: 3px;
+}
+
+@media (max-width: 500px) {
+  .mob-no-pad {
+    padding: 7px;
+  }
+  .exchange-section {
+    padding: 13px 3px;
+  }
+  .offer-item-number {
+    font-size: 25px;
+    line-height: 25px;
+  }
 }

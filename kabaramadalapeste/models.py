@@ -485,6 +485,9 @@ class TradeOffer(models.Model):
             'creator_participant_username': self.creator_participant.team.name,
             'creator_participant_picture_url': self.creator_participant.picture_url
         }
+        if self.accepted_participant:
+            dic['acceptor_participant_username'] = self.accepted_participant.team.name
+            dic['acceptor_participant_picture_url'] = self.accepted_participant.picture_url
         for offer_item in self.suggested_items.all():
             dic['suggested_' + offer_item.property_type] = offer_item.amount
         for offer_item in self.requested_items.all():
