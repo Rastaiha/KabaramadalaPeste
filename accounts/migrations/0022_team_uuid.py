@@ -5,8 +5,8 @@ import uuid
 
 
 def gen_uuid(apps, schema_editor):
-    participant = apps.get_model('accounts', 'Participant')
-    for row in participant.objects.all():
+    teams = apps.get_model('accounts', 'Team')
+    for row in teams.objects.all():
         row.uuid = uuid.uuid4()
         row.save(update_fields=['uuid'])
 
