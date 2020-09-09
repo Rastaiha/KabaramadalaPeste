@@ -327,8 +327,8 @@ class ParticipantIslandStatus(models.Model):
             return
         all_island_questions = set(self.island.challenge.questions.values_list('id'))
         got_this_challenge_questions = set(ParticipantIslandStatus.objects.filter(
-            participant=self.participant,
-            island__challenge=self.island.challenge
+            participant__team=self.participant.team,
+            island__challenge=self.island.challenge,
         ).exclude(island=self.island).values_list('question_object_id'))
         valid_question_ids = all_island_questions.difference(got_this_challenge_questions)
         if not valid_question_ids:
