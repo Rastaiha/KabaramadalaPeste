@@ -113,7 +113,9 @@ class Participant(models.Model):
     @property
     def picture_url(self):
         try:
-            pic = self.team.picture if self.team.picture else 'picture/user_default.png'
+            pic = 'picture/user_default.png'
+            if self.team:
+                pic = self.team.picture if self.team.picture else 'picture/user_default.png'
             return get_thumbnailer(pic)['avatar'].url
         except Exception:
             return ''
@@ -718,6 +720,15 @@ class Team(models.Model):
     group_name = models.CharField(max_length=30, blank=True)
     active = models.BooleanField(default=False)
     picture = ThumbnailerImageField(upload_to='picture', default="picture/user_default.png")
+
+    @property
+    def name(self):
+        try:
+            if self.group_name:
+                return self.group_name
+            return 'شماره ' + self.id
+        except Exception:
+            return ''
 
     def __str__(self):
         s = str(self.id) + "-" +self.group_name + " ("

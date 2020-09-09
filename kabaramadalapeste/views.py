@@ -144,7 +144,7 @@ class ParticipantInfoView(View):
                 )
                 currently_anchored = pis.currently_anchored
             return JsonResponse({
-                'username': request.user.username,
+                'username': request.user.participant.team.name,
                 'picture_url': request.user.participant.picture_url,
                 'did_won_peste': request.user.participant.did_won_peste(),
                 'current_island_id': current_island_id,
@@ -765,6 +765,8 @@ def exchange(request):
 @game_running_required
 @login_activated_participant_required
 def team(request):
+    if request.user.participant.team is None:
+        return redirect('kabaramadalapeste:game')
     ptrticipants = Participant.objects.filter(team=request.user.participant.team)
     names=[]
     properties_dict = {}
@@ -776,7 +778,6 @@ def team(request):
             else:
                 properties_dict[key] += ptrticipant_dict[key]
         names.append(str(ptrticipant))
-
     return render(request, 'kabaramadalapeste/team.html', {
         'without_nav': True,
         'without_footer': True,

@@ -482,7 +482,7 @@ class TradeOffer(models.Model):
     def to_dict(self):
         dic = {
             'pk': self.pk,
-            'creator_participant_username': self.creator_participant.member.username,
+            'creator_participant_username': self.creator_participant.team.name,
             'creator_participant_picture_url': self.creator_participant.picture_url
         }
         for offer_item in self.suggested_items.all():
