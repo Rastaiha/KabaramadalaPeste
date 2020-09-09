@@ -1,0 +1,15 @@
+{% extends 'kabaramadalapeste/base.html' %}
+{% load static %}
+{% block game_base_styles %}
+<link rel="stylesheet" href="{% static 'styles/kabaramadalapeste/team.css' %}" />
+{% endblock game_base_styles %}
+{% block game_base_content %}
+<div class="container">
+    <div>
+        <a class="my-btn my-2" href="{% url 'kabaramadalapeste:game' %}">بازگشت به نقشه</a>
+    </div>
+    
+</div>
+{% endblock game_base_content %}
+{% block game_base_scripts %}
+{% endblock game_base_scripts %}

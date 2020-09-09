@@ -762,6 +762,15 @@ def exchange(request):
     })
 
 
+@game_running_required
+@login_activated_participant_required
+def team(request):
+    return render(request, 'kabaramadalapeste/team.html', {
+        'without_nav': True,
+        'without_footer': True,
+    })
+
+
 @login_activated_participant_required
 def stat_page(request):
     return render(request, 'kabaramadalapeste/stat.html', {
