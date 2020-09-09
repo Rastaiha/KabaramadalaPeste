@@ -18,6 +18,7 @@ from collections import defaultdict
 import logging
 import random
 import re
+import uuid
 from easy_thumbnails.fields import ThumbnailerImageField
 logger = logging.getLogger(__file__)
 
@@ -716,6 +717,7 @@ class NotificationData(models.Model):
 
 class Team(models.Model):
     group_name = models.CharField(max_length=30, blank=True)
+    uuid = models.UUIDField(unique=True, default=uuid.uuid4, editable=False)
     active = models.BooleanField(default=False)
     picture = ThumbnailerImageField(upload_to='picture', default="picture/user_default.png")
 
