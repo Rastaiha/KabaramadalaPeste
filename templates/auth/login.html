@@ -26,16 +26,7 @@
         </button>
     </div>
 </div>
-{#<div class="text-center pt-3 pb-2">#}
-{#    <span style="color:#777">#}
-{#        فراموشی#}
-{#    </span>#}
-{##}
-{#    <a href="/panel/user/forgot_password/">#}
-{#        رمز عبور#}
-{#    </a>#}
-{#</div>#}
-
+{% if site_config.is_signup_enabled %}
 <div class="text-center pb-1">
     <span style="color:#777">
         ساختن حساب کاربری -
@@ -45,4 +36,5 @@
         ثبت‌نام
     </a>
 </div>
+{% endif %}
 {% endblock auth_form %}
