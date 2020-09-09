@@ -1,6 +1,8 @@
 .footer {
     background: #2F2F31;
     color: blanchedalmond;
+    position: relative;
+    z-index: 1;
 }
 
 .without_footer .footer {
