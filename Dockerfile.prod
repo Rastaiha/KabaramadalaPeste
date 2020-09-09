@@ -9,12 +9,17 @@ ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
 RUN apk add --no-cache --virtual .build-deps gcc musl-dev
-
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.ustc.edu.cn/g' /etc/apk/repositories
 # install python-dev
-RUN apk update \
-    && apk add --virtual .build-deps gcc libc-dev libxslt-dev \
-    && apk add --no-cache libxslt \
-    && pip install lxml==4.5.0
+#RUN apk update \
+#    && apk add --virtual .build-deps gcc libc-dev libxslt-dev
+#    && apk add --no-cache libxslt \
+#    && pip install lxml==4.5.0
+
+RUN apk update
+
+RUN  apk add --virtual .build-deps gcc libc-dev libxslt-dev \
+    && apk add libffi-dev openssl-dev
 
 # install psycopg2
 RUN apk update \
