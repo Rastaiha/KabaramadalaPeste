@@ -1,0 +1,52 @@
+{% load static %}
+<nav class="navbar navbar-expand-lg my-nav fixed-top rtl-nav">
+    <div class="container">
+        <a class="navbar-brand" href="/" style="position: relative">
+            <div class="nav-logo rasta-logo">
+                <img src="{% static 'images/logo.png' %}" alt="rasta">
+            </div>
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav ml-auto">
+                
+            </ul>
+            <ul class="navbar-nav mr-auto">
+                {% if user.is_authenticated %}
+                {% if site_config.is_game_running %}
+                {% if user.is_participant %}
+                {% if user.participant.is_activated and user.participant.document_status == 'Verified' %}
+                <li class="nav-item">
+                    <a class="nav-link hover-shadow" href="{% url 'kabaramadalapeste:game' %}">بازی</a>
+                </li>
+                {% endif %}
+                {% endif %}
+                {% elif site_config.is_game_over %}
+                {% if user.is_participant %}
+                {% if user.participant.is_activated and user.participant.document_status == 'Verified' %}
+                <li class="nav-item">
+                    <a href="#" class="nav-link hover-shadow show-stat">مشاهده کارنامه</a>
+                </li>
+                {% endif %}
+                {% endif %}
+                {% endif %}
+                <li class="nav-item">
+                    <a class="nav-link hover-shadow {% if request.path == '/accounts/logout/' %} activate {% endif %}"
+                        href="{% url 'accounts:logout' %}">خروج</a>
+                </li>
+                {% if site_config.is_signup_enabled %}
+                {% endif %}
+                {% else %}
+                <li class="nav-item">
+                    <a class="nav-link hover-shadow {% if request.path == '/accounts/login/' %} activate {% endif %}"
+                        href="{% url 'accounts:login' %}">ورود</a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>
