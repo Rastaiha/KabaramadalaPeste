@@ -91,7 +91,7 @@ class Participant(models.Model):
     city = models.CharField(max_length=40)
     document = models.ImageField(upload_to='documents/')
     gender = models.CharField(max_length=10, default=Gender.Man, choices=[(tag.value, tag.name) for tag in Gender])
-    phone_number = models.CharField(max_length=12, blank=True, null=True)
+    phone_number = models.CharField(max_length=15, blank=True, null=True)
     is_activated = models.BooleanField(default=False)
     team = models.ForeignKey('Team', models.SET_NULL, blank=True, null=True)
     document_status = models.CharField(max_length=30,
