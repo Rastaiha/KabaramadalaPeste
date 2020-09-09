@@ -1,5 +1,10 @@
-.first-page-back{
-    height: 100vh;
+.summer-first {
+  z-index: 1;
+  position: relative;
+}
+
+.first-page-back {
+  height: 100vh;
   position: fixed;
   top: 0;
   left: 0;
@@ -112,7 +117,7 @@
   text-decoration: none;
 }
 
-.signup-btn {
+.go-to-game-btn {
   display: block;
   background: #34aa05;
   border: 1px solid #34aa05;
@@ -125,7 +130,7 @@
   text-align: center;
 }
 
-.signup-btn .full-capacity {
+.go-to-game-btn .full-capacity {
   position: absolute;
   top: -45px;
   transform: rotate(20deg);
@@ -140,8 +145,8 @@
   font-weight: 900;
 }
 
-.signup-btn:hover,
-.signup-btn:focus {
+.go-to-game-btn:hover,
+.go-to-game-btn:focus {
   cursor: pointer;
   background: white;
   color: #10a6ce;
@@ -153,7 +158,7 @@
     font-size: 24px;
   }
 
-  .signup-btn {
+  .go-to-game-btn {
     font-size: 24px;
   }
 }
