@@ -462,6 +462,19 @@ def get_all_offers(request):
 
 @game_running_required
 @login_activated_participant_required
+def get_recent_transactions(request):
+    try:
+        data = {'offers': []}
+        for trade_offer in TradeOffer.objects.filter(status__exact=settings.GAME_OFFER_ACCEPTED).order_by('close_datetime').all()[0:20]:
+            data['offers'].append(trade_offer.to_dict())
+        return JsonResponse(data)
+    except Exception as e:
+        logger.error(e, exc_info=True)
+        return default_error_response
+
+
+@game_running_required
+@login_activated_participant_required
 def get_my_offers(request):
     try:
         data = {'offers': []}
