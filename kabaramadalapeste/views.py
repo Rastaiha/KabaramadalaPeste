@@ -143,8 +143,11 @@ class ParticipantInfoView(View):
                     island=request.user.participant.currently_at_island
                 )
                 currently_anchored = pis.currently_anchored
+            usernaeme = ''
+            if request.user.participant.team:
+                username = request.user.participant.team.name
             return JsonResponse({
-                'username': request.user.username,
+                'username': username,
                 'picture_url': request.user.participant.picture_url,
                 'did_won_peste': request.user.participant.did_won_peste(),
                 'current_island_id': current_island_id,
@@ -778,6 +781,8 @@ def exchange(request):
 @game_running_required
 @login_activated_participant_required
 def team(request):
+    if request.user.participant.team is None:
+        return redirect('kabaramadalapeste:game')
     ptrticipants = Participant.objects.filter(team=request.user.participant.team)
     names=[]
     properties_dict = {}
@@ -789,12 +794,12 @@ def team(request):
             else:
                 properties_dict[key] += ptrticipant_dict[key]
         names.append(str(ptrticipant))
-
     return render(request, 'kabaramadalapeste/team.html', {
         'without_nav': True,
         'without_footer': True,
         'team': {
             'name': request.user.participant.team.group_name,
+            'uuid': request.user.participant.team.uuid,
             'img': request.user.participant.picture_url,
             'members': names,
             'properties': properties_dict
@@ -839,16 +844,18 @@ def set_picture(request):
         form = ProfilePictureUploadForm(request.POST, request.FILES)
         if not form.is_valid():
             return redirect('kabaramadalapeste:game')
-        request.user.participant.team.picture = form.cleaned_data['picture']
-        request.user.participant.team.save()
+        if request.user.participant.team:
+            request.user.participant.team.picture = form.cleaned_data['picture']
+            request.user.participant.team.save()
     return redirect('kabaramadalapeste:game')
 
 
 @login_activated_participant_required
 def set_team_name(request):
     if request.method == 'POST':
-        request.user.participant.team.group_name = request.POST.get('name')
-        request.user.participant.team.save()
+        if request.user.participant.team:
+            request.user.participant.team.group_name = request.POST.get('name')
+            request.user.participant.team.save()
     return redirect('kabaramadalapeste:team')
 
 
