@@ -299,6 +299,11 @@ class CustomNotificationAdmin(NotificationAdmin):
     )
     search_fields = ('recipient__username', 'description', 'data')
 
+class TeamAdmin(admin.ModelAdmin):
+    list_display = (
+        'group_name', 'active'
+    )
+
 
 admin.site.unregister(Notification)
 admin.site.register(Notification, CustomNotificationAdmin)
@@ -306,3 +311,5 @@ admin.site.register(Member, MemberAdmin)
 # admin.site.register(Participant)
 admin.site.register(Judge)
 admin.site.register(PaymentAttempt, PaymentAttemptAdmin)
+
+admin.site.register(Team, TeamAdmin)

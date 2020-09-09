@@ -18,6 +18,7 @@ from collections import defaultdict
 import logging
 import random
 import re
+import uuid
 from easy_thumbnails.fields import ThumbnailerImageField
 logger = logging.getLogger(__file__)
 
@@ -86,7 +87,6 @@ class Participant(models.Model):
         pass
 
     member = models.OneToOneField(Member, related_name='participant', on_delete=models.CASCADE)
-    picture = ThumbnailerImageField(upload_to='picture', default="picture/user_default.png")
     school = models.CharField(max_length=200)
     city = models.CharField(max_length=40)
     document = models.ImageField(upload_to='documents/')
@@ -114,7 +114,9 @@ class Participant(models.Model):
     @property
     def picture_url(self):
         try:
-            pic = self.picture if self.picture else 'picture/user_default.png'
+            pic = 'picture/user_default.png'
+            if self.team:
+                pic = self.team.picture if self.team.picture else 'picture/user_default.png'
             return get_thumbnailer(pic)['avatar'].url
         except Exception:
             return ''
@@ -717,7 +719,18 @@ class NotificationData(models.Model):
 
 class Team(models.Model):
     group_name = models.CharField(max_length=30, blank=True)
+    uuid = models.UUIDField(unique=True, default=uuid.uuid4, editable=False)
     active = models.BooleanField(default=False)
+    picture = ThumbnailerImageField(upload_to='picture', default="picture/user_default.png")
+
+    @property
+    def name(self):
+        try:
+            if self.group_name:
+                return self.group_name
+            return 'شماره ' + self.id
+        except Exception:
+            return ''
 
     def __str__(self):
         s = str(self.id) + "-" +self.group_name + " ("

@@ -16,8 +16,11 @@ class ParticipantsDataCache:
     def calc_data(cls):
         data = {}
         for par in Participant.objects.filter(is_activated=True, document_status='Verified').exclude(currently_at_island__isnull=True):
+            un = ''
+            if par.team:
+                un = par.team.name
             data[par.pk] = {
-                'un': par.member.username,
+                'un': un,
                 'pp': par.picture_url,
                 'ii': par.currently_at_island.island_id if par.currently_at_island else None
             }

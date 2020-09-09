@@ -128,6 +128,7 @@
   transition: 0.5s;
   font-weight: 800;
   text-align: center;
+  direction: rtl;
 }
 
 .go-to-game-btn .full-capacity {
@@ -220,11 +221,11 @@ p {
 
 @keyframes logo_kabar {
   0% {
-    background: #420A6B;
+    background: #420a6b;
   }
 
   70% {
-    background: #420A6B;
+    background: #420a6b;
   }
 }
 

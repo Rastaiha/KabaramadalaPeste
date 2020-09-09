@@ -1,158 +1,159 @@
 .exchange-wrapper {
-    width: 100%;
-    background: #ddd;
-    border-radius: 20px;
-    padding: 10px;
+  width: 100%;
+  background: #ddd;
+  border-radius: 20px;
+  padding: 10px;
 }
 
 .exchange-wrapper h2 {
-    font-size: 30px;
-    font-weight: 800;
+  font-size: 30px;
+  font-weight: 800;
 }
 
 .exchanges-list {
-    max-height: 75vh;
-    overflow: auto
+  max-height: 75vh;
+  overflow: auto;
+  margin-top: 10px;
 }
 
 .exchange-card {
-    background: #333;
-    padding: 10px;
-    border-radius: 10px;
-    color: white;
-    text-align: center;
-    margin-top: 10px;
+  background: #333;
+  padding: 10px;
+  border-radius: 10px;
+  color: white;
+  text-align: center;
+  margin-top: 10px;
 }
 
 .exchange-section {
-    position: relative;
-    padding: 15px 10px;
-    border-radius: 10px;
-    margin-bottom: 10px;
+  position: relative;
+  padding: 15px 10px;
+  border-radius: 10px;
+  margin-bottom: 10px;
 }
 
 .exchange-section span {
-    color: #333;
-    font-size: 30px;
-    font-weight: 400;
+  color: #333;
+  font-size: 30px;
+  font-weight: 400;
 }
 
 .exchange-section b {
-    font-weight: 900;
+  font-weight: 900;
 }
 
 .exchange-section img {
-    height: 20px;
-    margin-left: 10px;
+  height: 20px;
+  margin-left: 10px;
 }
 
 .b-exchange {
-    background: rgb(77, 250, 71);
+  background: rgb(77, 250, 71);
 }
 
 .s-exchange {
-    background: rgb(250, 97, 97);
+  background: rgb(250, 97, 97);
 }
 
 .exchange-type {
-    position: absolute;
-    left: 5px;
-    top: 5px;
-    width: 20px;
-    height: 20px;
-    font-size: 20px;
-    line-height: 25px;
-    text-align: center;
-    border-radius: 50%;
-    background: white;
-    color: #333;
-    font-weight: 300;
+  position: absolute;
+  left: 5px;
+  top: 5px;
+  width: 20px;
+  height: 20px;
+  font-size: 20px;
+  line-height: 25px;
+  text-align: center;
+  border-radius: 50%;
+  background: white;
+  color: #333;
+  font-weight: 300;
 }
 
 .s-exchange .exchange-type {
-    font-size: 40px;
-    line-height: 26px;
-    font-weight: 200;
+  font-size: 40px;
+  line-height: 26px;
+  font-weight: 200;
 }
 
 .select-items-box {
-    position: relative;
-    padding: 10px;
-    border-radius: 10px;
-    margin-bottom: 10px;
+  position: relative;
+  padding: 10px;
+  border-radius: 10px;
+  margin-bottom: 10px;
 }
 
 .select-items-box h3 {
-    font-weight: 900;
-    font-size: 30px;
-    text-align: center;
-    color: white
+  font-weight: 900;
+  font-size: 30px;
+  text-align: center;
+  color: white;
 }
 
 .request-items {
-    background: rgb(65, 223, 59)
+  background: rgb(65, 223, 59);
 }
 
 .response-items {
-    background: rgb(250, 97, 97)
+  background: rgb(250, 97, 97);
 }
 
 .select-item input {
-    margin: auto;
-    width: 60px;
+  margin: auto;
+  width: 60px;
 }
 
 .select-item img {
-    margin: auto;
-    height: 30px;
+  margin: auto;
+  height: 30px;
 }
 
 .select-item {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 5px;
 }
 
 .select-item-header {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 5px;
 }
 
-.select-item-header>div {
-    margin: auto;
-    font-weight: 900;
-    font-size: 20px;
-    color: #eaeaea;
+.select-item-header > div {
+  margin: auto;
+  font-weight: 900;
+  font-size: 20px;
+  color: #eaeaea;
 }
 
 .template {
-    display: none
+  display: none;
 }
 
 .delete-offer {
-    background-color: var(--color-4);
+  background-color: var(--color-4);
 }
 
 .del-offer .accept-offer {
-    display: none;
+  display: none;
 }
 
 .del-offer .offer-username {
-    display: none;
+  display: none;
 }
 
 .offer-user-img {
-    display: block;
-    margin: 0 auto 10px;
-    background-color: white;
-    width: 60px;
-    border-radius: 50%;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15), 0 1px 3px rgba(0, 0, 0, 0.25);
+  display: block;
+  margin: 0 auto 10px;
+  background-color: white;
+  width: 60px;
+  border-radius: 50%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15), 0 1px 3px rgba(0, 0, 0, 0.25);
 }
 
 .acc-offer .delete-offer {
-    display: none;
+  display: none;
 }
