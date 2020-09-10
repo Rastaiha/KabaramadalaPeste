@@ -147,10 +147,10 @@ $(".right-info-btn").click(function() {
                 $(".player-info .right-info-details h3").text(
                     response.username
                 );
-                $(".player-propties").html("");
+                $(".player-info .player-propties").html("");
                 for (const key in response.properties) {
                     if (response.properties.hasOwnProperty(key)) {
-                        $(".player-propties").append(
+                        $(".player-info .player-propties").append(
                             '<div class="player-proprty"><span><b class="proprty-count">' +
                                 response.properties[key] +
                                 ' </b>×</span><img title="' +
