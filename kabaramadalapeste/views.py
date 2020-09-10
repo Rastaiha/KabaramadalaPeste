@@ -143,11 +143,8 @@ class ParticipantInfoView(View):
                     island=request.user.participant.currently_at_island
                 )
                 currently_anchored = pis.currently_anchored
-            usernaeme = ''
-            if request.user.participant.team:
-                username = request.user.participant.team.name
             return JsonResponse({
-                'username': username,
+                'username': request.user.participant.team_name,
                 'picture_url': request.user.participant.picture_url,
                 'did_won_peste': request.user.participant.did_won_peste(),
                 'current_island_id': current_island_id,

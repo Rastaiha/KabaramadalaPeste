@@ -121,6 +121,12 @@ class Participant(models.Model):
         except Exception:
             return ''
 
+    @property
+    def team_name(self):
+        if self.team:
+            return self.team.name
+        return ''
+
     def get_property(self, property_type):
         if self.properties.filter(property_type__exact=property_type).count() == 0:
             property_item = game_models.ParticipantPropertyItem.objects.create(
@@ -725,12 +731,9 @@ class Team(models.Model):
 
     @property
     def name(self):
-        try:
-            if self.group_name:
-                return self.group_name
-            return 'شماره ' + self.id
-        except Exception:
-            return ''
+        if self.group_name:
+            return self.group_name
+        return 'شماره ' + self.id
 
     def __str__(self):
         s = str(self.id) + "-" +self.group_name + " ("
