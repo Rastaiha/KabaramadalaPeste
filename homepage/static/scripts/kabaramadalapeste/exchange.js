@@ -137,9 +137,8 @@ $('.last-exchanges-btn').click(function () {
         }
         $('.last-exchanges-list').append(last_exchanges_item_template.html());
       });
-      console.log(response);
     })
-    .catch((err) => alert(err));
+    .catch(default_fail);
 });
 
 $('#prompt_modal_btn').click(function () {
