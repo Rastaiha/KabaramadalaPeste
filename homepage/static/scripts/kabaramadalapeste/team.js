@@ -11,7 +11,6 @@ const jitsiCofgi = {
     disableDeepLinking: true,
     prejoinPageEnabled: false,
     startAudioOnly: false,
-    startWithAudioMuted: true,
     startWithVideoMuted: true,
   },
   interfaceConfigOverwrite: {
@@ -21,7 +20,6 @@ const jitsiCofgi = {
     CONNECTION_INDICATOR_DISABLED: true,
     TOOLBAR_ALWAYS_VISIBLE: true,
     DEFAULT_BACKGROUND: '#eaeaea',
-    LANG_DETECTION: false,
     HIDE_INVITE_MORE_HEADER: true,
     DISPLAY_WELCOME_PAGE_CONTENT: false,
     GENERATE_ROOMNAMES_ON_WELCOME_PAGE: false,
@@ -30,6 +28,13 @@ const jitsiCofgi = {
     NATIVE_APP_NAME: 'Rasta Meet',
     MOBILE_APP_PROMO: false,
     PROVIDER_NAME: 'Rasta',
+    TOOLBAR_BUTTONS: [
+      'microphone', 'camera', 'closedcaptions', 'desktop', 'embedmeeting', 'fullscreen',
+      'fodeviceselection', 'profile', 'chat', 'recording',
+      'livestreaming', 'etherpad', 'sharedvideo', 'settings', 'raisehand',
+      'videoquality', 'filmstrip', 'invite', 'feedback', 'stats', 'shortcuts',
+      'tileview', 'videobackgroundblur', 'download', 'help', 'mute-everyone', 'security'
+  ],
   },
 };
 api = new JitsiMeetExternalAPI('meet.jit.si/r/', jitsiCofgi);
