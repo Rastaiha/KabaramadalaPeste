@@ -2,8 +2,8 @@ let data = {};
 
 function setOffers(response, isMyOffer = false) {
   response.offers.forEach((offer) => {
-    let offer_template = $('.offer-template');
-    let offer_item_template = $('.offer-item-template');
+    let offer_template = $('.offer-template').clone();
+    let offer_item_template = $('.offer-item-template').clone();
 
     offer_template
       .find('.offer-user-img')
@@ -93,8 +93,8 @@ $('.last-exchanges-btn').click(function () {
     .then((response) => {
       $('.last-exchanges-list').html('');
       response.offers.forEach((offer) => {
-        var last_exchanges_item_template = $('.last-exchanges-item-template');
-        var offer_item_template = $('.offer-item-template');
+        var last_exchanges_item_template = $('.last-exchanges-item-template').clone();
+        var offer_item_template = $('.offer-item-template').clone();
         last_exchanges_item_template
           .find('.last-exchanges-s .last-exchanges-item-img')
           .attr('src', offer.creator_participant_picture_url);
