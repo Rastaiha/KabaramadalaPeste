@@ -1,5 +1,6 @@
 $(window).on('resize', function () {
-  if ($(document.activeElement).attr('type') !== 'text') {
+  var focusedItemType = $(document.activeElement).attr('type');
+  if (focusedItemType !== 'text' && focusedItemType !== 'number') {
     $('#resize_modal').modal();
   }
 });
