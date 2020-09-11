@@ -790,7 +790,7 @@ def team(request):
                 properties_dict[key] = ptrticipant_dict[key]
             else:
                 properties_dict[key] += ptrticipant_dict[key]
-        names.append(str(ptrticipant))
+        names.append(ptrticipant.member.first_name)
     return render(request, 'kabaramadalapeste/team.html', {
         'without_nav': True,
         'without_footer': True,
