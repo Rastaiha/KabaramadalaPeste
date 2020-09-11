@@ -8,7 +8,8 @@ from django.urls import path, reverse
 from django.shortcuts import redirect
 from django.http import HttpResponse
 from homepage.models import *
-from accounts.models import Participant
+from accounts.models import Participant, Team
+from django.db.models import Q, Sum
 
 
 class SiteConfigAdmin(SingletonModelAdmin):
@@ -26,11 +27,13 @@ class SiteConfigAdmin(SingletonModelAdmin):
         return custom_urls + urls
 
     def download_scoreboard(self, request, *args, **kwargs):
-        s = 'نام و نام خوانوادگی,یوزرنیم,مدرسه,شهر,سکه\n'
-        for participant in Participant.objects.filter(document_status='Verified', is_activated=True).all():
-            s += '%s,%s,%s,%s,%d\n' % \
-                 (participant.member.first_name, participant.member.username, participant.school, participant.city,
-                  participant.sekke.amount)
+        s = 'نام تیم,آیدی تیم,سکه\n'
+        teams = Team.objects.all().values("id", "group_name").annotate(
+            sum_coin=Sum('participant__properties__amount', filter=Q(participant__properties__property_type="SK"))
+        ).order_by('-sum_coin')
+
+        for team in teams:
+            s += '%s,%d,%d\n' % (team['group_name'], team['id'], team['sum_coin'] if team['sum_coin'] else 0)
         response = HttpResponse(s, content_type="text/csv")
         response['Content-Disposition'] = 'inline; filename=scoreboard.csv'
         return response
