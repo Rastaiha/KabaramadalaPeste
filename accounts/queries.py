@@ -17,3 +17,10 @@ def get_number_of_bully_of_each_team():
     return Team.objects.all().values("id", "group_name").annotate(
         sum_BLY=Count('participant__logs__id', filter=Q(participant__logs__event_type="Bully target"))
     ).order_by('-sum_BLY')
+
+
+def get_number_of_kheftgiri_of_each_team():
+    return Team.objects.all().values("id", "group_name").annotate(
+        count_BLY=Count('participant__member__notifications__id',
+                        filter=Q(participant__member__notifications__verb="sb_fall_in_your_bully"))
+    ).order_by('-count_BLY')
