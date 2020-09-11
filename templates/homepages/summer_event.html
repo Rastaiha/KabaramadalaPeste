@@ -13,7 +13,11 @@
 <div class="first-page-back"></div>
 <div class="first-page full-page-center-item summer-first">
     <div class="container">
-        <h1 class="text-center mb-5 transparent-text" style="direction: rtl">بازی شروع شد!!!</h1>
+        {% if site_config.is_game_over %}
+            <h1 class="text-center mb-5 transparent-text" style="direction: rtl">بازی تموم شد:(</h1>
+        {% else %}
+            <h1 class="text-center mb-5 transparent-text" style="direction: rtl">بازی شروع شد!!!</h1>
+        {% endif %}
         <div class="center-container my-4">
             <a href='{% url 'kabaramadalapeste:game' %}'  class="go-to-game-btn ml-1">بزن بریم!</a>
         </div>
