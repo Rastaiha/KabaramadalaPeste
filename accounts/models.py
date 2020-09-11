@@ -733,7 +733,7 @@ class Team(models.Model):
     def name(self):
         if self.group_name:
             return self.group_name
-        return 'شماره ' + self.id
+        return 'شماره ' + str(self.id)
 
     def __str__(self):
         s = str(self.id) + "-" +self.group_name + " ("
