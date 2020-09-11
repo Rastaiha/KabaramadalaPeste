@@ -780,17 +780,17 @@ def exchange(request):
 def team(request):
     if request.user.participant.team is None:
         return redirect('kabaramadalapeste:game')
-    ptrticipants = Participant.objects.filter(team=request.user.participant.team)
+    participants = Participant.objects.filter(team=request.user.participant.team)
     names=[]
     properties_dict = {}
-    for ptrticipant in ptrticipants:
-        ptrticipant_dict = {prop.property_type: prop.amount for prop in ptrticipant.properties.all()}
-        for key in ptrticipant_dict:
+    for participant in participants:
+        participant_dict = {prop.property_type: prop.amount for prop in participant.properties.all()}
+        for key in participant_dict:
             if key not in properties_dict:
-                properties_dict[key] = ptrticipant_dict[key]
+                properties_dict[key] = participant_dict[key]
             else:
-                properties_dict[key] += ptrticipant_dict[key]
-        names.append(ptrticipant.member.first_name)
+                properties_dict[key] += participant_dict[key]
+        names.append(participant.member.first_name)
     return render(request, 'kabaramadalapeste/team.html', {
         'without_nav': True,
         'without_footer': True,
