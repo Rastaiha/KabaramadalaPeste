@@ -14,5 +14,7 @@
 ## Initial commands
 
 - `python3 manage.py import_game_data`
+  - inits islands, challenges & ...
 - `python3 manage.py init_pis`
   - add all questions before running this command
+  - inits participants status & assigns questions to them
