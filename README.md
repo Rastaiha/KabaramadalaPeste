@@ -15,3 +15,4 @@
 
 - `python3 manage.py import_game_data`
 - `python3 manage.py init_pis`
+  - add all questions before running this command
