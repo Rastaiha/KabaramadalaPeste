@@ -32,7 +32,7 @@ def import_judgeables(out, path):
                 ).save()
                 counter += 1
         except e:
-            pass
+            print(e)
 
 
 class Command(BaseCommand):
