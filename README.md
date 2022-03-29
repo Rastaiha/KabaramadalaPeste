@@ -11,6 +11,6 @@
 - `python3 manage.py runserver`
 
 
-## initial commands
+## Initial commands
 
-- `python manage.py import_game_data`
+- `python3 manage.py import_game_data`
