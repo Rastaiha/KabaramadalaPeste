@@ -13,4 +13,4 @@
 
 ## initial commands
 
-- `python manage.py import_game_data
+- `python manage.py import_game_data`
