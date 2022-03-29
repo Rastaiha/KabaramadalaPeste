@@ -18,3 +18,6 @@
 - `python3 manage.py init_pis`
   - add all questions before running this command
   - inits participants status & assigns questions to them
+
+## Islands Ids
+![image](https://user-images.githubusercontent.com/79265051/160621775-b4a716c4-2ecb-40cb-8d47-3617cedceb59.png)
