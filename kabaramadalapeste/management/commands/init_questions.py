@@ -31,7 +31,7 @@ def import_judgeables(out, path):
                     challenge=Challenge.objects.filter(challenge_id=question_id)[0]
                 ).save()
                 counter += 1
-        except e:
+        except:
             print(e)
 
 
