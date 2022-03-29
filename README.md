@@ -16,6 +16,7 @@
 - `python3 manage.py import_game_data`
   - Inits islands, challenges & ...
   - Initialization files are in "initial_data" folder
+- `python3 manage.py init_questions`
 - `python3 manage.py init_pis`
   - Add all questions before running this command
   - Inits participants' status & assigns questions to them
