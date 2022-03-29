@@ -14,3 +14,4 @@
 ## Initial commands
 
 - `python3 manage.py import_game_data`
+- `python3 manage.py init_pis`
