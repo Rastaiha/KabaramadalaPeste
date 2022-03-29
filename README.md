@@ -20,7 +20,7 @@
   - add all questions before running this command
   - inits participants status & assigns questions to them
 - `python3 manage.py add_new_peste [Island_Id]`
-  - Islands "peste"s are initialized by the "islands.csv" (when has_peste is 1, that island will have peste)
+  - Islands "peste"s are initialized by "islands.csv" in "initial_data" folder. When has_peste is 1, that island will have "peste"
   - use this command just when you need to add additional "peste"s 
 
 ## Islands Ids
