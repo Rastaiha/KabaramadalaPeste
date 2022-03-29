@@ -21,15 +21,18 @@ def import_judgeables(out, path):
     counter = 0
     for question_id in range(1, 36):
         directory = os.path.join(path, str(question_id))
-        for question_name in os.listdir(directory):
-            question_path = os.path.join(directory, question_name)
-            out.write(str(counter) + '. ' + question_path + ' copied')
-            JudgeableQuestion(
-                title=question_name,
-                question=question_path,
-                challenge=Challenge.objects.filter(challenge_id=question_id)[0]
-            ).save()
-            counter += 1
+        try:
+            for question_name in os.listdir(directory):
+                question_path = os.path.join(directory, question_name)
+                out.write(str(counter) + '. ' + question_path + ' copied')
+                JudgeableQuestion(
+                    title=question_name,
+                    question=question_path,
+                    challenge=Challenge.objects.filter(challenge_id=question_id)[0]
+                ).save()
+                counter += 1
+        except e:
+            pass
 
 
 class Command(BaseCommand):
