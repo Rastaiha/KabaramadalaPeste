@@ -55,7 +55,7 @@ class MemberResource(resources.ModelResource):
 
 
 class ParticipantInline(admin.StackedInline):
-    readonly_fields = ['document', 'gender', 'currently_at_island']
+    readonly_fields = ['document', 'currently_at_island']
     model = Participant
     # inlines = [ParticipantPropertyItemInline]
 
@@ -107,8 +107,8 @@ class MemberAdmin(ExportActionMixin, admin.ModelAdmin):
     list_display = ('username', 'real_name', 'get_city', 'get_school', 'is_active', 'get_is_paid', 'get_document_status',
                     'get_document', 'account_actions', 'get_has_seen_day1', 'get_has_seen_day2')
     list_filter = ('is_active', IsPaidFilter, IsVerifiedFilter)
-    readonly_fields = ['username', 'email']
-    fields = ['first_name', 'username', 'email', 'is_active', 'is_participant']
+    # readonly_fields = ['username', 'email']
+    # fields = ['first_name', 'username', 'email', 'is_active', 'is_participant']
     inlines = [ParticipantInline]
 
     def get_city(self, obj):
