@@ -21,7 +21,7 @@
   - Inits islands, challenges & ...
   - Initialization files are in "initial_data" folder
 - `python3 manage.py init_questions`
-  - Import questions from `/media/soals/Questions/Judgeable/i` (i in range(1,36))` 
+  - Import questions from `/media/soals/Questions/Judgeable/i` (i in range(1,36))
 - `python3 manage.py init_pis`
   - Add all questions before running this command
   - Inits participants' status & assigns questions to them
