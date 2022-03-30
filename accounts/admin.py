@@ -336,7 +336,7 @@ class TeamAdmin(admin.ModelAdmin):
 admin.site.unregister(Notification)
 admin.site.register(Notification, CustomNotificationAdmin)
 admin.site.register(Member, MemberAdmin)
-# admin.site.register(Participant)
+admin.site.register(Participant)
 admin.site.register(Judge)
 admin.site.register(PaymentAttempt, PaymentAttemptAdmin)
 
