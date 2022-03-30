@@ -109,7 +109,7 @@ class MemberAdmin(ExportActionMixin, admin.ModelAdmin):
     list_filter = ('is_active', IsPaidFilter, IsVerifiedFilter)
     # readonly_fields = ['username', 'email']
     # fields = ['first_name', 'username', 'email', 'is_active', 'is_participant']
-    inlines = [ParticipantInline]
+    # inlines = [ParticipantInline]
 
     def get_city(self, obj):
         try:
