@@ -2,7 +2,7 @@
 {% load static %}
 <html lang="en">
 
-<head>
+  <head>
     <meta charset="UTF-8">
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -25,7 +25,7 @@
     {% csrf_token %}
 
     <title>
-        {% block title %}رستایی‌ها{% endblock title %}
+      {% block title %}در جست‌و‌جوی آتلانتیس{% endblock title %}
     </title>
 
     <!-- Bootstrap -->
@@ -44,13 +44,13 @@
     <!-- FontAwesome -->
     <link rel='stylesheet' href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css">
     <style>
-        .fab {
-            font-family: "Font Awesome 5 Brands" !important;
-        }
+      .fab {
+        font-family: "Font Awesome 5 Brands" !important;
+      }
 
-        .fas {
-            font-family: "Font Awesome 5 Free" !important;
-        }
+      .fas {
+        font-family: "Font Awesome 5 Free" !important;
+      }
     </style>
 
     <!-- Custom Theme Style -->
@@ -61,36 +61,40 @@
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-160800151-1"></script>
     <script>
-        window.dataLayer = window.dataLayer || [];
+      window.dataLayer = window.dataLayer || [];
 
-        function gtag() {
-            dataLayer.push(arguments);
-        }
-        gtag('js', new Date());
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag('js', new Date());
 
-        gtag('config', 'UA-160800151-1');
+      gtag('config', 'UA-160800151-1');
     </script>
 
     {% block styles %}{% endblock %}
-</head>
+  </head>
 
-<body
+  <body
     class="{%if without_nav %} without-nav {% endif %} {%if without_footer %} without_footer {% endif %} {%if nol %} nol {% endif %} iranyekan">
     {% if messages %}
-    <ul class="back_messages">
+      <ul class="back_messages">
         {% for message in messages %}
-        <li{% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</li>
-            {% endfor %}
-    </ul>
+          <li{% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</li>
+        {% endfor %}
+      </ul>
     {% endif %}
 
-    {%if not without_nav %} {% include 'base/summer_nav.html' %}  {% endif %}
+    {%if not without_nav %}
+      {% include 'base/summer_nav.html' %}
+    {% endif %}
 
     <div class="base-content {% if not not_nav_padding %} nav-padding {% endif %}">
-        {% block base_content %}{% endblock %}
+      {% block base_content %}{% endblock %}
     </div>
 
-    {%if not without_footer %} {% include 'base/footer.html' %} {% endif %}
+    {%if not without_footer %}
+      {% include 'base/footer.html' %}
+    {% endif %}
 
     {% block modals %}{% endblock %}
     {% csrf_token %}
@@ -108,17 +112,19 @@
     {% block scripts %}{% endblock %}
 
     <script type="text/javascript">
-        window.$crisp = [];
-        window.CRISP_WEBSITE_ID = "e342ddf5-9fb9-4297-9927-4aab665c24cb";
-        (function () {
-            d = document;
-            s = d.createElement("script");
-            s.src = "https://client.crisp.chat/l.js";
-            s.async = 1;
-            d.getElementsByTagName("head")[0].appendChild(s);
-        })();
+      window.$crisp = [];
+      window.CRISP_WEBSITE_ID = "e342ddf5-9fb9-4297-9927-4aab665c24cb";
+      (function () {
+        d = document;
+        s = d.createElement("script");
+        s.src = "https://client.crisp.chat/l.js";
+        s.async = 1;
+        d
+          .getElementsByTagName("head")[0]
+          .appendChild(s);
+      })();
     </script>
 
-</body>
+  </body>
 
 </html>

@@ -109,7 +109,7 @@ class MemberAdmin(ExportActionMixin, admin.ModelAdmin):
     list_filter = ('is_active', IsPaidFilter, IsVerifiedFilter)
     # readonly_fields = ['username', 'email']
     # fields = ['first_name', 'username', 'email', 'is_active', 'is_participant']
-    inlines = [ParticipantInline]
+    # inlines = [ParticipantInline]
 
     def get_city(self, obj):
         try:
@@ -336,7 +336,7 @@ class TeamAdmin(admin.ModelAdmin):
 admin.site.unregister(Notification)
 admin.site.register(Notification, CustomNotificationAdmin)
 admin.site.register(Member, MemberAdmin)
-# admin.site.register(Participant)
+admin.site.register(Participant)
 admin.site.register(Judge)
 admin.site.register(PaymentAttempt, PaymentAttemptAdmin)
 

@@ -1,40 +1,40 @@
 {% extends 'auth/base.html' %}
 {% load static %}
 {% block auth_form %}
-<div class="row">
+  <div class="row">
     <h2 class="text-center col-md-12 my-4" style="font-weight: 800">
         ورود به مسابقه
     </h2>
 
     <div class="col-md-8 mx-auto my-3 material-input">
-        <input name="email" type="email" required>
-        <span class="highlight"></span>
-        <span class="bar"></span>
-        <label class="fa-input">ایمیل</label>
+      <input name="email" type="email" required>
+      <span class="highlight"></span>
+      <span class="bar"></span>
+      <label class="fa-input">ایمیل</label>
     </div>
 
     <div class="col-md-8 mx-auto my-3 material-input">
-        <input id="password" name="password" type="password" required>
-        <span class="highlight"></span>
-        <span class="bar"></span>
-        <label class="fa-input">گذرواژه</label>
+      <input id="password" name="password" type="password" required>
+      <span class="highlight"></span>
+      <span class="bar"></span>
+      <label class="fa-input">گذرواژه</label>
     </div>
 
     <div class="col-md-8 mx-auto my-3">
-        <button class="my-btn w-100" style="font-size: 20px">
+      <button class="my-btn w-100" style="font-size: 20px">
             ورود
         </button>
     </div>
-</div>
-{% if site_config.is_signup_enabled %}
-<div class="text-center pb-1">
-    <span style="color:#777">
+  </div>
+  {% if site_config.is_signup_enabled %}
+    <div class="text-center pb-1">
+      <span style="color:#777">
         ساختن حساب کاربری -
     </span>
 
-    <a href="{% url 'accounts:signup' %}">
+      <a href="{% url 'accounts:signup' %}">
         ثبت‌نام
     </a>
-</div>
-{% endif %}
+    </div>
+  {% endif %}v
 {% endblock auth_form %}
