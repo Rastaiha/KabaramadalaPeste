@@ -80,7 +80,7 @@ function set_click_listener(key, elem) {
                             my_prompt(
                                 "برای بیل‌زدن باید " +
                                     response.island_spade_cost +
-                                    " سکه بدی. می‌خوای این کارو بکنی؟",
+                                    " زیتون بدی. می‌خوای این کارو بکنی؟",
                                 "بیل‌زدن",
                                 {
                                     kind: "bill"

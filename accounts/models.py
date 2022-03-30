@@ -494,9 +494,9 @@ class Participant(models.Model):
     def send_msg_fall_in_bully(self, bully, amount):
         text = 'توی تله‌ی جاسازی شده توسط %s افتادی' % (bully.owner, )
         if amount < game_settings.GAME_BULLY_DAMAGE:
-            text += ' و چون پول کافی نداشتی ازت %d سکه کم شد.' % (amount, )
+            text += ' و چون پول کافی نداشتی ازت %d زیتون کم شد.' % (amount, )
         else:
-            text += ' و ازت %d سکه کم شد.' % (amount, )
+            text += ' و ازت %d زیتون کم شد.' % (amount, )
         notify.send(
             sender=Member.objects.filter(is_superuser=True).all()[0],
             recipient=self.member,
@@ -508,9 +508,9 @@ class Participant(models.Model):
     def send_msg_sb_fall_in_your_bully(self, bully, victim_participant, amount):
         text = '%s توی تله‌ی جاسازی شده در جزیره‌ی %s افتاد' % (victim_participant, bully.island.name)
         if amount < game_settings.GAME_BULLY_DAMAGE:
-            text += ' و چون پول کافی نداشت بهت %d سکه اضافه شد.' % (amount, )
+            text += ' و چون پول کافی نداشت بهت %d زیتون اضافه شد.' % (amount, )
         else:
-            text += ' و بهت %d سکه اضافه شد.' % (amount, )
+            text += ' و بهت %d زیتون اضافه شد.' % (amount, )
         notify.send(
             sender=Member.objects.filter(is_superuser=True).all()[0],
             recipient=self.member,
@@ -520,14 +520,14 @@ class Participant(models.Model):
         )
 
     def send_msg_bandargah_computed(self, investment, was_successful, total_investments):
-        text = 'کار امروز بندرگاه به پایان رسید! مجموع سرمایه‌گذاری‌ها %d سکه بود' % (total_investments, )
+        text = 'کار امروز بندرگاه به پایان رسید! مجموع سرمایه‌گذاری‌ها %d زیتون بود' % (total_investments, )
         if was_successful:
             gain = int(game_models.BandargahConfiguration.get_solo().profit_coefficient * investment.amount)
             text += ' که درون بازه‌ی سوددهی قرار گرفت'
         else:
             gain = int(game_models.BandargahConfiguration.get_solo().loss_coefficient * investment.amount)
             text += ' که درون بازه‌ی سوددهی قرار نگرفت'
-        text += ' و به تو %d سکه رسید.' % (gain, )
+        text += ' و به تو %d زیتون رسید.' % (gain, )
         notify.send(
             sender=Member.objects.filter(is_superuser=True).all()[0],
             recipient=self.member,

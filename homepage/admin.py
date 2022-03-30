@@ -27,7 +27,7 @@ class SiteConfigAdmin(SingletonModelAdmin):
         return custom_urls + urls
 
     def download_scoreboard(self, request, *args, **kwargs):
-        s = 'نام تیم,آیدی تیم,سکه\n'
+        s = 'نام تیم,آیدی تیم,زیتون\n'
         teams = Team.objects.all().values("id", "group_name").annotate(
             sum_coin=Sum('participant__properties__amount', filter=Q(participant__properties__property_type="SK"))
         ).order_by('-sum_coin')
