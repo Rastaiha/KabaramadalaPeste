@@ -8,6 +8,7 @@
 - `pip install -r requirements.txt`
 - `python3 manage.py migrate`
 - `python3 manage.py createsuperuser`
+  - execute initial commands before running server...
 - `python3 manage.py runserver`
 
 
