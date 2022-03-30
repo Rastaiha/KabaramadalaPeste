@@ -8,15 +8,20 @@
 - `pip install -r requirements.txt`
 - `python3 manage.py migrate`
 - `python3 manage.py createsuperuser`
+  - execute initial commands before running server...
 - `python3 manage.py runserver`
 
 
 ## Initial commands
 
+- `python3 manage.py create_participants`
+  - Dont forget to fill `/accounts/initial_data/participants.csv` with users data
 - `python3 manage.py import_game_data`
+  - Dont forget to correct islands name before running command
   - Inits islands, challenges & ...
   - Initialization files are in "initial_data" folder
 - `python3 manage.py init_questions`
+  - Import questions from `/media/soals/Questions/Judgeable/i` (i in range(1,36))
 - `python3 manage.py init_pis`
   - Add all questions before running this command
   - Inits participants' status & assigns questions to them
