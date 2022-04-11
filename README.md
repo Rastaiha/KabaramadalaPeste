@@ -1,5 +1,10 @@
 # KabaramadalaPeste
 
+## Game Instructions
+- [Kabaramadalapeste Instructions - Nowrooz 1399](https://docs.google.com/document/d/1LbDdLOMEeWAaU00YOF3T9lhyEolmmPGuuTY5WcfqWw8/edit?usp=drivesdk) | [pdf](https://github.com/Rastaiha/KabaramadalaPeste/files/8460883/default.pdf)
+
+- [Atlantis Instructions - Nowrooz 1401](https://docs.google.com/document/d/1PKA-TLBmFvmNnY1FKjy0_hVfYaMNxBC1XNULm_w2aDY/edit) | [pdf](https://github.com/Rastaiha/KabaramadalaPeste/files/8460887/default.pdf)
+
 ## Instalation
 
 - `git clone https://github.com/Rastaiha/KabaramadalaPeste`
