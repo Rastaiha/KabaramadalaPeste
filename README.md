@@ -5,6 +5,21 @@
 
 - [Atlantis Instructions - Nowrooz 1401](https://docs.google.com/document/d/1PKA-TLBmFvmNnY1FKjy0_hVfYaMNxBC1XNULm_w2aDY/edit) | [pdf](https://github.com/Rastaiha/KabaramadalaPeste/files/8460887/default.pdf)
 
+
+## Game Management
+Do all these things in the django admin panel:
+
+### At the game start
+- Check "Is Game Running" at Site configuration page
+- Check "Is Peste Available" at Peste configuration. Notice that at each time, only 1 peste can be available in the game. If peste is founed, you can add another peste by running add_new_peste command.
+
+### At the game end
+- Uncheck "Is Game Running" at Site configuration
+- Check "Is Game Over" at Site configuration
+- Do Bandargah processes at Bandargah configuration
+- Download scoreboard from Site configuration
+
+
 ## Instalation
 
 - `git clone https://github.com/Rastaiha/KabaramadalaPeste`
