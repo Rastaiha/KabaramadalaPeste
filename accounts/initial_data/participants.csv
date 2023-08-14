@@ -1,8 +1,8 @@
-username,email,password
-aaa,aaa@gmail.com,aaa
-bbb,bbb@gmail.com,bbb
-ccc,ccc@gmail.com,ccc
-ddd,ddd@gmail.com,ddd
-eee,eee@gmail.com,eee
-fff,fff@gmail.com,fff
-ggg,ggg@gmail.com,ggg
+username,email,password,group_name
+aaa,aaa@gmail.com,aaa,t1
+bbb,bbb@gmail.com,bbb,t1
+ccc,ccc@gmail.com,ccc,t2
+ddd,ddd@gmail.com,ddd,t2
+eee,eee@gmail.com,eee,t3
+fff,fff@gmail.com,fff,t3
+ggg,ggg@gmail.com,ggg,t4

@@ -1,7 +1,7 @@
 import csv
 from django.core.management.base import BaseCommand
 from django.db import transaction
-from accounts.models import Member, Participant
+from accounts.models import Member, Participant, Team
 from django.conf import settings
 import os
 import logging
@@ -20,6 +20,7 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         pass
 
+
     @transaction.atomic
     def handle(self, *args, **options):
         with open(self.participants_file, newline='') as csvfile:
@@ -35,10 +36,14 @@ class Command(BaseCommand):
                         email=row[1],
                     )
                     member.set_password(row[2])
+                    team, _ = Team.objects.create_or_get(group_name=row[3])
+                    team.active = True
+                    team.save()
                     participant = Participant.objects.create(
                         member=member,
                         document_status='Verified',
-                        is_activated=True
+                        is_activated=True,
+                        team=team,
                     )
                     member.save()
                     participant.save()
