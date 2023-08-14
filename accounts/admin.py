@@ -55,7 +55,7 @@ class MemberResource(resources.ModelResource):
 
 
 class ParticipantInline(admin.StackedInline):
-    readonly_fields = ['document', 'gender', 'currently_at_island']
+    readonly_fields = ['document', 'currently_at_island']
     model = Participant
     # inlines = [ParticipantPropertyItemInline]
 
@@ -108,9 +108,9 @@ class MemberAdmin(ExportActionMixin, admin.ModelAdmin):
                     'get_document', 'account_actions', 'get_has_seen_day1', 'get_has_seen_day2')
     list_filter = ('is_active', IsPaidFilter, IsVerifiedFilter)
     # readonly_fields = ['username', 'email']
-    fields = ['first_name', 'username', 'email', 'is_active', 'is_participant']
-    inlines = [ParticipantInline]
-
+    # fields = ['first_name', 'username', 'email', 'is_active', 'is_participant']
+    # inlines = [ParticipantInline]
+    #toDo tofff
     def get_city(self, obj):
         try:
             return obj.participant.city
@@ -300,9 +300,44 @@ class CustomNotificationAdmin(NotificationAdmin):
     search_fields = ('recipient__username', 'description', 'data')
 
 
+class TeamAdmin(admin.ModelAdmin):
+    model = Team
+    list_display = ['get_group_name', 'active', 'group_members_display', 'team_members_count', 'team_status',]
+
+    def get_group_name(self, obj):
+        name = str(obj.id) + "  " + str(obj.group_name)
+        return name
+
+    def group_members_display(self, obj):
+        display_text = ", ".join(["<span>{}</span>".format(member.member.email) for member in obj.participant_set.all()])
+        if display_text:
+            return mark_safe(display_text)
+        return "-"
+
+    def team_members_count(self, obj):
+        return obj.participant_set.all().count()
+
+    def team_status(self, obj):
+        accept_count = 0
+        for p in obj.participant_set.all():
+            if p.is_activated:
+                accept_count += 1
+        if accept_count == 0: return False
+        elif accept_count == obj.participant_set.all().count(): return True
+        else: return None
+
+    group_members_display.short_description = "اعضای تیم"
+    get_group_name.short_description = "تیم "
+    team_members_count.short_description = "تعداد اعضا"
+    team_status.short_description = "وضعیت قبولی تیم"
+    team_status.boolean = True
+
+
 admin.site.unregister(Notification)
 admin.site.register(Notification, CustomNotificationAdmin)
 admin.site.register(Member, MemberAdmin)
-# admin.site.register(Participant)
+admin.site.register(Participant)
 admin.site.register(Judge)
 admin.site.register(PaymentAttempt, PaymentAttemptAdmin)
+
+admin.site.register(Team, TeamAdmin)

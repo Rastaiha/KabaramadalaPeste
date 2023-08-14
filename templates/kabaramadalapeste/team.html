@@ -1,0 +1,122 @@
+{% extends 'kabaramadalapeste/base.html' %} {% load static %} {% block game_base_styles %}
+<link
+  rel="stylesheet"
+  href="{% static 'styles/kabaramadalapeste/team.css' %}"
+/>
+{% endblock game_base_styles %} {% block game_base_content %}
+<div class="container">
+  <div>
+    <a class="my-btn my-2" href="{% url 'kabaramadalapeste:game' %}"
+      >بازگشت به نقشه</a
+    >
+  </div>
+  <div
+    class="team-wrapper my-3 row"
+    style="position: relative; direction: rtl; text-align: right"
+  >
+    <div class="col-md-12">
+      <div
+        id="jitsi"
+        data-uuid="{{ team.uuid }}"
+        style="height: 300px; max-width: 500px; margin: 5px auto; border-radius: 10px; overflow: hidden"
+      ></div>
+    </div>
+    <div class="col-md-8">
+      {% if team.name %}
+      <h2 class="text-center mt-2">تیم {{ team.name }}</h2>
+      {% else %}
+      <form method="post" action="/game/set_team_name/">
+        {% csrf_token %}
+        <h2 class="text-center mt-2">برای تیمتون اسم انتخاب کنید:</h2>
+        <div class="mx-auto mt-2" style="width: fit-content">
+          <input name="name" placeholder="نام تیم" />
+          <button type="submit" class="my-btn">ثبت</button>
+        </div>
+      </form>
+      {% endif %}
+      <div class="row">
+        <div class="col-md-6">
+          <div class="team-users-list">
+            <label>اعضای تیم</label>
+            <ul>
+              {% for member in team.members %}
+              <li>{{ member }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="team-abilities-list" style="color: black">
+            <label>دارایی‌های تیم</label>
+            <div class="player-propties">
+              <div class="player-proprty">
+                <span
+                  ><b class="proprty-count">{{team.properties.SK|default:"0"}} </b>×</span
+                ><img title="زیتون" src="/static/images/game/coins.png" />
+              </div>
+              <div class="player-proprty">
+                <span
+                  ><b class="proprty-count">{{team.properties.K1|default:"0"}} </b>×</span
+                ><img title="طلایی" src="/static/images/game/key1.png" />
+              </div>
+              <div class="player-proprty">
+                <span
+                  ><b class="proprty-count">{{team.properties.K2|default:"0"}} </b>×</span
+                ><img title="آبی" src="/static/images/game/key2.png" />
+              </div>
+              <div class="player-proprty">
+                <span
+                  ><b class="proprty-count">{{team.properties.K3|default:"0"}} </b>×</span
+                ><img title="قرمز" src="/static/images/game/key3.png" />
+              </div>
+              <div class="player-proprty">
+                <span
+                  ><b class="proprty-count">{{team.properties.VIS|default:"0"}} </b>×</span
+                ><img title="بینش غیبی" src="/static/images/game/look.png" />
+              </div>
+              <div class="player-proprty">
+                <span
+                  ><b class="proprty-count">{{team.properties.TXP|default:"0"}} </b>×</span
+                ><img
+                  title="سفر اکسپرس"
+                  src="/static/images/game/attraction.png"
+                />
+              </div>
+              <div class="player-proprty">
+                <span
+                  ><b class="proprty-count">{{team.properties.CHP|default:"0"}} </b>×</span
+                ><img title="چالش پلاس" src="/static/images/game/problem.png" />
+              </div>
+              <div class="player-proprty">
+                <span
+                  ><b class="proprty-count">{{team.properties.BLY|default:"0"}} </b>×</span
+                ><img title="زورگیری" src="/static/images/game/trap.png" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="mx-auto mt-2" style="display: table">
+        <div>{% include 'kabaramadalapeste/flag.html' with img=team.img %}</div>
+        <div>
+          <a
+            class="my-btn edit-team-image"
+            style="
+              background: var(--color-5);
+              font-weight: 800;
+              font-size: 25px;
+            "
+          >
+            تغییر پرچم</a
+          >
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock game_base_content %} {% block game_base_scripts %}
+<script src="https://meet.jit.si/external_api.js"></script>
+<script src="{% static 'scripts/kabaramadalapeste/team.js' %}"></script>
+{% endblock game_base_scripts %}

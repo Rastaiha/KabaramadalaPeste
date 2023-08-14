@@ -17,6 +17,7 @@
             <form class="new-image-form" style="margin: auto; position: relative" method="post"
                 enctype="multipart/form-data" action="/game/set_picture/">
                 {% csrf_token %}
+                <input name="next_page" hidden value={{ request.get_full_path }} />
                 <input name="picture" class="new-image-input" type="file" accept="image/*" hidden />
                 <img class="player-info-image" />
                 <img class="edit-player-image" src="{% static 'images/game/edit2.png' %}" />

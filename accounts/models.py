@@ -18,6 +18,7 @@ from collections import defaultdict
 import logging
 import random
 import re
+import uuid
 from easy_thumbnails.fields import ThumbnailerImageField
 logger = logging.getLogger(__file__)
 
@@ -86,13 +87,13 @@ class Participant(models.Model):
         pass
 
     member = models.OneToOneField(Member, related_name='participant', on_delete=models.CASCADE)
-    picture = ThumbnailerImageField(upload_to='picture', default="picture/user_default.png")
     school = models.CharField(max_length=200)
     city = models.CharField(max_length=40)
     document = models.ImageField(upload_to='documents/')
     gender = models.CharField(max_length=10, default=Gender.Man, choices=[(tag.value, tag.name) for tag in Gender])
-    phone_number = models.CharField(max_length=12, blank=True, null=True)
+    phone_number = models.CharField(max_length=15, blank=True, null=True)
     is_activated = models.BooleanField(default=False)
+    team = models.ForeignKey('Team', models.SET_NULL, blank=True, null=True)
     document_status = models.CharField(max_length=30,
                                        default='Pending',
                                        choices=[(tag.value, tag.name) for tag in ParticipantStatus])
@@ -113,10 +114,18 @@ class Participant(models.Model):
     @property
     def picture_url(self):
         try:
-            pic = self.picture if self.picture else 'picture/user_default.png'
+            pic = 'picture/user_default.png'
+            if self.team:
+                pic = self.team.picture if self.team.picture else 'picture/user_default.png'
             return get_thumbnailer(pic)['avatar'].url
         except Exception:
             return ''
+
+    @property
+    def team_name(self):
+        if self.team:
+            return self.team.name
+        return ''
 
     def get_property(self, property_type):
         if self.properties.filter(property_type__exact=property_type).count() == 0:
@@ -268,17 +277,18 @@ class Participant(models.Model):
         return self.currently_at_island
 
     def move(self, dest_island):
+        active_expresses = game_models.AbilityUsage.objects.filter(
+            participant=self,
+            ability_type=game_settings.GAME_TRAVEL_EXPRESS,
+            is_active=True
+        ).all()
         if not self.currently_at_island:
             raise Participant.ParticipantIsNotOnIsland
-        if not self.currently_at_island.is_neighbor_with(dest_island):
-            raise game_models.Island.IslandsNotConnected
+        if active_expresses.count() == 0:
+            if not self.currently_at_island.is_neighbor_with(dest_island):
+                raise game_models.Island.IslandsNotConnected
 
         with transaction.atomic():
-            active_expresses = game_models.AbilityUsage.objects.filter(
-                participant=self,
-                ability_type=game_settings.GAME_TRAVEL_EXPRESS,
-                is_active=True
-            ).all()
             if active_expresses.count() == 0:
                 self.reduce_property(game_settings.GAME_SEKKE, game_settings.GAME_MOVE_PRICE)
             else:
@@ -484,9 +494,9 @@ class Participant(models.Model):
     def send_msg_fall_in_bully(self, bully, amount):
         text = 'توی تله‌ی جاسازی شده توسط %s افتادی' % (bully.owner, )
         if amount < game_settings.GAME_BULLY_DAMAGE:
-            text += ' و چون پول کافی نداشتی ازت %d سکه کم شد.' % (amount, )
+            text += ' و چون پول کافی نداشتی ازت %d زیتون کم شد.' % (amount, )
         else:
-            text += ' و ازت %d سکه کم شد.' % (amount, )
+            text += ' و ازت %d زیتون کم شد.' % (amount, )
         notify.send(
             sender=Member.objects.filter(is_superuser=True).all()[0],
             recipient=self.member,
@@ -498,9 +508,9 @@ class Participant(models.Model):
     def send_msg_sb_fall_in_your_bully(self, bully, victim_participant, amount):
         text = '%s توی تله‌ی جاسازی شده در جزیره‌ی %s افتاد' % (victim_participant, bully.island.name)
         if amount < game_settings.GAME_BULLY_DAMAGE:
-            text += ' و چون پول کافی نداشت بهت %d سکه اضافه شد.' % (amount, )
+            text += ' و چون پول کافی نداشت بهت %d زیتون اضافه شد.' % (amount, )
         else:
-            text += ' و بهت %d سکه اضافه شد.' % (amount, )
+            text += ' و بهت %d زیتون اضافه شد.' % (amount, )
         notify.send(
             sender=Member.objects.filter(is_superuser=True).all()[0],
             recipient=self.member,
@@ -510,14 +520,14 @@ class Participant(models.Model):
         )
 
     def send_msg_bandargah_computed(self, investment, was_successful, total_investments):
-        text = 'کار امروز بندرگاه به پایان رسید! مجموع سرمایه‌گذاری‌ها %d سکه بود' % (total_investments, )
+        text = 'کار امروز بندرگاه به پایان رسید! مجموع سرمایه‌گذاری‌ها %d زیتون بود' % (total_investments, )
         if was_successful:
             gain = int(game_models.BandargahConfiguration.get_solo().profit_coefficient * investment.amount)
             text += ' که درون بازه‌ی سوددهی قرار گرفت'
         else:
             gain = int(game_models.BandargahConfiguration.get_solo().loss_coefficient * investment.amount)
             text += ' که درون بازه‌ی سوددهی قرار نگرفت'
-        text += ' و به تو %d سکه رسید.' % (gain, )
+        text += ' و به تو %d زیتون رسید.' % (gain, )
         notify.send(
             sender=Member.objects.filter(is_superuser=True).all()[0],
             recipient=self.member,
@@ -711,3 +721,30 @@ class NotificationData(models.Model):
         self.sent_by = sender_user
         self.sent_at = timezone.now()
         self.save()
+
+
+class Team(models.Model):
+    group_name = models.CharField(max_length=30, blank=True)
+    uuid = models.UUIDField(unique=True, default=uuid.uuid4, editable=False)
+    active = models.BooleanField(default=False)
+    picture = ThumbnailerImageField(upload_to='picture', default="picture/user_default.png")
+
+    @property
+    def name(self):
+        if self.group_name:
+            return self.group_name
+        return 'شماره ' + str(self.id)
+
+    def __str__(self):
+        s = str(self.id) + "-" +self.group_name + " ("
+
+        for p in self.participant_set.all():
+            s+= str(p) + ", "
+        s += ")"
+        return s
+
+    def is_team_active(self):
+        for p in self.participant_set.all():
+            if not p.is_activated:
+                return False
+        return True

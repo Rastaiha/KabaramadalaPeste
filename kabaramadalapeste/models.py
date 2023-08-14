@@ -327,8 +327,8 @@ class ParticipantIslandStatus(models.Model):
             return
         all_island_questions = set(self.island.challenge.questions.values_list('id'))
         got_this_challenge_questions = set(ParticipantIslandStatus.objects.filter(
-            participant=self.participant,
-            island__challenge=self.island.challenge
+            participant__team=self.participant.team,
+            island__challenge=self.island.challenge,
         ).exclude(island=self.island).values_list('question_object_id'))
         valid_question_ids = all_island_questions.difference(got_this_challenge_questions)
         if not valid_question_ids:
@@ -482,9 +482,12 @@ class TradeOffer(models.Model):
     def to_dict(self):
         dic = {
             'pk': self.pk,
-            'creator_participant_username': self.creator_participant.member.username,
+            'creator_participant_username': self.creator_participant.team_name,
             'creator_participant_picture_url': self.creator_participant.picture_url
         }
+        if self.accepted_participant:
+            dic['acceptor_participant_username'] = self.accepted_participant.team_name
+            dic['acceptor_participant_picture_url'] = self.accepted_participant.picture_url
         for offer_item in self.suggested_items.all():
             dic['suggested_' + offer_item.property_type] = offer_item.amount
         for offer_item in self.requested_items.all():

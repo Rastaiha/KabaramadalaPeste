@@ -144,7 +144,7 @@ class ParticipantInfoView(View):
                 )
                 currently_anchored = pis.currently_anchored
             return JsonResponse({
-                'username': request.user.username,
+                'username': request.user.participant.team_name,
                 'picture_url': request.user.participant.picture_url,
                 'did_won_peste': request.user.participant.did_won_peste(),
                 'current_island_id': current_island_id,
@@ -217,7 +217,7 @@ class MoveToIslandView(View):
         except Participant.PropertiesAreNotEnough:
             return JsonResponse({
                 'status': settings.ERROR_STATUS,
-                'message': 'سکه‌هات برای حرکت کافی نیست.'
+                'message': 'زیتون‌هات برای حرکت کافی نیست.'
             }, status=400)
         except Exception as e:
             logger.error(e, exc_info=True)
@@ -241,7 +241,7 @@ class PutAnchorView(View):
         except Participant.PropertiesAreNotEnough:
             return JsonResponse({
                 'status': settings.ERROR_STATUS,
-                'message': 'سکه‌هات برای لنگر انداختن کافی نیست.'
+                'message': 'زیتون‌هات برای لنگر انداختن کافی نیست.'
             }, status=400)
         except Participant.CantPutAnchorAgain:
             return JsonResponse({
@@ -450,6 +450,19 @@ def get_all_offers(request):
     try:
         data = {'offers': []}
         for trade_offer in TradeOffer.objects.filter(status__exact=settings.GAME_OFFER_ACTIVE).order_by('?').all():
+            data['offers'].append(trade_offer.to_dict())
+        return JsonResponse(data)
+    except Exception as e:
+        logger.error(e, exc_info=True)
+        return default_error_response
+
+
+@game_running_required
+@login_activated_participant_required
+def get_recent_transactions(request):
+    try:
+        data = {'offers': []}
+        for trade_offer in TradeOffer.objects.filter(status__exact=settings.GAME_OFFER_ACCEPTED).order_by('-close_datetime').all()[0:20]:
             data['offers'].append(trade_offer.to_dict())
         return JsonResponse(data)
     except Exception as e:
@@ -727,7 +740,7 @@ def invest(request):
         except Participant.PropertiesAreNotEnough:
             return JsonResponse({
                 'status': settings.ERROR_STATUS,
-                'message': 'این مقدار سکه برای سرمایه‌گذاری نداری.'
+                'message': 'این مقدار زیتون برای سرمایه‌گذاری نداری.'
             }, status=400)
         except Exception as e:
             logger.error(e, exc_info=True)
@@ -759,6 +772,35 @@ def exchange(request):
     return render(request, 'kabaramadalapeste/exchange.html', {
         'without_nav': True,
         'without_footer': True,
+    })
+
+
+@game_running_required
+@login_activated_participant_required
+def team(request):
+    if request.user.participant.team is None:
+        return redirect('kabaramadalapeste:game')
+    participants = Participant.objects.filter(team=request.user.participant.team)
+    names=[]
+    properties_dict = {}
+    for participant in participants:
+        participant_dict = {prop.property_type: prop.amount for prop in participant.properties.all()}
+        for key in participant_dict:
+            if key not in properties_dict:
+                properties_dict[key] = participant_dict[key]
+            else:
+                properties_dict[key] += participant_dict[key]
+        names.append(participant.member.first_name)
+    return render(request, 'kabaramadalapeste/team.html', {
+        'without_nav': True,
+        'without_footer': True,
+        'team': {
+            'name': request.user.participant.team.group_name,
+            'uuid': request.user.participant.team.uuid,
+            'img': request.user.participant.picture_url,
+            'members': names,
+            'properties': properties_dict
+        }
     })
 
 
@@ -799,9 +841,22 @@ def set_picture(request):
         form = ProfilePictureUploadForm(request.POST, request.FILES)
         if not form.is_valid():
             return redirect('kabaramadalapeste:game')
-        request.user.participant.picture = form.cleaned_data['picture']
-        request.user.participant.save()
-    return redirect('kabaramadalapeste:game')
+        if request.user.participant.team:
+            request.user.participant.team.picture = form.cleaned_data['picture']
+            request.user.participant.team.save()
+    next_page = request.POST.get('next_page', '')
+    if next_page == '':
+        next_page = 'kabaramadalapeste:game'
+    return redirect(next_page)
+
+
+@login_activated_participant_required
+def set_team_name(request):
+    if request.method == 'POST':
+        if request.user.participant.team:
+            request.user.participant.team.group_name = request.POST.get('name')
+            request.user.participant.team.save()
+    return redirect('kabaramadalapeste:team')
 
 
 @method_decorator(game_running_required, name='dispatch')

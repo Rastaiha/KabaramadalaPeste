@@ -1,36 +1,42 @@
 {% extends 'base/base.html' %}
 {% load static %}
 {% block styles %}
-<link rel="stylesheet" href="{% static 'styles/summer_event.css' %}" />
-<style>
-.share-input {
-    height: calc(6.75rem + 2px);
-    direction: rtl
-}
-</style>
+  <link rel="stylesheet" href="{% static 'styles/summer_event.css' %}"/>
+  <style>
+    .share-input {
+      height: calc(6.75rem + 2px);
+      direction: rtl;
+    }
+  </style>
 {% endblock styles %}
 {% block base_content %}
-<div class="first-page-back"></div>
-<div class="first-page full-page-center-item summer-first">
+  <div class="first-page-back"></div>
+  <div class="first-page full-page-center-item summer-first">
     <div class="container">
+      {% if site_config.is_game_over %}
+        <h1 class="text-center mb-5 transparent-text" style="direction: rtl">بازی تموم شد:(</h1>
+      {% else %}
         <h1 class="text-center mb-5 transparent-text" style="direction: rtl">بازی شروع شد!!!</h1>
         <div class="center-container my-4">
-            <a href='{% url 'kabaramadalapeste:game' %}'  class="go-to-game-btn ml-1">بزن بریم!</a>
+          <a href='{% url 'kabaramadalapeste:game' %}'  class="go-to-game-btn ml-1">بزن بریم!</a>
         </div>
+
+        <div class="center-container my-4">
+          <a href="{% static 'pdfs/آتلانتیس.pdf' %}" target="_blank" download class="my-btn ml-1">دریافت قوانین</a>
+        </div>
+      {% endif %}
     </div>
-</div>
-
-
+  </div>
 
 {% endblock base_content %}
 
 {% block scripts %}
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/latest/TweenMax.min.js"></script>
-<script src="{% static 'scripts/countdown.js' %}"></script>
-<script src="{% static 'scripts/our_team.js' %}"></script>
-<script src="{% static 'scripts/faq.js' %}"></script>
-<script src="{% static 'scripts/landing.js' %}"></script>
-<script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/latest/TweenMax.min.js"></script>
+  <script src="{% static 'scripts/countdown.js' %}"></script>
+  <script src="{% static 'scripts/our_team.js' %}"></script>
+  <script src="{% static 'scripts/faq.js' %}"></script>
+  <script src="{% static 'scripts/landing.js' %}"></script>
+  <script>
     random_team_list();
-</script>
+  </script>
 {% endblock %}

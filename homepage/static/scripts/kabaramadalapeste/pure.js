@@ -150,14 +150,14 @@ function update_modal(response) {
         question =
             "هزینه لنگر انداختن " +
             data.put_anchor_price +
-            " سکه است. آیا مایل به آن هستید؟";
+            " زیتون است. آیا مایل به آن هستید؟";
     } else if (response.action === "travel") {
         if (response.player_info.currently_anchored) {
             title = "سفر و برداشتن لنگر";
             question =
                 "هزینه سفر " +
                 data.move_price +
-                " سکه است. آیا مایل به آن هستید؟" +
+                " زیتون است. آیا مایل به آن هستید؟" +
                 "</br><small style='color:#222; font-weight: 300'>" +
                 "دقت کنید لنگر شما از جزیره‌ای که در آن هستید برداشته خواهد شد." +
                 "</small>";
@@ -174,7 +174,7 @@ function update_modal(response) {
             question =
                 "هزینه سفر " +
                 data.move_price +
-                " سکه است. آیا مایل به آن هستید؟";
+                " زیتون است. آیا مایل به آن هستید؟";
             if (response.player_info.has_free_travel) {
                 question = "هزینه سفر رایگان است. آیا مایل به آن هستید؟";
             }
@@ -281,7 +281,7 @@ $(".island-info-action a").click(function() {
             my_prompt(
                 "آیا می‌خوای بر روی بندرگاه " +
                     invest_input.value +
-                    " سکه سرمایه‌گذاری کنی؟",
+                    " زیتون سرمایه‌گذاری کنی؟",
                 "سرمایه‌گذاری",
                 {
                     kind: "invest"

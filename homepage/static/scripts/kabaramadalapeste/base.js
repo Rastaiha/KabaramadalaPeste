@@ -114,7 +114,7 @@ function toggle_right_info(elem) {
 prop_details = {
     SK: {
         src: "/static/images/game/coins.png",
-        persian: "سکه"
+        persian: "زیتون"
     },
     K1: {
         src: "/static/images/game/key1.png",
@@ -159,10 +159,10 @@ $(".right-info-btn").click(function() {
                 $(".player-info .right-info-details h3").text(
                     response.username
                 );
-                $(".player-propties").html("");
+                $(".player-info .player-propties").html("");
                 for (const key in response.properties) {
                     if (response.properties.hasOwnProperty(key)) {
-                        $(".player-propties").append(
+                        $(".player-info .player-propties").append(
                             '<div class="player-proprty"><span><b class="proprty-count">' +
                                 response.properties[key] +
                                 ' </b>×</span><img title="' +
@@ -263,6 +263,10 @@ $("#prompt_modal_btn").click(function() {
             })
             .catch(default_fail);
     }
+});
+
+$(".edit-team-image").click(function() {
+    $(".new-image-input").click();
 });
 
 $(".edit-player-image").click(function() {

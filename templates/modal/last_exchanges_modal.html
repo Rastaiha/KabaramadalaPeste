@@ -1,0 +1,26 @@
+{% extends 'modal/base.html' %} {% load static %} {% block modal_header %}
+
+<h5 class="modal-title" style='width: 100%; text-align: center; font-size: 30px; font-weight: 800;'>آخرین مبادلات</h5>
+
+{% endblock %} {% block modal_content %}
+<div class="template last-exchanges-item-template">
+  <div class="exchange-card">
+    <div class="row">
+      <div class="col-6 mob-no-pad last-exchanges-s">
+        <img class="last-exchanges-item-img" />
+        <h3 class="text-center last-exchanges-item-username mb-3"></h3>
+        <div class="exchange-section b-exchange offer-suggested-list"></div>
+      </div>
+      <div class="col-6 mob-no-pad last-exchanges-c">
+        <img class="last-exchanges-item-img" />
+        <h3 class="text-center last-exchanges-item-username mb-3"></h3>
+        <div class="exchange-section s-exchange offer-requested-list"></div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="mb-3">
+  <ul class="last-exchanges-list"></ul>
+</div>
+
+{% endblock modal_content %}

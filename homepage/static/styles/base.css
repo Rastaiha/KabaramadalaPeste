@@ -53,7 +53,7 @@ html,
 body {
     font-size: 13px;
     height: 100%;
-    background-color: #272A43;
+    background-color: #420A6B;
 }
 
 input:not([type="checkbox"]),
@@ -372,6 +372,21 @@ a.my-btn:not([href]):not([tabindex]) {
 a.my-btn.disabled,
 fieldset:disabled a.my-btn {
     pointer-events: none;
+}
+
+
+
+.my-basic-btn {
+    background: transparent;
+    border: 1px solid  var(--color-6);
+    color: black;
+    
+}
+
+.my-basic-btn:hover,
+.my-basic-btn:focus{
+    background: var(--color-6);
+    color: white;
 }
 
 .my-row {
