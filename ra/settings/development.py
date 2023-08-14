@@ -1,6 +1,5 @@
 from ra.settings.base import *
 import sys
-import django_heroku
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = '*z!3aidedw32xh&1ew(^&5dgd17(ynnmk=s*mo=v2l_(4t_ff('
@@ -50,7 +49,3 @@ LOGGING = {
 TESTING = sys.argv[1] == 'test'
 # TESTING = True
 REGISTRATION_FEE = get_environment_var('REGISTRATION_FEE', '500')
-
-# Activate Django-Heroku.
-django_heroku.settings(locals(), test_runner=False)
-DOMAIN = get_environment_var('DOMAIN', 'http://kabaraamadalapeste.herokuapp.com')
