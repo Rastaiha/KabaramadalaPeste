@@ -33,10 +33,10 @@ class Command(BaseCommand):
                 else:
                     member = Member.objects.create(
                         username=row[0],
-                        email=row[1],
+                        email=row[0]+"@gmail.com",
                     )
-                    member.set_password(row[2])
-                    team, _ = Team.objects.create_or_get(group_name=row[3])
+                    member.set_password(row[1])
+                    team, _ = Team.objects.get_or_create(group_name=row[3])
                     team.active = True
                     team.save()
                     participant = Participant.objects.create(
