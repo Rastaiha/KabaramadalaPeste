@@ -142,9 +142,9 @@ def login(request):
     if request.user.is_authenticated:
         raise Http404
     if request.method == "POST":
-        members = Member.objects.filter(email__exact=request.POST.get('email'))
+        members = Member.objects.filter(username__exact=request.POST.get('username'))
         if members.count() == 0:
-            messages.error(request, 'ایمیل یا رمز عبور غلط است.')
+            messages.error(request, 'یوزرنیم یا رمز عبور غلط است.')
             return render(request, 'auth/login.html')
         member = members[0]
         if not member.is_active:
@@ -157,7 +157,7 @@ def login(request):
             auth_login(request, user)
             return redirect('homepage:homepage')
         else:
-            messages.error(request, 'ایمیل یا رمز عبور غلط است.')
+            messages.error(request, 'یوزرنیم یا رمز عبور غلط است.')
             return render(request, 'auth/login.html')
     return render(request, 'auth/login.html')
 

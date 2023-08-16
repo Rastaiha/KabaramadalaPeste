@@ -36,7 +36,7 @@ class Command(BaseCommand):
                         email=row[0]+"@gmail.com",
                     )
                     member.set_password(row[1])
-                    team, _ = Team.objects.get_or_create(group_name=row[3])
+                    team, _ = Team.objects.get_or_create(group_name=row[2])
                     team.active = True
                     team.save()
                     participant = Participant.objects.create(
