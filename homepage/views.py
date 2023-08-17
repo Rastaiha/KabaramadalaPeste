@@ -66,7 +66,7 @@ def rules_pdf(request):
     try:
         rules_file_path = os.path.join(
             settings.BASE_DIR,
-            'homepage/static/misc/منشورِ قوانین کابارآمادالاپسته.pdf'
+            'homepage/static/pdfs/منشورِ قوانین کابارآمادالاپسته.pdf'
         )
         return FileResponse(open(rules_file_path, 'rb'), content_type='application/pdf')
     except FileNotFoundError:

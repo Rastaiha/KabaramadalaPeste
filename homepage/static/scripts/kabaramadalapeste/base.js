@@ -114,7 +114,7 @@ function toggle_right_info(elem) {
 prop_details = {
     SK: {
         src: "/static/images/game/coins.png",
-        persian: "زیتون"
+        persian: "سکه"
     },
     K1: {
         src: "/static/images/game/key1.png",

@@ -39,10 +39,10 @@ class GameConf(AppConf):
     PARTICIPANT_PROPERTY_TYPE_CHOICES = TREASURE_REWARD_TYPE_CHOICES
 
     TRANSLATION_DICT = {
-        SEKKE: 'زیتون جهنمی',
-        KEY1: 'اپتیکالیپتوس نامرئی',
-        KEY2: 'پاره آجر',
-        KEY3: 'نشان حکیم جزیره',
+        SEKKE: 'سکه',
+        KEY1: 'کلید طلایی',
+        KEY2: 'کلید آبی',
+        KEY3: 'کلید قرمز',
         VISION: 'توانایی بینش غیبی',
         TRAVEL_EXPRESS: 'توانایی سفر اکسپرس',
         CHALLENGE_PLUS: 'توانایی چالش پلاس',

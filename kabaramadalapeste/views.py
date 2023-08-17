@@ -217,7 +217,7 @@ class MoveToIslandView(View):
         except Participant.PropertiesAreNotEnough:
             return JsonResponse({
                 'status': settings.ERROR_STATUS,
-                'message': 'زیتون‌هات برای حرکت کافی نیست.'
+                'message': 'سکه‌هات برای حرکت کافی نیست.'
             }, status=400)
         except Exception as e:
             logger.error(e, exc_info=True)
@@ -241,7 +241,7 @@ class PutAnchorView(View):
         except Participant.PropertiesAreNotEnough:
             return JsonResponse({
                 'status': settings.ERROR_STATUS,
-                'message': 'زیتون‌هات برای لنگر انداختن کافی نیست.'
+                'message': 'سکه‌هات برای لنگر انداختن کافی نیست.'
             }, status=400)
         except Participant.CantPutAnchorAgain:
             return JsonResponse({
@@ -740,7 +740,7 @@ def invest(request):
         except Participant.PropertiesAreNotEnough:
             return JsonResponse({
                 'status': settings.ERROR_STATUS,
-                'message': 'این مقدار زیتون برای سرمایه‌گذاری نداری.'
+                'message': 'این مقدار سکه برای سرمایه‌گذاری نداری.'
             }, status=400)
         except Exception as e:
             logger.error(e, exc_info=True)
