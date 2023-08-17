@@ -12,6 +12,7 @@ Do all these things in the django admin panel:
 ### At the game start
 - Check "Is Game Running" at Site configuration page
 - Check "Is Peste Available" at Peste configuration. Notice that at each time, only 1 peste can be available in the game. If peste is founed, you can add another peste by running add_new_peste command.
+- Set Bandargah min and max investment value.
 
 ### At the game end
 - Uncheck "Is Game Running" at Site configuration
