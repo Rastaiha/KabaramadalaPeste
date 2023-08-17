@@ -1,9 +1,9 @@
 # KabaramadalaPeste
 
 ## Game Instructions
-- [Kabaramadalapeste Instructions - Nowrooz 1399](https://docs.google.com/document/d/1LbDdLOMEeWAaU00YOF3T9lhyEolmmPGuuTY5WcfqWw8/edit?usp=drivesdk) | [pdf](https://github.com/Rastaiha/KabaramadalaPeste/files/8460883/default.pdf)
-
-- [Atlantis Instructions - Nowrooz 1401](https://docs.google.com/document/d/1PKA-TLBmFvmNnY1FKjy0_hVfYaMNxBC1XNULm_w2aDY/edit) | [pdf](https://github.com/Rastaiha/KabaramadalaPeste/files/8460887/default.pdf)
+- Kabaramadalapeste - Nowrooz 1399: [google docs](https://docs.google.com/document/d/1LbDdLOMEeWAaU00YOF3T9lhyEolmmPGuuTY5WcfqWw8/edit?usp=drivesdk) | [pdf](https://github.com/Rastaiha/KabaramadalaPeste/files/12367715/default.pdf)
+- Rastakhiz - Summer 1400: [pdf](https://github.com/Rastaiha/KabaramadalaPeste/files/8460883/default.pdf)
+- Atlantis - Nowrooz 1401: [google docs](https://docs.google.com/document/d/1PKA-TLBmFvmNnY1FKjy0_hVfYaMNxBC1XNULm_w2aDY/edit) | [pdf](https://github.com/Rastaiha/KabaramadalaPeste/files/8460887/default.pdf)
 
 
 ## Game Management
