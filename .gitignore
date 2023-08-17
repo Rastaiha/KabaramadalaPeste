@@ -90,7 +90,6 @@ venv
 db.sqlite3
 .idea/
 
-media/*
 
 *.sublime-project
 *.sublime-workspace

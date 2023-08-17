@@ -18,7 +18,8 @@ from django.urls import include, path
 from django.conf import settings
 from django.conf.urls.static import static
 import notifications.urls
-
+from django.views.static import serve
+from django.urls import re_path as url
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -26,5 +27,6 @@ urlpatterns = [
                            'kabaramadalapeste'), namespace='kabaramadalapeste')),
     path('accounts/', include(('accounts.urls', 'accounts'), namespace='accounts')),
     path('notifications/', include(notifications.urls, namespace='notifications')),
-    path('', include(('homepage.urls', 'homepage'), namespace='homepage'))
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    path('', include(('homepage.urls', 'homepage'), namespace='homepage')),
+    url(r'^media/(?P<path>.*)$', serve,{'document_root': settings.MEDIA_ROOT})
+]
