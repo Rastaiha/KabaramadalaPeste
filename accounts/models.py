@@ -762,7 +762,7 @@ class Team(models.Model):
     active = models.BooleanField(default=False)
     picture = ThumbnailerImageField(
         upload_to='picture', default="picture/user_default.png")
-    chat_room_link = models.URLField(default=None)
+    chat_room_link = models.URLField(null=True, blank=True)
 
     @property
     def name(self):
