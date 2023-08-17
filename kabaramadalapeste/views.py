@@ -98,7 +98,8 @@ class IslandInfoView(View):
             estimated_judge_time = 15
             if not pis.island.challenge or not pis.island.challenge.is_judgeable:
                 estimated_judge_time = 0
-            submits = JudgeableSubmit.objects.exclude(submit_status='Pending').filter(pis__island__challenge=island.challenge).all()
+            submits = JudgeableSubmit.objects.exclude(submit_status='Pending').filter(
+                pis__island__challenge=island.challenge).all()
             if submits.count() > 0:
                 s = []
                 for submit in submits:
@@ -151,10 +152,10 @@ class ParticipantInfoView(View):
                 'currently_anchored': currently_anchored,
                 'properties': properties_dict,
                 'has_free_travel': AbilityUsage.objects.filter(
-                        participant=request.user.participant,
-                        ability_type=settings.GAME_TRAVEL_EXPRESS,
-                        is_active=True
-                    ).all().count() > 0
+                    participant=request.user.participant,
+                    ability_type=settings.GAME_TRAVEL_EXPRESS,
+                    is_active=True
+                ).all().count() > 0
             })
         except Exception as e:
             logger.error(e, exc_info=True)
@@ -780,11 +781,13 @@ def exchange(request):
 def team(request):
     if request.user.participant.team is None:
         return redirect('kabaramadalapeste:game')
-    participants = Participant.objects.filter(team=request.user.participant.team)
-    names=[]
+    participants = Participant.objects.filter(
+        team=request.user.participant.team)
+    names = []
     properties_dict = {}
     for participant in participants:
-        participant_dict = {prop.property_type: prop.amount for prop in participant.properties.all()}
+        participant_dict = {
+            prop.property_type: prop.amount for prop in participant.properties.all()}
         for key in participant_dict:
             if key not in properties_dict:
                 properties_dict[key] = participant_dict[key]
@@ -799,7 +802,8 @@ def team(request):
             'uuid': request.user.participant.team.uuid,
             'img': request.user.participant.picture_url,
             'members': names,
-            'properties': properties_dict
+            'properties': properties_dict,
+            'chat_room_link': request.user.participant.team.chat_room_link
         }
     })
 
