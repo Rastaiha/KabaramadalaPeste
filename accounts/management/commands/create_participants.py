@@ -32,11 +32,14 @@ class Command(BaseCommand):
                     self.stdout.write('Headers: ' + ', '.join(row))
                 else:
                     member = Member.objects.create(
-                        username=row[0],
-                        email=row[0]+"@gmail.com",
+                        username=row[1],
+                        email=row[1]+"@gmail.com",
+                        first_name=row[0]
                     )
-                    member.set_password(row[1])
-                    team, _ = Team.objects.get_or_create(group_name=row[2])
+                    member.set_password(row[2])
+                    team, create = Team.objects.get_or_create(group_name=row[3])
+                    if create:
+                        team.chat_room_link = row[4]
                     team.active = True
                     team.save()
                     participant = Participant.objects.create(

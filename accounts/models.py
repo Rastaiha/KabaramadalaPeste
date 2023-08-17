@@ -728,6 +728,7 @@ class Team(models.Model):
     uuid = models.UUIDField(unique=True, default=uuid.uuid4, editable=False)
     active = models.BooleanField(default=False)
     picture = ThumbnailerImageField(upload_to='picture', default="picture/user_default.png")
+    chat_room_link = models.URLFields(balnk=True, null=True)
 
     @property
     def name(self):
