@@ -7,19 +7,17 @@
 <div class="container">
   <div>
     <a class="my-btn my-2" href="{% url 'kabaramadalapeste:game' %}"
-      >بازگشت به نقشه
-    </a>
+      >بازگشت به نقشه</a
+    >
   </div>
   <div
     class="team-wrapper my-3 row"
     style="position: relative; direction: rtl; text-align: right"
   >
     <div class="col-md-12">
-      <div
-        id="jitsi"
-        data-chatRoomLink="{{ team.chat_room_link }}"
-        style="height: 300px; max-width: 500px; margin: 5px auto; border-radius: 10px; overflow: hidden"
-      ></div>
+      <div style="height: 300px; max-width: 500px; margin: 5px auto; border-radius: 10px; overflow: hidden">
+        <iframe width="100%" height="300px" src="{{ team.chat_room_link }}" title="بازی" border="none"></iframe>
+      </div>
     </div>
     <div class="col-md-8">
       {% if team.name %}
@@ -52,7 +50,7 @@
               <div class="player-proprty">
                 <span
                   ><b class="proprty-count">{{team.properties.SK|default:"0"}} </b>×</span
-                ><img title="سکه" src="/static/images/game/coins.png" />
+                ><img title="زیتون" src="/static/images/game/coins.png" />
               </div>
               <div class="player-proprty">
                 <span
@@ -118,5 +116,4 @@
 </div>
 {% endblock game_base_content %} {% block game_base_scripts %}
 <script src="https://meet.jit.si/external_api.js"></script>
-<script src="{% static 'scripts/kabaramadalapeste/team.js' %}"></script>
 {% endblock game_base_scripts %}
