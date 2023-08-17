@@ -1,4 +1,7 @@
 {% extends 'kabaramadalapeste/base.html' %}
+{% block header_tags %}
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+{% endblock header_tags %}
 {% load static %}
 {% block game_base_styles %}
 <style>
