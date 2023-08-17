@@ -86,11 +86,13 @@ class Participant(models.Model):
     class CantSubmitChallengeAgain(Exception):
         pass
 
-    member = models.OneToOneField(Member, related_name='participant', on_delete=models.CASCADE)
+    member = models.OneToOneField(
+        Member, related_name='participant', on_delete=models.CASCADE)
     school = models.CharField(max_length=200)
     city = models.CharField(max_length=40)
     document = models.ImageField(upload_to='documents/')
-    gender = models.CharField(max_length=10, default=Gender.Man, choices=[(tag.value, tag.name) for tag in Gender])
+    gender = models.CharField(max_length=10, default=Gender.Man, choices=[
+                              (tag.value, tag.name) for tag in Gender])
     phone_number = models.CharField(max_length=15, blank=True, null=True)
     is_activated = models.BooleanField(default=False)
     team = models.ForeignKey('Team', models.SET_NULL, blank=True, null=True)
@@ -103,7 +105,8 @@ class Participant(models.Model):
                                             related_name="current_participants",
                                             null=True)
 
-    stat_image = models.ImageField(upload_to='stats/', null=True, default="stats/base_stat.png")
+    stat_image = models.ImageField(
+        upload_to='stats/', null=True, default="stats/base_stat.png")
     stat_image_with_background = models.ImageField(
         upload_to='stats-back/', null=True, default="stats-back/base_stat_back.png"
     )
@@ -214,11 +217,12 @@ class Participant(models.Model):
 
     def can_open_new_challenge(self):
         return self.today_challenges_opened_count() < \
-               game_settings.GAME_BASE_CHALLENGE_PER_DAY + self.today_challenge_pluses_count()
+            game_settings.GAME_BASE_CHALLENGE_PER_DAY + self.today_challenge_pluses_count()
 
     def init_pis(self):
         if game_models.ParticipantIslandStatus.objects.filter(participant=self).count():
-            logger.info('Participant currently has some PIS. We cant init again.')
+            logger.info(
+                'Participant currently has some PIS. We cant init again.')
             return
         treasures_shuffled = list(game_models.Treasure.objects.all())
         random.shuffle(treasures_shuffled)
@@ -235,7 +239,8 @@ class Participant(models.Model):
 
     def init_properties(self):
         if self.properties.count():
-            logger.info('Participant currently has some properties. We cant init again.')
+            logger.info(
+                'Participant currently has some properties. We cant init again.')
             return
         for property_type, amount in game_settings.GAME_PARTICIPANT_INITIAL_PROPERTIES.items():
             if amount > 0:
@@ -245,7 +250,8 @@ class Participant(models.Model):
                     amount=amount
                 )
             else:
-                logger.warning('Property could not be negative we continue setting other properties')
+                logger.warning(
+                    'Property could not be negative we continue setting other properties')
 
     def set_start_island(self, dest_island):
         if self.currently_at_island:
@@ -290,7 +296,8 @@ class Participant(models.Model):
 
         with transaction.atomic():
             if active_expresses.count() == 0:
-                self.reduce_property(game_settings.GAME_SEKKE, game_settings.GAME_MOVE_PRICE)
+                self.reduce_property(
+                    game_settings.GAME_SEKKE, game_settings.GAME_MOVE_PRICE)
             else:
                 express = active_expresses[0]
                 express.is_active = False
@@ -333,7 +340,8 @@ class Participant(models.Model):
             raise Participant.CantPutAnchorAgain
 
         with transaction.atomic():
-            self.reduce_property(game_settings.GAME_SEKKE, game_settings.GAME_PUT_ANCHOR_PRICE)
+            self.reduce_property(game_settings.GAME_SEKKE,
+                                 game_settings.GAME_PUT_ANCHOR_PRICE)
 
             current_pis.currently_anchored = True
             current_pis.is_treasure_visible = True
@@ -355,16 +363,22 @@ class Participant(models.Model):
                         related=bully
                     )
                     try:
-                        self.reduce_property(game_settings.GAME_SEKKE, game_settings.GAME_BULLY_DAMAGE)
-                        self.send_msg_fall_in_bully(bully, game_settings.GAME_BULLY_DAMAGE)
-                        bully.owner.add_property(game_settings.GAME_SEKKE, game_settings.GAME_BULLY_DAMAGE)
-                        bully.owner.send_msg_sb_fall_in_your_bully(bully, self, game_settings.GAME_BULLY_DAMAGE)
+                        self.reduce_property(
+                            game_settings.GAME_SEKKE, game_settings.GAME_BULLY_DAMAGE)
+                        self.send_msg_fall_in_bully(
+                            bully, game_settings.GAME_BULLY_DAMAGE)
+                        bully.owner.add_property(
+                            game_settings.GAME_SEKKE, game_settings.GAME_BULLY_DAMAGE)
+                        bully.owner.send_msg_sb_fall_in_your_bully(
+                            bully, self, game_settings.GAME_BULLY_DAMAGE)
                     except Participant.PropertiesAreNotEnough:
                         damage = self.sekke.amount
                         self.reduce_property(game_settings.GAME_SEKKE, damage)
                         self.send_msg_fall_in_bully(bully, damage)
-                        bully.owner.add_property(game_settings.GAME_SEKKE, damage)
-                        bully.owner.send_msg_sb_fall_in_your_bully(bully, self, damage)
+                        bully.owner.add_property(
+                            game_settings.GAME_SEKKE, damage)
+                        bully.owner.send_msg_sb_fall_in_your_bully(
+                            bully, self, damage)
 
             game_models.GameEventLog.objects.create(
                 who=self,
@@ -440,7 +454,8 @@ class Participant(models.Model):
         if current_pis.did_spade:
             raise Participant.CantSpadeAgain
         with transaction.atomic():
-            self.reduce_property(settings.GAME_SEKKE, game_models.PesteConfiguration.get_solo().island_spade_cost)
+            self.reduce_property(
+                settings.GAME_SEKKE, game_models.PesteConfiguration.get_solo().island_spade_cost)
             current_pis.did_spade = True
             current_pis.spaded_at = timezone.now()
             current_pis.save()
@@ -454,7 +469,8 @@ class Participant(models.Model):
                 if self.currently_at_island.peste.is_found:
                     self.send_msg_spade_result(False)
                     return False
-                self.add_property(settings.GAME_SEKKE, game_models.PesteConfiguration.get_solo().peste_reward)
+                self.add_property(
+                    settings.GAME_SEKKE, game_models.PesteConfiguration.get_solo().peste_reward)
                 self.currently_at_island.peste.is_found = True
                 self.currently_at_island.peste.found_by = self
                 self.currently_at_island.peste.found_at = timezone.now()
@@ -471,7 +487,8 @@ class Participant(models.Model):
                 return False
 
     def send_msg_bully_expired(self, bully):
-        text = 'تله‌ای که توی جزیره‌ی %s جاسازی کرده بود به علت جاسازی شدن تله‌ی جدید از بین رفت.' % (bully.island.name, )
+        text = 'تله‌ای که توی جزیره‌ی %s جاسازی کرده بود به علت جاسازی شدن تله‌ی جدید از بین رفت.' % (
+            bully.island.name, )
         notify.send(
             sender=Member.objects.filter(is_superuser=True).all()[0],
             recipient=self.member,
@@ -482,7 +499,8 @@ class Participant(models.Model):
 
     def send_msg_offer_accepted(self, trade_offer):
         text = 'پیشنهاد مبادله‌ات توسط %s قبول شد. %s گرفتی.' % \
-               (trade_offer.accepted_participant, trade_offer.get_requested_items_persian())
+               (trade_offer.accepted_participant,
+                trade_offer.get_requested_items_persian())
         notify.send(
             sender=Member.objects.filter(is_superuser=True).all()[0],
             recipient=self.member,
@@ -506,7 +524,8 @@ class Participant(models.Model):
         )
 
     def send_msg_sb_fall_in_your_bully(self, bully, victim_participant, amount):
-        text = '%s توی تله‌ی جاسازی شده در جزیره‌ی %s افتاد' % (victim_participant, bully.island.name)
+        text = '%s توی تله‌ی جاسازی شده در جزیره‌ی %s افتاد' % (
+            victim_participant, bully.island.name)
         if amount < game_settings.GAME_BULLY_DAMAGE:
             text += ' و چون پول کافی نداشت بهت %d زیتون اضافه شد.' % (amount, )
         else:
@@ -520,12 +539,15 @@ class Participant(models.Model):
         )
 
     def send_msg_bandargah_computed(self, investment, was_successful, total_investments):
-        text = 'کار امروز بندرگاه به پایان رسید! مجموع سرمایه‌گذاری‌ها %d زیتون بود' % (total_investments, )
+        text = 'کار امروز بندرگاه به پایان رسید! مجموع سرمایه‌گذاری‌ها %d زیتون بود' % (
+            total_investments, )
         if was_successful:
-            gain = int(game_models.BandargahConfiguration.get_solo().profit_coefficient * investment.amount)
+            gain = int(game_models.BandargahConfiguration.get_solo(
+            ).profit_coefficient * investment.amount)
             text += ' که درون بازه‌ی سوددهی قرار گرفت'
         else:
-            gain = int(game_models.BandargahConfiguration.get_solo().loss_coefficient * investment.amount)
+            gain = int(game_models.BandargahConfiguration.get_solo(
+            ).loss_coefficient * investment.amount)
             text += ' که درون بازه‌ی سوددهی قرار نگرفت'
         text += ' و به تو %d زیتون رسید.' % (gain, )
         notify.send(
@@ -539,10 +561,12 @@ class Participant(models.Model):
     def send_msg_correct_judged_answer(self, judgeablesubmit):
         if judgeablesubmit.judge_note:
             text = 'پاسخی که قبلا به چالش‌ جزیره‌ی %s داده بودی توسط داوران ارزیابی شد و درست بود. %s دریافت کردی. داور بهت گفته: %s' % \
-                (judgeablesubmit.pis.island.name, judgeablesubmit.get_rewards_persian(), judgeablesubmit.judge_note)
+                (judgeablesubmit.pis.island.name,
+                 judgeablesubmit.get_rewards_persian(), judgeablesubmit.judge_note)
         else:
             text = 'پاسخی که قبلا به چالش‌ جزیره‌ی %s داده بودی توسط داوران ارزیابی شد و درست بود. %s دریافت کردی.' % \
-                (judgeablesubmit.pis.island.name, judgeablesubmit.get_rewards_persian())
+                (judgeablesubmit.pis.island.name,
+                 judgeablesubmit.get_rewards_persian())
         notify.send(
             sender=Member.objects.filter(is_superuser=True).all()[0],
             recipient=self.member,
@@ -568,7 +592,8 @@ class Participant(models.Model):
 
     def send_msg_correct_short_answer(self, shortanswersubmit):
         text = 'پاسخی که به چالش‌ جزیره‌ی %s دادی صحیح بود. %s دریافت کردی.' % \
-               (shortanswersubmit.pis.island.name, shortanswersubmit.get_rewards_persian())
+               (shortanswersubmit.pis.island.name,
+                shortanswersubmit.get_rewards_persian())
         notify.send(
             sender=Member.objects.filter(is_superuser=True).all()[0],
             recipient=self.member,
@@ -598,7 +623,8 @@ class Participant(models.Model):
         )
 
     def send_msg_peste_news(self, winner_participant):
-        text = 'دوستان پسته طلایی توسط %s پیدا شد دیگر کلنگ نزنید چون پسته ای در کار نیست.' % (winner_participant, )
+        text = 'دوستان پسته طلایی توسط %s پیدا شد دیگر کلنگ نزنید چون پسته ای در کار نیست.' % (
+            winner_participant, )
         notify.send(
             sender=Member.objects.filter(is_superuser=True).all()[0],
             recipient=self.member,
@@ -630,10 +656,13 @@ class JudgeManager(models.Manager):
             g = Group.objects.get(name="Judge")
         except Group.DoesNotExist:
             g = Group.objects.create(name="Judge")
-            g.permissions.add(Permission.objects.get(codename="view_judgeablesubmit"))
-            g.permissions.add(Permission.objects.get(codename="change_judgeablesubmit"))
+            g.permissions.add(Permission.objects.get(
+                codename="view_judgeablesubmit"))
+            g.permissions.add(Permission.objects.get(
+                codename="change_judgeablesubmit"))
             g.save()
-        member = Member.objects.create_user(username=email, email=email, password=password)
+        member = Member.objects.create_user(
+            username=email, email=email, password=password)
         member.is_staff = True
         member.is_participant = False
         member.groups.add(g)
@@ -645,7 +674,8 @@ class JudgeManager(models.Manager):
 class Judge(models.Model):
     objects = JudgeManager()
 
-    member = models.OneToOneField(Member, related_name='judge', on_delete=models.CASCADE)
+    member = models.OneToOneField(
+        Member, related_name='judge', on_delete=models.CASCADE)
 
     def __str__(self):
         return str(self.member)
@@ -659,13 +689,15 @@ class Judge(models.Model):
         text_content = re.sub('<style[^<]+?</style>', '', html_content)
         text_content = strip_tags(text_content)
 
-        msg = EmailMultiAlternatives('اطلاعات کاربری مصحح', text_content, 'Rastaiha <info@rastaiha.ir>', [username])
+        msg = EmailMultiAlternatives(
+            'اطلاعات کاربری مصحح', text_content, 'Rastaiha <info@rastaiha.ir>', [username])
         msg.attach_alternative(html_content, "text/html")
         msg.send()
 
 
 class PaymentAttempt(models.Model):
-    participant = models.ForeignKey(Participant, related_name='payment_attempts', on_delete=models.CASCADE)
+    participant = models.ForeignKey(
+        Participant, related_name='payment_attempts', on_delete=models.CASCADE)
     red_id = models.CharField(max_length=20, null=True, blank=True)
     status = models.CharField(max_length=20, null=True, blank=True)
     authority = models.CharField(max_length=50)
@@ -682,7 +714,8 @@ class NotificationData(models.Model):
         Draft = 'Draft'
         Sent = 'Sent'
 
-    level = models.CharField(choices=Notification.LEVELS, default=Notification.LEVELS.info, max_length=20)
+    level = models.CharField(choices=Notification.LEVELS,
+                             default=Notification.LEVELS.info, max_length=20)
     text = models.TextField()
 
     status = models.CharField(
@@ -727,8 +760,9 @@ class Team(models.Model):
     group_name = models.CharField(max_length=30, blank=True)
     uuid = models.UUIDField(unique=True, default=uuid.uuid4, editable=False)
     active = models.BooleanField(default=False)
-    picture = ThumbnailerImageField(upload_to='picture', default="picture/user_default.png")
-    chat_room_link = models.URLFields(balnk=True, null=True)
+    picture = ThumbnailerImageField(
+        upload_to='picture', default="picture/user_default.png")
+    chat_room_link = models.URLField(default=None)
 
     @property
     def name(self):
@@ -737,10 +771,10 @@ class Team(models.Model):
         return 'شماره ' + str(self.id)
 
     def __str__(self):
-        s = str(self.id) + "-" +self.group_name + " ("
+        s = str(self.id) + "-" + self.group_name + " ("
 
         for p in self.participant_set.all():
-            s+= str(p) + ", "
+            s += str(p) + ", "
         s += ")"
         return s
 
