@@ -43,8 +43,8 @@ class Island(models.Model):
 
     def is_neighbor_with(self, other_island):
         return (
-            Way.objects.filter(first_end=self, second_end=other_island).count() != 0 or
-            Way.objects.filter(first_end=other_island, second_end=self).count() != 0
+                Way.objects.filter(first_end=self, second_end=other_island).count() != 0 or
+                Way.objects.filter(first_end=other_island, second_end=self).count() != 0
         )
 
 
@@ -122,88 +122,49 @@ class ChallengeRewardItem(models.Model):
 class BaseQuestion(models.Model):
     title = models.CharField(max_length=100)
     question = models.FileField(upload_to='soals/')
-
-    challenge = models.ForeignKey('Challenge',
-                                  related_name='%(class)s',
-                                  on_delete=models.CASCADE)
+    challenge = models.ForeignKey('Challenge', related_name='%(class)s', on_delete=models.CASCADE)
 
     class Meta:
         abstract = True
 
     def __str__(self):
-        return '%s for challenge: %s' % (
-            self.title, self.challenge.name
-        )
+        return '%s for challenge: %s' % (self.title, self.challenge.name)
 
     def get_answer_type(self):
         raise NotImplementedError
 
     def save(self, *args, **kwargs):
-        # LONG TODO: fix here so not change every time
-        # Call standard save
-        super(BaseQuestion, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
         if not settings.TESTING and self.question:
             initial_path = self.question.path
-
-            # New path in the form eg '/images/uploadmodel/1/image.jpg'
             dt = timezone.now()
             r = ''.join(random.choices(string.ascii_letters + string.digits, k=12))
             new_n = '-'.join([r, dt.strftime('%H-%M-%S-%f'), os.path.basename(initial_path)])
             new_name = 'soals/' + new_n
             new_path = os.path.join(settings.MEDIA_ROOT, 'soals', new_n)
 
-            # Create dir if necessary and move file
             if not os.path.exists(os.path.dirname(new_path)):
                 os.makedirs(os.path.dirname(new_path))
-
             os.rename(initial_path, new_path)
-
-            # Update the image_file field
             self.question.name = new_name
-
-            # Save changes
-            super(BaseQuestion, self).save(*args, **kwargs)
+            super().save(*args, **kwargs)  # Save changes
 
 
-class ShortAnswerQuestion(BaseQuestion):
-    INTEGER = 'INT'
-    FLOAT = 'FLT'
-    STRING = 'STR'
-    ANSWER_TYPE_CHOICES = [
-        (INTEGER, 'int'),
-        (FLOAT, 'float'),
-        (STRING, 'string')
-    ]
-    correct_answer = models.CharField(max_length=100)
-    answer_type = models.CharField(
-        max_length=3,
-        choices=ANSWER_TYPE_CHOICES,
-        default=STRING,
-    )
-
-    pis_set = GenericRelation(
-        'ParticipantIslandStatus',
-        related_query_name='short_answer_question',
-        content_type_field='question_content_type',
-        object_id_field='question_object_id',
-    )
-
-    def get_answer_type(self):
-        return self.answer_type
-
-
-class JudgeableQuestion(BaseQuestion):
+class Question(BaseQuestion):
     upload_required = models.BooleanField(default=True)
+    small_answer = models.CharField(max_length=100, blank=True, null=True)
 
     pis_set = GenericRelation(
         'ParticipantIslandStatus',
-        related_query_name='judgeable_question',
+        related_query_name='question',
         content_type_field='question_content_type',
         object_id_field='question_object_id',
     )
 
     def get_answer_type(self):
+        if self.small_answer:
+            return 'TEXT'
         return 'FILE' if self.upload_required else 'NO'
 
 
@@ -217,9 +178,9 @@ class Treasure(models.Model):
         i = 0
         for treasure_key_item in self.keys.exclude(amount__exact=0).all():
             s += '%d عدد %s' % (treasure_key_item.amount, settings.GAME_TRANSLATION_DICT[treasure_key_item.key_type])
-            if i < n-2:
+            if i < n - 2:
                 s += '، '
-            elif i == n-2:
+            elif i == n - 2:
                 s += ' و '
             i += 1
         return s
@@ -229,10 +190,11 @@ class Treasure(models.Model):
         s = ''
         i = 0
         for treasure_reward_item in self.rewards.exclude(amount__exact=0).all():
-            s += '%d عدد %s' % (treasure_reward_item.amount, settings.GAME_TRANSLATION_DICT[treasure_reward_item.reward_type])
-            if i < n-2:
+            s += '%d عدد %s' % (
+                treasure_reward_item.amount, settings.GAME_TRANSLATION_DICT[treasure_reward_item.reward_type])
+            if i < n - 2:
                 s += '، '
-            elif i == n-2:
+            elif i == n - 2:
                 s += ' و '
             i += 1
         return s
@@ -393,17 +355,17 @@ class BaseSubmit(models.Model):
         s = ''
         i = 0
         for treasure_reward_item in self.pis.question.challenge.rewards.exclude(amount__exact=0).all():
-            s += '%d عدد %s' % (treasure_reward_item.amount, settings.GAME_TRANSLATION_DICT[treasure_reward_item.reward_type])
-            if i < n-2:
+            s += '%d عدد %s' % (
+                treasure_reward_item.amount, settings.GAME_TRANSLATION_DICT[treasure_reward_item.reward_type])
+            if i < n - 2:
                 s += '، '
-            elif i == n-2:
+            elif i == n - 2:
                 s += ' و '
             i += 1
         return s
 
 
 class ShortAnswerSubmit(BaseSubmit):
-
     submitted_answer = models.CharField(max_length=100)
 
     def check_answer(self):
@@ -500,9 +462,9 @@ class TradeOffer(models.Model):
         i = 0
         for requested_item in self.requested_items.exclude(amount__exact=0).all():
             s += '%d عدد %s' % (requested_item.amount, settings.GAME_TRANSLATION_DICT[requested_item.property_type])
-            if i < n-2:
+            if i < n - 2:
                 s += '، '
-            elif i == n-2:
+            elif i == n - 2:
                 s += ' و '
             i += 1
         return s
