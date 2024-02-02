@@ -10,45 +10,51 @@ logger = logging.getLogger(__file__)
 
 
 class Command(BaseCommand):
-    help = 'Create participants from csv'
+    help = 'Create participants, members, and teams from csv'
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, stdout=None, stderr=None, no_color=False, force_color=False):
+        super().__init__(stdout, stderr, no_color, force_color)
+        self.base_dir = None
+        self.participants_file = None
+
+    def init(self, *args, **kwargs):
         self.base_dir = os.path.join(settings.BASE_DIR, 'accounts/initial_data')
         self.participants_file = os.path.join(self.base_dir, 'participants.csv')
-        super(Command, self).__init__(*args, **kwargs)
+        super().init(*args, **kwargs)
 
     def add_arguments(self, parser):
         pass
 
-
     @transaction.atomic
     def handle(self, *args, **options):
         with open(self.participants_file, newline='') as csvfile:
-            start_count = Participant.objects.count()
-            self.stdout.write('Participant currently has %s records' % start_count)
             reader = csv.reader(csvfile, delimiter=',', quotechar='|')
-            for i, row in enumerate(reader):
-                if not i:
-                    self.stdout.write('Headers: ' + ', '.join(row))
-                else:
-                    member = Member.objects.create(
-                        username=row[1],
-                        email=row[1]+"@gmail.com",
-                        first_name=row[0]
-                    )
-                    member.set_password(row[2])
-                    team, create = Team.objects.get_or_create(group_name=row[3])
-                    if create:
-                        team.chat_room_link = row[4]
+            start_count = Participant.objects.count()
+            self.stdout.write(f'Participant currently has {start_count} records')
+            headers = next(reader)
+            self.stdout.write('Headers: ' + ', '.join(headers))
+            for row in reader:
+                member, _ = Member.objects.get_or_create(
+                    username=row[1],
+                    email=row[1] + "@gmail.com",
+                    first_name=row[0]
+                )
+                member.set_password(row[2])
+                member.save()
+
+                team, created = Team.objects.get_or_create(group_name=row[3])
+                if created:
+                    team.chat_room_link = row[4]
                     team.active = True
                     team.save()
-                    participant = Participant.objects.create(
-                        member=member,
-                        document_status='Verified',
-                        is_activated=True,
-                        team=team,
-                    )
-                    member.save()
-                    participant.save()
-            self.stdout.write('Created %s new Participants' % (Participant.objects.count() - start_count))
-            self.stdout.write('Participant currently has %s records' % Participant.objects.count())
+
+                Participant.objects.get_or_create(
+                    member=member,
+                    document_status='Verified',
+                    is_activated=True,
+                    team=team,
+                )
+
+            new_count = Participant.objects.count() - start_count
+            self.stdout.write(f'Created {new_count} new Participants')
+            self.stdout.write(f'Participant currently has {Participant.objects.count()} records')
