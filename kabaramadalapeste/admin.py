@@ -93,8 +93,7 @@ class JudgeableSubmitAdmin(admin.ModelAdmin):
             'scripts/admin-confirm.js',
         )
     list_display = ('get_username', 'submitted_at', 'get_challenge_name', 'get_question_title',)
-    search_fields = ('pis__participant__member__username', 'pis__judgeable_question__title',)
-    list_filter = ('submit_status', 'pis__judgeable_question__challenge',)
+    search_fields = ('submit_status', )
     ordering = ('submitted_at',)
     exclude = ('judged_at', 'pis', 'judged_by')
     readonly_fields = (
@@ -182,7 +181,7 @@ class TradeOfferRequestedItemInline(admin.StackedInline):
 @admin.register(TradeOffer)
 class TradeOfferAdmin(admin.ModelAdmin):
     list_display = ('creator_participant', 'status', 'creation_datetime', 'close_datetime', 'accepted_participant')
-    list_filter = ('status',)
+    list_filter = ('status', )
     search_fields = ('creator_participant__member__username', 'accepted_participant__member__username')
     inlines = [TradeOfferRequestedItemInline, TradeOfferSuggestedItemInline]
 
